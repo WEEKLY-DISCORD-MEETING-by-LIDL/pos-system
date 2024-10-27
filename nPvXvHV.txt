@@ -1,0 +1,2879 @@
+openapi: 3.0.0
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/ERNISKARALIUS_1/PSP/1.0.0
+info:
+  version: 1.0.0
+  title: home-iot-api
+  description: The API for the EatBacon IOT project
+paths:
+  '/products':
+    post:
+      tags:
+        - Product
+      summary: Create a new product
+      operationId: createProduct
+      requestBody:
+        required: true
+        description: Information about the product
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProduct'
+            
+      responses:
+        '201':
+          description: Product created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        
+        '400':
+          description: Product contains fields with invalid lengths
+    
+    get:
+      tags:
+        - Product
+      operationId: getProducts
+      summary: Get products that satisfy conditions
+      parameters:
+        - in: query
+          name: categoryId
+          description: Returns products with the specified category
+          schema:
+            type: integer
+            format: uint64
+        - in: query
+          name: createdAtMin
+          description: Returns products created after the specified date
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: createdAtMax
+          description: Returns products created before the specified date
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: limit
+          description: Max amount of products to return
+          schema:
+            $ref: '#/components/schemas/Limit' 
+            
+      responses:
+        '200':
+          description: A list of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+        '403':
+          description: Insufficient privileges
+  
+  '/products/{productId}':
+    put:
+      tags:
+        - Product
+      operationId: updateProduct
+      summary: Update a product
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          description: ID of the product
+          schema:
+            type: integer
+            format: uint64
+      requestBody:
+        description: Fields of the product that can be updated
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProduct'
+      responses:
+        '200':
+          description: Product updated
+        '403':
+          description: Insufficient privileges
+        '404':
+          description: Product not found
+    
+    delete:
+      tags:
+        - Product
+      operationId: deleteProduct
+      summary: Delete a product
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          description: ID of the product
+          schema:
+            type: integer
+            format: uint64
+      responses:
+        '200':
+          description: Product deleted
+        '403':
+          description: Insufficient privileges
+        '404':
+          description: Product not found       
+    
+    get:
+      tags:
+        - Product
+      operationId: getProduct
+      summary: Get a specific product
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          description: ID of the product
+          schema:
+            type: integer
+            format: uint64
+      responses:
+        '200':
+          description: Product acquired
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '403':
+          description: Insufficient privileges
+        '404':
+          description: Product not found
+      
+  '/products/{productId}/variants':
+    post:
+      tags:
+        - ProductVariant
+      operationId: createVariant
+      summary: Create a new product variant
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          description: ID of the product
+          schema:
+            type: integer
+            format: uint64
+      requestBody:
+        description: Information about the product variant
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductVariant'
+      responses:
+        '201':
+          description: Product variant created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductVariant'
+        '400':
+          description: Product variant contains fields with invalid lengths
+        '403':
+          description: Insufficient privileges
+        '404':
+          description: Product not found
+   
+    get:
+      tags:
+        - ProductVariant
+      operationId: getVariants
+      summary: Get variants of a product
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          description: ID of the product
+          schema:
+            type: integer
+            format: uint64
+  
+      responses:
+        '200':
+          description: A list of variants
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductVariant'
+        '403':
+          description: Insufficient privileges
+        '404':
+          description: Product not found
+                  
+  '/variants/{variantId}':
+    put:
+      tags:
+        - ProductVariant
+      operationId: updateVariant
+      summary: Update a product variant
+      parameters:
+        - in: path
+          name: variantId
+          required: true
+          description: ID of the product variant
+          schema:
+            type: integer
+            format: uint64
+      requestBody:
+        description: Fields of the product variant that can be updated
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductVariant'
+      responses:
+        '200':
+          description: Product variant updated
+        '403':
+          description: Insufficient privileges
+        '404':
+          description: Product variant not found
+
+    get:
+      tags:
+        - ProductVariant
+      operationId: getVariant
+      summary: Get a specific product variant
+      parameters:
+        - in: path
+          name: variantId
+          required: true
+          description: ID of the product variant
+          schema:
+            type: integer
+            format: uint64
+      responses:
+        '200':
+          description: Product variant acquired
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductVariant'
+        '403':
+          description: Insufficient privileges
+        '404':
+          description: Product variant not found
+  
+  '/products/{productId}/variants/{variantId}':
+    delete:
+      tags:
+        - ProductVariant
+      operationId: deleteVariant
+      summary: Delete a variant
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          description: ID of the product
+          schema:
+            type: integer
+            format: uint64
+        - in: path
+          name: variantId
+          required: true
+          description: ID of the product variant
+          schema:
+            type: integer
+            format: uint64
+      responses:
+        '200':
+          description: Product variant deleted
+        '403':
+          description: Insufficient privileges
+        '404':
+          description: Product/Variant not found
+  
+  '/services':
+    post:
+      tags:
+        - Service
+      summary: Create a new service
+      operationId: createService
+      requestBody:
+        description: Information about the service
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateService'
+      responses:
+        '201':
+          description: Service created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Service'
+        
+        '400':
+          description: Service contains fields with invalid lengths.
+    
+    get:
+      tags:
+        - Service
+      operationId: getServices
+      summary: Get services that satisfy conditions
+      parameters:
+        - in: query
+          name: category
+          description: Category of services
+          schema:
+            type: string
+        - in: query
+          name: limit
+          description: Max amount of services to return
+          schema:
+            $ref: '#/components/schemas/Limit'
+      responses:
+        '200':
+          description: A list of services
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Service'
+        '403':
+          description: Insufficient privileges
+   
+  '/services/{serviceId}':
+    put:
+      tags:
+        - Service
+      operationId: updateService
+      summary: Update a service
+      parameters:
+        - in: path
+          name: serviceId
+          required: true
+          description: ID of the service
+          schema:
+            type: integer
+            format: uint64
+      requestBody:
+        description: Fields of the service that can be updated
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateService'
+      responses:
+        '200':
+          description: Service updated
+        '403':
+          description: Not a provider of the service
+        '404':
+          description: Service not found
+    
+    delete:
+      tags:
+        - Service
+      operationId: deleteService
+      summary: Delete a service
+      parameters:
+        - in: path
+          name: serviceId
+          required: true
+          description: ID of the service
+          schema:
+            type: integer
+            format: uint64
+      responses:
+        '200':
+          description: Service deleted
+        '403':
+          description: Insufficient privileges
+        '404':
+          description: Service not found    
+    get:
+      tags:
+        - Service
+      operationId: getService
+      summary: Get a specific service
+      parameters:
+        - in: path
+          name: serviceId
+          required: true
+          description: ID of the service
+          schema:
+            type: integer
+            format: uint64
+      responses:
+        '200':
+          description: Service acquired
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Service'
+        '403':
+          description: Insufficient privileges
+        '404':
+          description: Service not found
+ 
+  '/services/{serviceId}/available-times':
+    get:
+      summary: Check available time slots for a service
+      operationId: checkAvailableTimes
+      tags:
+        - Service
+      parameters:
+        - in: path
+          name: serviceId
+          required: true
+          schema:
+            type: integer
+            format: uint64
+          description: ID of the service
+        - in: query
+          name: date
+          required: true
+          schema:
+            type: string
+            format: date
+          description: The date for which to check available times
+      responses:
+        '200':
+          description: Available time slots retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: date-time
+        '403':
+          description: Insufficient privileges
+        '404':
+          description: Service not found
+          
+  '/reservations':
+    post:
+      summary: Create a new reservation/appointment
+      operationId: CreateReservation
+      tags:
+        - Reservations
+      requestBody:
+        description: Information about the reservation
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReservation'
+      responses:
+        '201':
+          description: Reservation created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+        '404':
+          description: Service or customer not found
+        '409':
+          description: Time slot already taken
+          
+    get:
+      summary: Get reservations that satisfy conditions
+      operationId: getAllReservations
+      tags:
+        - Reservations
+      parameters:
+        - in: query
+          name: serviceId
+          schema:
+            type: integer
+            format: uint64
+            description: Filter reservations by service ID
+        - in: query
+          name: status
+          description: Returns reservations that have the specified status
+          schema:
+            $ref: '#/components/schemas/ReservationStatus'
+        - in: query
+          name: limit
+          description: Max amount of reservation to return
+          schema:
+            $ref: '#/components/schemas/Limit' 
+      responses:
+        '200':
+          description: Filtered list of reservations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Reservation'
+        '400':
+          description: Invalid filter values
+        '403':
+          description: Insufficient privileges
+        '500':
+          description: Internal server error
+          
+  '/reservations/{reservationId}':
+    get:
+      summary: Get a specific reservation
+      operationId: getReservation
+      tags:
+        - Reservations
+      parameters:
+        - in: path
+          name: reservationId
+          required: true
+          schema:
+            type: integer
+            format: uint64
+          description: ID of the reservation to retrieve
+      responses:
+        '200':
+          description: Reservation details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+        '403':
+          description: Insufficient privileges
+        '404':
+          description: Reservation not found
+          
+    put:
+      summary: Update an existing reservation
+      operationId: UpdateReservation
+      tags:
+        - Reservations
+      parameters:
+        - in: path
+          name: reservationId
+          required: true
+          schema:
+            type: integer
+            format: uint64
+          description: ID of the reservation to update
+      requestBody:
+        description: Updated reservation details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateReservation'
+      responses:
+        '200':
+          description: Reservation updated successfully
+        '403':
+          description: Insufficient privileges
+        '404':
+          description: Reservation not found
+        '409':
+          description: Time slot already taken      
+          
+    delete:
+      summary: Delete a reservation
+      operationId: DeleteReservation
+      tags:
+        - Reservations
+      parameters:
+        - in: path
+          name: reservationId
+          required: true
+          schema:
+            type: integer
+            format: uint64
+          description: ID of the reservation to delete
+      responses:
+        '204':
+          description: Reservation deleted successfully
+        '404':
+          description: Reservation not found
+
+  '/reservations/{reservationId}/receipt':
+    get:
+      summary: Get the final receipt for a reservation
+      operationId: GetReservationReceipt
+      tags:
+        - Receipts
+      parameters:
+        - in: path
+          name: reservationId
+          required: true
+          schema:
+            type: integer
+            format: uint64
+          description: ID of the reservation to retrieve the receipt for
+      responses:
+        '200':
+          description: Receipt retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  merchantInfo:
+                    type: object
+                    description: Information about the merchant
+                    properties:
+                      name:
+                        type: string
+                      VAT:
+                        type: string
+                      address:
+                        type: string
+                  receiptId:
+                    type: string
+                    description: Optional receipt identifier
+                    example: "RCPT-2023-002"
+                  date:
+                    type: string
+                    format: date-time
+                    description: Date of the receipt
+                  employeeName:
+                    type: string
+                    description: Name of the employee who processed the reservation
+                  serviceDetails:
+                    type: object
+                    description: Details of the service
+                    properties:
+                      serviceName:
+                        type: string
+                        description: Name of the service
+                      price:
+                        type: number
+                        format: float
+                        description: Price of the service
+                  discount:
+                    type: object
+                    description: Discount applied to the reservation
+                    properties:
+                      title:
+                        type: string
+                        description: Name of the discount (e.g., "20% Holiday Discount")
+                      discountAmount:
+                        type: number
+                        format: float
+                        description: Amount deducted as a discount
+                  paymentMethod:
+                    type: string
+                    description: Payment method used (e.g., Debit Card)
+                  totalAmount:
+                    type: number
+                    format: float
+                    description: Total amount for the reservation
+                  taxes:
+                    type: object
+                    description: Tax information
+                    properties:
+                      taxPercentage:
+                        type: number
+                        format: float
+                        description: Percentage of taxes applied
+                      taxAmount:
+                        type: number
+                        format: float
+                        description: Total tax amount
+                  finalAmount:
+                    type: number
+                    format: float
+                    description: Final amount after applying taxes and discounts
+        '404':
+          description: Reservation not found
+        '500':
+          description: Internal server error
+          
+  '/categories':
+    post:
+      tags:
+        - Category
+      summary: Create a new category
+      operationId: createCategory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Category'
+      responses:
+        '201':
+          description: Category created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '400':
+          description: Invalid input
+        '403':
+          description: Insufficient privileges
+
+    get:
+      tags:
+        - Category
+      summary: Get all categories
+      operationId: getCategories
+      responses:
+        '200':
+          description: Categories acquired
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+
+  '/categories/{categoryId}':
+    put:
+      tags:
+        - Category
+      summary: Update a category
+      operationId: updateCategory
+      parameters:
+        - name: categoryId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: uint64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Category'
+      responses:
+        '200':
+          description: Category updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '403':
+          description: Insufficient privileges
+        '404':
+          description: Category not found
+
+    delete:
+      tags:
+        - Category
+      summary: Delete a category
+      operationId: deleteCategory
+      parameters:
+        - name: categoryId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: uint64
+      responses:
+        '204':
+          description: Successful operation
+        '403':
+          description: Insufficient privileges
+        '404':
+          description: Category not found
+
+  '/giftCards':
+    post:
+      tags:
+        - GiftCard
+      summary: Create a new gift card
+      operationId: createGiftCard
+      requestBody:
+        required: true
+        description: Information about the gift card
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateGiftCard'
+            
+      responses:
+        '201':
+          description: Gift card created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GiftCard'
+      
+    get:
+      tags:
+        - GiftCard
+      summary: Get gift cards that satisfy conditions
+      operationId: getGiftCards
+      parameters:
+        - name: createdAtMin
+          in: query
+          description: Returns gift cards created after the specified date
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: createdAtMax
+          in: query
+          description: Returns gift cards created before the specified date
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: limit
+          in: query
+          description: Max amount of gift cards to return
+          required: false
+          schema:
+            $ref: '#/components/schemas/Limit'
+      responses:
+        '200':
+          description: A list of gift cards
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GiftCard'
+        '403':
+          description: Insufficient privileges
+  
+  '/giftCards/{giftCardId}':
+    get:
+      tags:
+        - GiftCard
+      summary: Get a specific gift card
+      operationId: getGiftCard
+      parameters:
+        - name: giftCardId
+          in: path
+          description: Id of the gift card
+          required: true
+          schema:
+            type: integer
+            format: uint64
+      responses:
+        '200':
+          description: Gift card acquired
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GiftCard'
+        '403':
+          description: Insufficient privileges
+        '404':
+          description: Gift card not found
+                  
+    put:
+      tags:
+        - GiftCard
+      summary: Update a gift card
+      operationId: updateGiftCard
+      parameters:
+        - name: giftCardId
+          in: path
+          description: ID of the gift card
+          required: true
+          schema:
+            type: integer
+            format: uint64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateGiftCard'
+      responses:
+        '200':
+          description: Gift card updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GiftCard'
+        '403':
+          description: Insufficient privileges
+        '404':
+          description: Gift card not found
+
+    delete:
+      tags:
+        - GiftCard
+      summary: Delete a gift card
+      operationId: deleteGiftCard
+      parameters:
+        - name: giftCardId
+          in: path
+          description: ID of the gift card
+          required: true
+          schema:
+            type: integer
+            format: uint64
+      responses:
+        '200':
+          description: Gift card deleted
+        '403':
+          description: Insufficient privileges
+        '404':
+          description: Gift card not found
+
+  '/discounts':
+    post:
+      tags:
+        - Discount
+      summary: Create a discount
+      operationId: createDiscount
+      requestBody:
+        required: true
+        description: Information about the discount
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDiscount'
+            
+      responses:
+        '201':
+          description: Discount created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Discount'
+    get:
+      tags:
+        - Discount
+      operationId: getDiscounts
+      summary: Get discounts that satisfy conditions
+      parameters:
+        - in: query
+          name: expired
+          description: Whether a discount has expired
+          schema:
+            type: boolean
+        - in: query
+          name: limit
+          description: Max amount of discounts to return
+          schema:
+            $ref: '#/components/schemas/Limit'
+      responses:
+        '200':
+          description: A list of discounts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Discount'
+        '403':
+          description: Insufficient privileges
+                
+  '/discounts/{discountId}':
+    get:
+      tags:
+        - Discount
+      summary: Get a specific discount
+      parameters:
+        - name: discountId
+          in: path
+          description: ID of the discount
+          required: true
+          schema:
+            type: integer
+            format: uint64
+      responses:
+        '200':
+          description: Discount acquired
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Discount'
+        '403':
+          description: Insufficient privileges
+        '404':
+          description: Discount not found
+                  
+    put:
+      tags:
+        - Discount
+      summary: Update a discount
+      operationId: updateDiscount
+      parameters:
+        - name: discountId
+          in: path
+          description: ID of the discount
+          required: true
+          schema:
+            type: integer
+            format: uint64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDiscount'
+      responses:
+        '200':
+          description: Discount updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Discount'
+        '403':
+          description: Insufficient privileges
+        '404':
+          description: Discount not found
+
+    delete:
+      tags:
+        - Discount
+      summary: Delete a discount
+      operationId: deleteDiscount
+      parameters:
+        - name: discountId
+          in: path
+          description: ID of the discount
+          required: true
+          schema:
+            type: integer
+            format: uint64
+      responses:
+        '200':
+          description: Discount deleted
+        '403':
+          description: Insufficient privileges
+        '404':
+          description: Discount not found
+  
+  
+  '/customers':
+    post:
+      summary: Create a new customer
+      operationId: createCustomer
+      tags:
+        - Customer
+      requestBody:
+        description: Details of the customer to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCustomer'
+      responses:
+        '201':
+          description: Customer created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          description: Invalid input
+        '500':
+          description: Internal server error
+          
+    get:
+      summary: Get all customers that satisfy conditions
+      operationId: getCustomers
+      tags:
+        - Customer
+      parameters:
+        - in: query
+          name: createdAtMin
+          description: Returns all customers created after the specified date
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: createdAtMax
+          description: Returns all customers created before the specified date
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: limit
+          description: Max amount of customers to return
+          schema:
+            $ref: '#/components/schemas/Limit'
+      responses:
+        '200':
+          description: List of customers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Customer'
+        '500':
+          description: Internal server error
+
+  '/customers/{customerId}':
+    get:
+      summary: Get customer details
+      operationId: getCustomer
+      tags:
+        - Customer
+      parameters:
+        - in: path
+          name: customerId
+          required: true
+          schema:
+            type: integer
+            format: uint64
+          description: ID of the customer to retrieve
+      responses:
+        '200':
+          description: Customer details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '404':
+          description: Customer not found
+        '500':
+          description: Internal server error
+
+    put:
+      summary: Update an existing customer
+      operationId: updateCustomer
+      tags:
+        - Customer
+      parameters:
+        - in: path
+          name: customerId
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            description: ID of the customer to update
+      requestBody:
+        description: Customer details to update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCustomer'
+      responses:
+        '200':
+          description: Customer updated successfully
+        '400':
+          description: Invalid input
+        '404':
+          description: Customer not found
+        '500':
+          description: Internal server error
+
+    delete:
+      summary: Delete an existing customer
+      operationId: DeleteCustomer
+      tags:
+        - Customer
+      parameters:
+        - in: path
+          name: customerId
+          required: true
+          schema:
+            type: integer
+            format: uint64
+          description: ID of the customer to delete
+      responses:
+        '204':
+          description: Customer deleted successfully
+        '404':
+          description: Customer not found
+        '500':
+          description: Internal server error
+
+  '/customers/{customerId}/reservations':
+    get:
+      summary: Get reservations of a specific customer
+      operationId: getCustomerReservations
+      tags:
+        - Customer
+      parameters:
+        - in: path
+          name: customerId
+          description: ID of the customer
+          required: true
+          schema:
+            type: integer
+            format: uint64
+        - in: query
+          name: upcoming
+          description: Filter upcoming reservations
+          schema:
+            type: boolean
+            default: true
+        - in: query
+          name: limit
+          description: Max amount of orders to return
+          schema:
+            $ref: '#/components/schemas/Limit'
+      responses:
+        '200':
+          description: Reservations acquired
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Reservation'
+        '403':
+          description: Insufficient privileges
+        '404':
+          description: Customer not found
+
+  '/employees':
+    post:
+      summary: Create a new employee
+      operationId: createEmployee
+      tags:
+        - Employee
+      requestBody:
+        description: Details of the employee to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEmployee'
+      responses:
+        '201':
+          description: Employee created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+        '400':
+          description: Invalid input
+        '500':
+          description: Internal server error
+
+    get:
+      summary: Retrieve all employees
+      operationId: getAllEmployees
+      tags:
+        - Employee
+      parameters:
+        - in: query
+          name: type
+          description: Returns all employees that are of the specified type
+          schema:
+            $ref: '#/components/schemas/EmployeeType'
+        - in: query
+          name: limit
+          description: Max amount of employees to return
+          schema:
+            $ref: '#/components/schemas/Limit'
+      responses:
+        '200':
+          description: List of employees
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Employee'
+        '500':
+          description: Internal server error
+
+  '/employees/{employeeId}':
+    get:
+      summary: Get a specific employee
+      operationId: getEmployee
+      tags:
+        - Employee
+      parameters:
+        - in: path
+          name: employeeId
+          required: true
+          description: ID of the employee to retrieve
+          schema:
+            type: integer
+            format: uint64
+      responses:
+        '200':
+          description: Employee details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+        '404':
+          description: Employee not found
+        '500':
+          description: Internal server error
+
+    put:
+      summary: Update an existing employee
+      operationId: updateEmployee
+      tags:
+        - Employee
+      parameters:
+        - in: path
+          name: employeeId
+          required: true
+          description: ID of the employee to update
+          schema:
+            type: integer
+            format: uint64
+      requestBody:
+        description: Employee details to update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEmployee'
+      responses:
+        '200':
+          description: Employee updated successfully
+        '400':
+          description: Invalid input
+        '404':
+          description: Employee not found
+        '500':
+          description: Internal server error
+
+    delete:
+      summary: Delete an existing employee
+      operationId: deleteEmployee
+      tags:
+        - Employee
+      parameters:
+        - in: path
+          name: employeeId
+          required: true
+          description: ID of the employee to delete
+          schema:
+            type: integer
+            format: uint64
+      responses:
+        '204':
+          description: Employee deleted successfully
+        '404':
+          description: Employee not found
+        '500':
+          description: Internal server error
+
+  '/orders':
+    post:
+      summary: Create a new order
+      operationId: CreateOrder
+      tags:
+        - Order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrder'
+      responses:
+        '201':
+          description: Order created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Invalid input
+        '500':
+          description: Internal server error
+
+  '/orders/{orderId}':
+    get:
+      summary: Get order details
+      operationId: GetOrder
+      tags:
+        - Order
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: integer
+            format: uint64
+          description: ID of the order to retrieve
+      responses:
+        '200':
+          description: Order details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '403':
+          description: Insufficient privileges
+        '404':
+          description: Order not found
+        '500':
+          description: Internal server error
+
+    put:
+      summary: Modify an existing order
+      operationId: UpdateOrder
+      tags:
+        - Order
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: integer
+            format: uint64
+          description: ID of the order to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  $ref: '#/components/schemas/OrderStatus'
+      responses:
+        '200':
+          description: Order modified successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Invalid input
+        '403':
+          description: Insufficient privileges
+        '404':
+          description: Order not found
+        '500':
+          description: Internal server error
+
+    delete:
+      summary: Delete an existing order
+      operationId: DeleteOrder
+      tags:
+        - Order
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: integer
+            format: uint64
+          description: ID of the order to delete
+      responses:
+        '204':
+          description: Order deleted successfully
+        '403':
+          description: Insufficient privileges
+        '404':
+          description: Order not found
+        '500':
+          description: Internal server error
+    
+  '/orders/{orderId}/cancel':
+    patch:
+      summary: Cancel an existing order
+      operationId: CancelOrder
+      tags:
+        - Order
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          description: ID of the order to cancel
+          schema:
+            type: integer
+            format: uint64
+      responses:
+        '200':
+          description: Order canceled successfully
+        '403':
+          description: Insufficient privileges
+        '404':
+          description: Order not found
+        '500':
+          description: Internal server error
+  
+  '/orders/{orderId}/discount':
+    post:
+      summary: Apply a discount to an order
+      operationId: ApplyDiscount
+      tags:
+        - Order
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          description: ID of the order to apply the discount
+          schema:
+            type: integer
+            format: uint64
+      # requestBody:
+      #   description: Details of the discount to apply
+      #   required: true
+      #   content:
+      #     application/json:
+      #       schema:
+      #         type: object
+      #         properties:
+      #           discount_code:
+      #             type: string
+      #             description: Discount code to apply
+      #             example: SUMMER2024
+      #           discount_amount:
+      #             type: number
+      #             description: Amount of the discount to apply
+      #             example: 10.00
+      #           expiration_date:
+      #             type: number
+      #             format: date
+      #             example: 2024-12-07
+      responses:
+        '200':
+          description: Discount applied successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orderId:
+                    type: integer
+                    format: uint64
+                    
+                  totalAmount:
+                    type: number
+                    description: Updated total amount after applying the discount
+                    example: 50.00
+        '400':
+          description: Invalid discount or order
+        '404':
+          description: Order not found
+        '500':
+          description: Internal server error
+
+  '/orders/{orderId}/receipt':
+    get:
+      summary: Get the final receipt for an order
+      operationId: GetOrderReceipt
+      tags:
+        - Receipts
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: integer
+            format: uint64
+          description: ID of the order to retrieve the receipt for
+      responses:
+        '200':
+          description: Receipt retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  merchantInfo:
+                    type: object
+                    description: Information about the merchant
+                    properties:
+                      name:
+                        type: string
+                      VAT:
+                        type: string
+                      address:
+                        type: string
+                  receiptId:
+                    type: string
+                    description: Optional receipt identifier
+                    example: "RCPT-2023-001"
+                  date:
+                    type: string
+                    format: date-time
+                    description: Date of the receipt
+                  employeeName:
+                    type: string
+                    description: Name of the employee who processed the order
+                  items:
+                    type: array
+                    description: List of items in the order
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          description: Name of the item/product
+                        quantity:
+                          type: integer
+                          description: Quantity of the product
+                        unitPrice:
+                          type: number
+                          format: float
+                          description: Price per unit
+                        total:
+                          type: number
+                          format: float
+                          description: Total price for the product (quantity * unit price)
+                  discount:
+                    type: object
+                    description: Discount details applied to the order
+                    properties:
+                      title:
+                        type: string
+                        description: Name of the discount (e.g., "10% Off")
+                      discountAmount:
+                        type: number
+                        format: float
+                        description: Amount deducted as a discount
+                  paymentMethod:
+                    type: string
+                    description: Payment method used (e.g., Debit Card)
+                  totalAmount:
+                    type: number
+                    format: float
+                    description: Total amount for the order
+                  taxes:
+                    type: object
+                    description: Tax information
+                    properties:
+                      taxPercentage:
+                        type: number
+                        format: float
+                        description: Percentage of taxes applied
+                      taxAmount:
+                        type: number
+                        format: float
+                        description: Total tax amount
+                  finalAmount:
+                    type: number
+                    format: float
+                    description: Final amount after applying taxes and discounts
+        '404':
+          description: Order not found
+        '500':
+          description: Internal server error
+          
+  '/orderDiscounts':
+    post:
+      tags:
+        - OrderDiscount
+      summary: Create an order discount
+      operationId: createOrderDiscount
+      requestBody:
+        required: true
+        description: Information about the order discount
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderDiscount'
+            
+      responses:
+        '201':
+          description: Order discount created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderDiscount'
+    
+    get:
+      tags:
+        - OrderDiscount
+      operationId: getOrderDiscounts
+      summary: Get order discounts that satisfy conditions
+      parameters:
+        - in: query
+          name: expired
+          description: Whether an order discount has expired
+          schema:
+            type: boolean
+        - in: query
+          name: limit
+          description: Max amount of order discounts to return
+          schema:
+            $ref: '#/components/schemas/Limit'
+      responses:
+        '200':
+          description: A list of order discounts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderDiscount'
+        '403':
+          description: Insufficient privileges
+  
+  '/orderDiscounts/{orderDiscountId}':
+    get:
+      tags:
+        - OrderDiscount
+      summary: Get a specific order discount
+      operationId: getOrderDiscount
+      parameters:
+        - name: orderDiscountId
+          in: path
+          description: ID of the order discount
+          required: true
+          schema:
+            type: integer
+            format: uint64
+      responses:
+        '200':
+          description: Order discount acquired
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderDiscount'
+        '403':
+          description: Insufficient privileges
+        '404':
+          description: Order discount not found
+                  
+    put:
+      tags:
+        - OrderDiscount
+      summary: Update an order discount
+      operationId: updateOrderDiscount
+      parameters:
+        - name: orderDiscountId
+          in: path
+          description: ID of the order discount
+          required: true
+          schema:
+            type: integer
+            format: uint64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderDiscount'
+      responses:
+        '200':
+          description: Order discount updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderDiscount'
+        '403':
+          description: Insufficient privileges
+        '404':
+          description: Order discount not found
+
+    delete:
+      tags:
+        - OrderDiscount
+      summary: Delete an order discount
+      operationId: deleteOrderDiscount
+      parameters:
+        - name: orderDiscountId
+          in: path
+          description: ID of the order discount
+          required: true
+          schema:
+            type: integer
+            format: uint64
+      responses:
+        '200':
+          description: Order discount deleted
+        '403':
+          description: Insufficient privileges
+        '404':
+          description: Order discount not found
+  
+  '/taxes':
+    post:
+      tags:
+        - Tax
+      summary: Create a new tax
+      operationId: createTax
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tax'
+      responses:
+        '201':
+          description: Tax created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tax'
+        '400':
+          description: Invalid input
+
+    get:
+      tags:
+        - Tax
+      summary: Get all taxes
+      operationId: getTaxes
+      parameters:
+        - name: limit
+          in: query
+          description: Max amount of taxes to return
+          required: false
+          schema:
+            $ref: '#/components/schemas/Limit'
+      responses:
+        '200':
+          description: Taxes acquired
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tax'
+
+  '/taxes/{taxId}':
+    get:
+      tags:
+        - Tax
+      summary: Get a specific tax
+      operationId: getTax
+      parameters:
+        - name: taxId
+          in: path
+          description: ID of the tax
+          required: true
+          schema:
+            type: integer
+            format: uint64
+      responses:
+        '200':
+          description: Tax acquired
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tax'
+        '403':
+          description: Insufficient privileges
+        '404':
+          description: Tax not found
+    put:
+      tags:
+        - Tax
+      summary: Update a tax
+      operationId: updateTax
+      parameters:
+        - name: taxId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: uint64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tax'
+      responses:
+        '200':
+          description: Tax updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tax'
+        '403':
+          description: Insufficient privileges
+        '404':
+          description: Tax not found
+
+    delete:
+      tags:
+        - Tax
+      summary: Delete a tax
+      operationId: deleteTax
+      parameters:
+        - name: taxId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: uint64
+      responses:
+        '204':
+          description: Tax deleted
+        '403':
+          description: Insufficient privileges
+        '404':
+          description: Tax not found
+          
+  '/pay':
+    post:
+      tags:
+        - Payment
+      summary: Create a payment
+      operationId: createPayment
+      requestBody:
+        required: true
+        description: Payment details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Payment'
+      responses:
+        '201':
+          description: Payment created
+        '400':
+          description: Invalid payment request
+
+  '/refund':
+    post:
+      tags:
+        - Payment
+      summary: Refund a payment
+      operationId: refundPayment
+      requestBody:
+        required: true
+        description: Refund details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Refund'
+      responses:
+        '200':
+          description: Payment refunded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  refundId:
+                    type: integer
+                    format: uint64
+                    description: Unique identifier of the refund
+                  refundedAmount:
+                    type: number
+                    format: float
+                    description: The total amount that was refunded
+                  currency:
+                    type: string
+                    minLength: 3
+                    maxLength: 3
+                    description: Currency used for the refund (e.g., USD, EUR)
+                  refundStatus:
+                    type: string
+                    enum: [success, failed, pending]
+                    description: Status of the refund transaction
+                  refundedAt:
+                    type: string
+                    format: date-time
+                    description: Timestamp of when the refund was processed
+        '400':
+          description: Invalid refund request (e.g., the payment doesn't exist or the refund amount exceeds the original payment)
+        '404':
+          description: Payment not found
+        '500':
+          description: Internal server error
+
+  '/merchants':
+    post:
+      tags:
+        - Merchant
+      summary: Create a new merchant
+      operationId: createMerchant
+      requestBody:
+        required: true
+        description: Merchant details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Merchant'
+      responses:
+        '201':
+          description: Merchant created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Merchant'
+        '400':
+          description: Invalid merchant data
+
+  '/merchants/{merchantId}':
+    get:
+      tags:
+        - Merchant
+      summary: "Get details of a specific merchant"
+      operationId: "getMerchant"
+      parameters:
+        - in: path
+          name: merchantId
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            description: "ID of the merchant to retrieve"
+      responses:
+        '200':
+          description: "Merchant details retrieved successfully"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Merchant'
+        '404':
+          description: "Merchant not found"
+        '500':
+          description: "Internal server error"
+
+    put:
+      tags:
+        - Merchant
+      summary: Update a merchant
+      operationId: updateMerchant
+      parameters:
+        - in: path
+          name: merchantId
+          required: true
+          schema:
+            type: integer
+            format: uint64
+      requestBody:
+        description: Merchant details to update
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: "Merchant's name"
+                VAT:
+                  type: number
+                  description: "Merchant's VAT number"
+                address:
+                  $ref: "#/components/schemas/Address"
+                email:
+                  type: string
+                  format: email
+                  description: "Merchant's email"
+                phone:
+                  type: string
+                  description: "Merchant's phone number"
+                  example: "865432877"
+      responses:
+        '200':
+          description: Merchant updated successfully
+        '400':
+          description: Invalid input
+        '404':
+          description: Merchant not found
+        '500':
+          description: Internal server error
+
+  '/login':
+    post:
+      tags:
+        - Authentication
+      summary: Log in
+      operationId: login
+      requestBody:
+        required: true
+        description: Login credentials
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+      responses:
+        '200':
+          description: Login successful
+        '401':
+          description: Invalid credentials
+  
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: uint64
+          readOnly: true
+        merchantId:
+          type: integer
+          format: uint64
+          readOnly: true
+        title:
+          type: string
+          minLength: 1
+          maxLength: 30
+        categoryId:
+          type: integer
+          format: uint64
+          default: null
+        price:
+          $ref: '#/components/schemas/Price'
+        discountId:
+          type: integer
+          format: uint64
+          default: null
+        taxId:
+          type: integer
+          format: uint64
+          default: null
+        weight:
+          type: integer
+          format: uint32
+          example: 2
+        weightUnit:
+          type: string
+          example: kg
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+        variants:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductVariant'
+            
+    CreateProduct:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 30
+        categoryId:
+          type: integer
+          format: uint64
+          default: null
+        price:
+          $ref: '#/components/schemas/Price'
+        taxId:
+          type: integer
+          format: uint64
+          default: null
+        weight:
+          type: integer
+          format: uint32
+          example: 2
+        weightUnit:
+          type: string
+          example: kg
+          
+    UpdateProduct:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 30
+        categoryId:
+          type: integer
+          format: uint64
+          default: null
+        price:
+          $ref: '#/components/schemas/Price'
+        discountId:
+          type: integer
+          format: uint64
+          default: null
+        taxId:
+          type: integer
+          format: uint64
+          default: null
+        weight:
+          type: integer
+          format: uint32
+          example: 2
+        weightUnit:
+          type: string
+          example: kg
+        
+    ProductVariant:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: uint64
+          readOnly: true
+        productId:
+          type: integer
+          format: uint64
+          readOnly: true
+        title:
+          type: string
+          minLength: 1
+          maxLength: 30
+          default: Default
+        additionalPrice:
+          type: number
+          format: float
+          default: 0
+        quantity:
+          type: integer
+          format: uint32
+          default: 0
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+          
+    CreateProductVariant:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 30
+          default: Default
+        additionalPrice:
+          type: number
+          format: float
+          default: 0
+        quantity:
+          type: integer
+          format: uint32
+          default: 0
+    
+    Price:
+      type: object
+      properties:
+        amount:
+          type: number
+          format: float
+          example: 7.25
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+          example: USD
+       
+    Limit:
+      type: integer
+      format: uint8
+      maximum: 250
+      default: 50
+    
+    Service:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: uint64
+          readOnly: true
+        merchantId:
+          type: integer
+          format: uint64
+          readOnly: true
+        title:
+          type: string
+          minLength: 1
+          maxLength: 30
+        categoryId:
+          type: integer
+          format: uint64
+          default: null
+        price:
+          $ref: '#/components/schemas/Price'
+        discountId:
+          type: integer
+          format: uint64
+          default: null
+        taxId:
+          type: integer
+          format: uint64
+          default: null
+        durationMins:
+          type: integer
+          format: uint16
+          description: The duration of the reservation in minutes
+          example: 45
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+        reservations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Reservation'
+            
+    CreateService:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 30
+        categoryId:
+          type: integer
+          format: uint64
+          default: null
+        price:
+          $ref: '#/components/schemas/Price'
+        discountId:
+          type: integer
+          format: uint64
+          default: null
+        taxId:
+          type: integer
+          format: uint64
+          default: null
+        durationMins:
+          type: integer
+          format: uint16
+          description: The duration of the reservation in minutes
+          example: 45
+          
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: uint64
+          readOnly: true
+        merchantId:
+          type: integer
+          format: uint64
+          readOnly: true
+        title:
+          type: string
+          
+    GiftCard:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: uint64
+          readOnly: true
+        merchantid:
+          type: integer
+          format: uint64
+          readOnly: true
+        code:
+          type: string
+          example: ABCD-1EF2GH-IJ123
+        initialBalance:
+          type: number
+          format: float
+          example: 20.0
+        balance:
+          type: number
+          format: float
+          example: 10.0
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+          example: USD
+        expiresOn:
+          type: string
+          format: date
+          default: null
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+          
+    CreateGiftCard:
+      type: object
+      properties:
+        initialBalance:
+          type: number
+          format: float
+          example: 20.0
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+          example: USD
+        expiresOn:
+          type: string
+          format: date
+        
+    UpdateGiftCard:
+      type: object
+      properties:
+        balance:
+          type: number
+          format: float
+          example: 10.0
+        expiresOn:
+          type: string
+          format: date
+
+    Discount:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: uint64
+          readOnly: true
+        merchantid:
+          type: integer
+          format: uint64
+          readOnly: true
+        title:
+          type: string
+          maxLength: 30
+          example: Vegetable sale
+        percentage:
+          type: number
+          format: float
+          maximum: 100.0
+          minimum: 0.0
+          example: 25.0
+        expiresOn:
+          type: string
+          format: date
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+          
+    CreateDiscount:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 30
+          example: Vegetable sale
+        percentage:
+          type: number
+          format: float
+          maximum: 100.0
+          minimum: 0.0
+          example: 25.0
+        expiresOn:
+          type: string
+          format: date
+          
+    Address:
+      type: object
+      properties:
+        address1:
+          type: string
+          example: A. Goštauto g.
+        address2:
+          type: string
+          example: 12A
+        city:
+          type: string
+          example: Vilnius
+        country:
+          type: string
+          example: Lithuania
+        countryCode:
+          type: string
+          minLength: 3
+          maxLength: 3
+          example: LTU
+        zipCode:
+          example: LT-01108
+          
+    Reservation:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: uint64
+          readOnly: true
+        customerId:
+          type: integer
+          format: uint64
+        serviceId:
+          type: integer
+          format: uint64
+        employeeId:
+          type: integer
+          format: uint64
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        status:
+          $ref: '#/components/schemas/ReservationStatus'
+        send_confirmation:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+
+    CreateReservation:
+      type: object
+      properties:
+        customerId:
+          type: integer
+          format: uint64
+        serviceId:
+          type: integer
+          format: uint64
+        employeeId:
+          type: integer
+          format: uint64
+        startTime:
+          type: string
+          format: date-time
+        sendConfirmation:
+          type: boolean
+          
+    UpdateReservation:
+      type: object
+      properties:
+        employeeId:
+          type: integer
+          format: uint64
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        status:
+          $ref: '#/components/schemas/ReservationStatus'
+          
+    ReservationStatus:
+      type: string
+      enum: [confirmed, canceled, completed]
+      
+    Employee:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: uint64
+          readOnly: true
+        merchantId:
+          type: integer
+          format: uint64
+          readOnly: true
+        firstName:
+          type: string
+          maxLength: 30
+          example: Jonas
+        lastName:
+          type: string
+          maxLength: 30
+          example: Jonaitis
+        employeeType:
+          $ref: '#/components/schemas/EmployeeType'
+        username:
+          type: string
+          maxLength: 30
+          example: Jonius
+        password:
+          type: string
+          format: password
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+        
+    CreateEmployee:
+      type: object
+      properties:
+        firstName:
+          type: string
+          maxLength: 30
+          example: Jonas
+        lastName:
+          type: string
+          maxLength: 30
+          example: Jonaitis
+        employeeType:
+          $ref: '#/components/schemas/EmployeeType'
+        username:
+          type: string
+          maxLength: 30
+          example: Jonius
+        password:
+          type: string
+          format: password
+         
+    EmployeeType:
+      type: string
+      enum: [regular, admin, owner]
+
+    Customer:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: uint64
+          readOnly: true
+        merchantid:
+          type: integer
+          format: uint64
+          readOnly: true
+        firstName:
+          type: string
+          maxLength: 30
+          example: Petras
+        lastName:
+          type: string
+          maxLength: 30
+          example: Petraitis
+        phone:
+          type: string
+          example: 867543588
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+          
+    CreateCustomer:
+      type: object
+      properties:
+        firstName:
+          type: string
+          maxLength: 30
+          example: Petras
+        lastName:
+          type: string
+          maxLength: 30
+          example: Petraitis
+        phone:
+          type: string
+          example: 867543588
+    
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: uint64
+          readOnly: true
+        merchantid:
+          type: integer
+          format: uint64
+          readOnly: true
+        orderDiscountId:
+          type: integer
+          format: uint64
+          default: null
+        status:
+          $ref: '#/components/schemas/OrderStatus'
+        totalAmount:
+          $ref: '#/components/schemas/Price'
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+        orderItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+            
+    CreateOrder:
+      type: object
+      properties:
+        orderDiscountId:
+          type: integer
+          format: uint64
+          default: null
+        totalAmount:
+          $ref: '#/components/schemas/Price'
+        orderItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+            
+    OrderItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: uint64
+          readOnly: true
+        orderId:
+          type: integer
+          format: uint64
+          readOnly: true
+        productVariantId:
+          type: integer
+          format: uint64
+          readOnly: true
+        quantity:
+          type: integer
+          format: uint32
+          default: 1
+        price:
+          $ref: '#/components/schemas/Price'
+
+    OrderStatus:
+      type: string
+      enum:
+        - opened
+        - paid
+        - partiallyPaid
+        - canceled
+        - refunded
+      
+    OrderDiscount:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: uint64
+          readOnly: true
+        merchantid:
+          type: integer
+          format: uint64
+          readOnly: true
+        title:
+          type: string
+          maxLength: 30
+          example: Happy Birthday
+        percentage:
+          type: number
+          format: float
+          example: 50.0
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+     
+    Tax:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: uint64
+          readOnly: true
+        merchantId:
+          type: integer
+          format: uint64
+          readOnly: true
+        title:
+          type: string
+          maxLength: 30
+          example: Alcohol
+        percentage:
+          type: number
+          format: float
+          example: 0.02
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+
+    Payment:
+      type: object
+      properties:
+        id: 
+          type: integer
+          format: uint64
+          readOnly: true
+        tipAmount:
+          type: number
+          format: float
+        totalAmount:
+          type: number
+          format: float
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+          example: USD
+        method:
+          $ref: '#/components/schemas/PaymentMethod'
+        type:
+          $ref: '#/components/schemas/PaymentType'
+        reservationId:
+          type: integer
+          format: uint64
+          default: null
+        orderId:
+          type: integer
+          format: uint64
+          default: null
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+          
+    PaymentMethod:
+      type: string
+      enum: [Credit/DebitCard, Cash, GiftCard]
+        
+    PaymentType:
+      type: string
+      enum: [Order, Reservation]
+          
+    Refund:
+      type: object
+      properties:
+        paymentId:
+          type: integer
+          format: uint64
+          description: ID of the payment that is being refunded
+        refundAmount:
+          $ref: '#/components/schemas/Price'
+        reason:
+          type: string
+          description: Optional reason for the refund (e.g., customer request, service error)
+          example: "Customer requested refund"
+      required:
+        - paymentId
+        - refundAmount
+        - currency
+
+    Merchant:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: uint64
+          readOnly: true
+        name:
+          type: string
+        VAT:
+          type: number
+        address:
+          $ref: "#/components/schemas/Address"
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+          example: 865432877
+          
+    Login:
+      type: object
+      properties:
+        username:
+          type: string
+          example: Jonius
+        password:
+          type: string
+          format: password
