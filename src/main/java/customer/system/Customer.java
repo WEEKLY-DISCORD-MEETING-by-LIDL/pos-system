@@ -8,7 +8,6 @@ import java.util.Date;
 @Getter
 @Setter
 public final class Customer {
-    /// API contract asked for uint64 type
     public int id;
     public int merchantId;
     //TODO: Add string restrictions of max length 30
