@@ -1,6 +1,5 @@
 package customer.system;
 
-import customer.system.DTOS.CustomerDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,9 +28,9 @@ public final class CustomerController {
     /// In the API contract Limit is an entity, but in the doc it isn't mentioned.
     //TODO: Decide which package Limit should be in. (It is used in several modules)
     @GetMapping("/customers")
-    ResponseEntity<List<Customer>> getCustomers(@RequestParam(value = "createdAtMin", required = false) Date createdAtMin,
-                                                @RequestParam(value = "createdAtMax", required = false) Date createdAtMax,
-                                                @RequestParam(value = "limit", required = false) int limit) {
+    ResponseEntity<List<Customer>> getCustomers(@RequestParam(required = false) Date createdAtMin,
+                                                @RequestParam(required = false) Date createdAtMax,
+                                                @RequestParam(required = false) int limit) {
         List<Customer> customers = _customerService.getCustomers(createdAtMin, createdAtMax, limit);
         return new ResponseEntity<>(customers, HttpStatus.OK);
     }
