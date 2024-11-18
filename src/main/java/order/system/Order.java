@@ -12,7 +12,7 @@ public final class Order {
     public int id;
     public int merchantId;
     @Nullable
-    public int orderDiscountId;
+    public Integer orderDiscountId;
     public OrderStatus status;
     public Price totalAmount;
     public Date createdAt;
