@@ -28,7 +28,7 @@ public class ProductService {
         return null;
     }
 
-    public Product getVariant(int variantId) {
+    public ProductVariant getVariant(int variantId) {
         return null;
     }
 
