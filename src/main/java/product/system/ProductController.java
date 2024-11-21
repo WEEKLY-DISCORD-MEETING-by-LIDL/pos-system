@@ -42,7 +42,7 @@ public class ProductController {
     }
 
     @GetMapping("/products/{productId}/variants")
-    ResponseEntity<List<ProductVariant>> getProducts(@PathVariable int productId) {
+    ResponseEntity<List<ProductVariant>> getVariants(@PathVariable int productId) {
         List<ProductVariant> productList = _productService.getVariants(productId);
         return new ResponseEntity<>(productList, HttpStatus.OK);
     }
