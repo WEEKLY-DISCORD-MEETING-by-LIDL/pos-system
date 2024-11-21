@@ -1,4 +1,4 @@
-package product.system;
+package category.system;
 
 import lombok.Getter;
 import lombok.Setter;

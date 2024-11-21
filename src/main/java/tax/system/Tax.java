@@ -1,4 +1,4 @@
-package product.system;
+package tax.system;
 
 import lombok.Getter;
 import lombok.Setter;
