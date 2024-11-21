@@ -44,6 +44,8 @@ public final class OrderController {
         return new ResponseEntity<>(null, httpStatus);
     }
 
+    //applies discount to order, but doesn't seem like theres anything indicating what discount its applying
+    //will probably need to be changed
     @PostMapping("/orders/{orderId}/discount")
     ResponseEntity<Order> applyDiscountToOrder(@PathVariable int orderId) {
         //Doc says to return an object made of orderId and totalAmount so this could be changed later
