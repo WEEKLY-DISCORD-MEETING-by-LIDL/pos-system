@@ -30,4 +30,6 @@ public final class Reservation {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
+
+    public Reservation(){};
 }
