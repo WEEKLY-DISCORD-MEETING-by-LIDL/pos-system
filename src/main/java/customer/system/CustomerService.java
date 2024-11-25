@@ -1,7 +1,9 @@
 package customer.system;
 
 
-import java.util.Date;
+import reservation.system.Reservation;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 public final class CustomerService {
@@ -13,7 +15,7 @@ public final class CustomerService {
         return null;
     }
 
-    public List<Customer> getCustomers(Date createdAtMin, Date createdAtMax, int limit) {
+    public List<Customer> getCustomers(LocalDateTime createdAtMin, LocalDateTime createdAtMax, int limit) {
         return null;
     }
 
