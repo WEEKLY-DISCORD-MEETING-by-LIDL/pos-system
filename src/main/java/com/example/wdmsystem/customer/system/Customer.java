@@ -3,7 +3,7 @@ package com.example.wdmsystem.customer.system;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -15,10 +15,10 @@ public final class Customer {
     public String lastName;
     public String phone;
     /// Not defined in document, but present in API contract
-    public Date createdAt;
-    public Date updatedAt;
+    public LocalDateTime createdAt;
+    public LocalDateTime updatedAt;
 
-    public Customer(int id, int merchantId, String firstName, String lastName, String phone, Date createdAt) {
+    public Customer(int id, int merchantId, String firstName, String lastName, String phone, LocalDateTime createdAt) {
         this.id = id;
         this.merchantId = merchantId;
         this.firstName = firstName;
