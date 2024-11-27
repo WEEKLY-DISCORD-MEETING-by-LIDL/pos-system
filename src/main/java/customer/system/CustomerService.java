@@ -1,11 +1,13 @@
 package customer.system;
 
 
+import org.springframework.stereotype.Service;
 import reservation.system.Reservation;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Service
 public final class CustomerService {
     //TODO:Add database interaction logic
     public CustomerService() {
