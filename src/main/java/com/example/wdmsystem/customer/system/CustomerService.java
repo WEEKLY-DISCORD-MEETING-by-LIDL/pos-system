@@ -10,7 +10,10 @@ import java.util.List;
 @Service
 public final class CustomerService {
     //TODO:Add database interaction logic
-    public CustomerService() {
+    private final CustomerRepository customerRepository;
+
+    public CustomerService(CustomerRepository customerRepository) {
+        this.customerRepository = customerRepository;
     }
 
     public Customer createCustomer(CustomerDTO createCustomer) {
