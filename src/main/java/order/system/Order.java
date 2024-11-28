@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -14,11 +14,11 @@ public final class Order {
     @Nullable
     public Integer orderDiscountId;
     public OrderStatus status;
-    public Price totalAmount;
-    public Date createdAt;
-    public Date updatedAt;
+    public double totalAmount;
+    public LocalDateTime createdAt;
+    public LocalDateTime updatedAt;
 
-    public Order(int id, int merchantId, int orderDiscountId, OrderStatus status, Price totalAmount, Date createdAt, Date updatedAt) {
+    public Order(int id, int merchantId, int orderDiscountId, OrderStatus status, double totalAmount, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.merchantId = merchantId;
         this.orderDiscountId = orderDiscountId;

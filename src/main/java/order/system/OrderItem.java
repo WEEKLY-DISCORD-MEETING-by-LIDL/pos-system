@@ -10,9 +10,9 @@ public final class OrderItem {
     public int orderId;
     public int productVariantId;
     public int quantity;
-    public Price price;
+    public double price;
 
-    public OrderItem(int id, int orderId, int productVariantId, int quantity, Price price) {
+    public OrderItem(int id, int orderId, int productVariantId, int quantity, double price) {
         this.id = id;
         this.orderId = orderId;
         this.productVariantId = productVariantId;
