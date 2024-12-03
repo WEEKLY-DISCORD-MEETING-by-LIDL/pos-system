@@ -35,7 +35,7 @@ public final class MerchantController {
         return new ResponseEntity<>(null, HttpStatus.OK);
     }
     
-    @DeleteMapping("/merchants/{merchantId}") // There is delete method defined in the api but someone on the team requested it
+    @DeleteMapping("/merchants/{merchantId}") // There is no delete method defined in the api but someone on the team requested it
     ResponseEntity<Merchant> deleteMerchant(@PathVariable int id) {
         _merchantService.deleteMerchant(id);
         return new ResponseEntity<>(null, HttpStatus.OK);
