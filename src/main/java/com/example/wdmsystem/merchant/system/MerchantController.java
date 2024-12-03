@@ -2,6 +2,7 @@ package com.example.wdmsystem.merchant.system;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +32,12 @@ public final class MerchantController {
     @PutMapping("/merchants/{merchantId}")
     ResponseEntity<Merchant> updateMerchant(@PathVariable int id, @RequestBody MerchantDTO response) {
         _merchantService.updateMerchant(id, response);
+        return new ResponseEntity<>(null, HttpStatus.OK);
+    }
+    
+    @DeleteMapping("/merchants/{merchantId}") // There is delete method defined in the api but someone on the team requested it
+    ResponseEntity<Merchant> deleteMerchant(@PathVariable int id) {
+        _merchantService.deleteMerchant(id);
         return new ResponseEntity<>(null, HttpStatus.OK);
     }
 

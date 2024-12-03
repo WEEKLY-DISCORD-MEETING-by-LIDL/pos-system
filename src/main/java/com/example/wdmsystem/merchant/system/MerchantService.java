@@ -20,4 +20,8 @@ public class MerchantService {
         
     }
 
+    public void deleteMerchant(int id) { // There is delete method defined in the api but someone on the team requested it
+
+    }
+
 }
