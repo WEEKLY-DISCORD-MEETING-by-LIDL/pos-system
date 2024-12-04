@@ -7,8 +7,9 @@ import java.util.List;
 @Service
 public class CategoryService {
 
-    public CategoryService() {
-
+    private final ICategoryRepository categoryRepository;
+    public CategoryService(ICategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
     }
 
     public Category createCategory(CategoryDTO request) {

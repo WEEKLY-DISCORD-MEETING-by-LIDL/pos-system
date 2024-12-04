@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 //TODO:Add logic to interact with database
+@Service
 public class EmployeeService{
     public EmployeeService() {
     }
