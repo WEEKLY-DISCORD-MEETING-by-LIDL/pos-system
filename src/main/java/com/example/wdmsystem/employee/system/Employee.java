@@ -1,14 +1,21 @@
 package com.example.wdmsystem.employee.system;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+@Entity
 @Getter
 @Setter
 public final class Employee {
-    public int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public Integer id;
     public int merchantId;
     //TODO: Add string restrictions of max length 30
     public String firstName;
@@ -20,7 +27,7 @@ public final class Employee {
     public LocalDateTime createdAt;
     public LocalDateTime updatedAt;
 
-    public Employee(int id, int merchantId, String firstName, String lastName, EmployeeType employeeType, String username, String password, LocalDateTime createdAt) {
+    public Employee(Integer id, int merchantId, String firstName, String lastName, EmployeeType employeeType, String username, String password, LocalDateTime createdAt) {
         this.id = id;
         this.merchantId = merchantId;
         this.firstName = firstName;
@@ -30,5 +37,10 @@ public final class Employee {
         this.password = password;
         this.createdAt = createdAt;
         this.updatedAt = null;
+    }
+
+    //@Entity required constructor
+    public Employee() {
+
     }
 }
