@@ -7,9 +7,10 @@ import java.util.List;
 
 @Service
 public class OrderDiscountService {
+    private final IOrderDiscountRepository orderDiscountRepository;
 
-    public OrderDiscountService() {
-
+    public OrderDiscountService(IOrderDiscountRepository orderDiscountRepository) {
+        this.orderDiscountRepository = orderDiscountRepository;
     }
 
     public OrderDiscount createOrderDiscount(OrderDiscount discount) {

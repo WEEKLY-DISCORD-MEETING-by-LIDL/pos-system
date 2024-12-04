@@ -6,9 +6,12 @@ import java.util.List;
 
 @Service
 public class ProductService {
+    private final IProductRepository productRepository;
+    private final IProductVariantRepository productVariantRepository;
 
-    public ProductService() {
-
+    public ProductService(IProductRepository productRepository, IProductVariantRepository productVariantRepository) {
+        this.productRepository = productRepository;
+        this.productVariantRepository = productVariantRepository;
     }
 
     public Product createProduct(ProductDTO request) {

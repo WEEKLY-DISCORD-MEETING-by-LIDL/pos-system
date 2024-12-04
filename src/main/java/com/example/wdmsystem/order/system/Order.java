@@ -1,15 +1,22 @@
 package com.example.wdmsystem.order.system;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
 
 import java.time.LocalDateTime;
 
+@Entity
 @Getter
 @Setter
 public final class Order {
-    public int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public Integer id;
     public int merchantId;
     @Nullable
     public Integer orderDiscountId;
@@ -18,7 +25,7 @@ public final class Order {
     public LocalDateTime createdAt;
     public LocalDateTime updatedAt;
 
-    public Order(int id, int merchantId, int orderDiscountId, OrderStatus status, double totalAmount, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Order(Integer id, int merchantId, int orderDiscountId, OrderStatus status, double totalAmount, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.merchantId = merchantId;
         this.orderDiscountId = orderDiscountId;
@@ -28,4 +35,8 @@ public final class Order {
         this.updatedAt = updatedAt;
     }
 
+    //@Entity required constructor
+    public Order() {
+
+    }
 }

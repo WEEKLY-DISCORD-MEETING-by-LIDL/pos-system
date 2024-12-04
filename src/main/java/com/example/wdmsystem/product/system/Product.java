@@ -1,5 +1,9 @@
 package com.example.wdmsystem.product.system;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,11 +12,13 @@ import java.util.Date;
 
 import org.springframework.lang.Nullable;
 
+@Entity
 @Getter
 @Setter
 public class Product {
-
-    public int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public Integer id;
     public int merchantId;
     public String title;
     @Nullable public int categoryId;
@@ -24,7 +30,7 @@ public class Product {
     public LocalDateTime createdAt;
     public LocalDateTime updatedAt;
 
-    public Product(int id, int merchantId, String title, int categoryId, double price, int discountId, int taxId, float weight, String weightUnit, LocalDateTime createdAt) {
+    public Product(Integer id, int merchantId, String title, int categoryId, double price, int discountId, int taxId, float weight, String weightUnit, LocalDateTime createdAt) {
         this.id = id;
         this.merchantId = merchantId;
         this.title = title;
@@ -37,4 +43,8 @@ public class Product {
         this.updatedAt = null;
     }
 
+    //@Entity required constructor
+    public Product() {
+
+    }
 }
