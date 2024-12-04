@@ -8,11 +8,8 @@ import java.util.List;
 
 //TODO:Add logic to interact with database
 @Service
-public class EmployeeService {
-    private final EmployeeRepository employeeRepository;
-
-    public EmployeeService(EmployeeRepository employeeRepository) {
-        this.employeeRepository = employeeRepository;
+public class EmployeeService{
+    public EmployeeService() {
     }
 
     public Employee createEmployee(EmployeeDTO request) {
@@ -30,6 +27,5 @@ public class EmployeeService {
     public void updateEmployee(int employeeId, EmployeeDTO request) {
     }
 
-    public void deleteEmployee(int employeeId) {
-    }
+    public void deleteEmployee(int employeeId) {}
 }
