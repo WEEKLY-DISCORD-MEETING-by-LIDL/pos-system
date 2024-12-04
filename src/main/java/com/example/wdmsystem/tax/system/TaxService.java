@@ -6,9 +6,10 @@ import java.util.List;
 
 @Service
 public class TaxService {
+    private final ITaxRepository taxRepository;
 
-    public TaxService() {
-
+    public TaxService(ITaxRepository taxRepository) {
+        this.taxRepository = taxRepository;
     }
 
     public Tax createTax(TaxDTO request) {

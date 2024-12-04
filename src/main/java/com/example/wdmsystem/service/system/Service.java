@@ -17,7 +17,7 @@ import java.util.Date;
 public final class Service {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public int id;
+    public Integer id;
     public String title;
     @Nullable public int categoryId;
     public double price;
@@ -27,7 +27,7 @@ public final class Service {
     public LocalDateTime createdAt;
     public LocalDateTime updatedAt;
 
-    public Service(int id, String title, int categoryId, double price, int discountId, int taxId, int durationMins, LocalDateTime createdAt) {
+    public Service(Integer id, String title, int categoryId, double price, int discountId, int taxId, int durationMins, LocalDateTime createdAt) {
         this.id = id;
         this.title = title;
         this.categoryId = categoryId;
