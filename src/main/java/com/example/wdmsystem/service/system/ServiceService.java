@@ -8,8 +8,10 @@ import java.util.List;
 
 @org.springframework.stereotype.Service
 public final class ServiceService {
-    public ServiceService() {
+    private final IServiceRepository serviceRepository;
 
+    public ServiceService(IServiceRepository serviceRepository) {
+        this.serviceRepository = serviceRepository;
     }
 
     public Service createService(ServiceDTO request) {

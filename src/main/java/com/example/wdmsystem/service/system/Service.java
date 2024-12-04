@@ -1,5 +1,9 @@
 package com.example.wdmsystem.service.system;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
@@ -7,9 +11,12 @@ import org.springframework.lang.Nullable;
 import java.time.LocalDateTime;
 import java.util.Date;
 
+@Entity
 @Getter
 @Setter
 public final class Service {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public int id;
     public String title;
     @Nullable public int categoryId;
@@ -32,6 +39,10 @@ public final class Service {
         this.updatedAt = null;
     }
 
+    //@Entity required constructor
+    public Service() {
+
+    }
 }
 
 
