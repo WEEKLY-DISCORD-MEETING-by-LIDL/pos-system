@@ -6,10 +6,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class OrderService {
+    private final IOrderRepository orderRepository;
 
-    public OrderService() {}
+    public OrderService(IOrderRepository orderRepository) {
+        this.orderRepository = orderRepository;
+    }
 
-    public Order createOrder(OrderDTO order){
+    public Order createOrder(OrderDTO order) {
         return null;
     }
 
@@ -31,7 +34,6 @@ public class OrderService {
         }
 
 
-
         return null;
     }
 
@@ -42,6 +44,7 @@ public class OrderService {
     public HttpStatus deleteOrder(int orderId) {
         return HttpStatus.NO_CONTENT;
     }
+
     public HttpStatus cancelOrder(int orderId) {
         return HttpStatus.OK;
     }

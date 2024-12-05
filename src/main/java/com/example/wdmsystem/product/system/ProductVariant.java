@@ -1,15 +1,21 @@
 package com.example.wdmsystem.product.system;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
 
+@Entity
 @Getter
 @Setter
 public class ProductVariant {
-
-    public int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public Integer id;
     public int productId;
     public String title;
     public double additionalPrice;
@@ -17,7 +23,7 @@ public class ProductVariant {
     public Date createdAt;
     public Date updatedAt;
 
-    public ProductVariant(int id, int productId, String title, double additionalPrice, int quantity, Date createdAt) {
+    public ProductVariant(Integer id, int productId, String title, double additionalPrice, int quantity, Date createdAt) {
         this.id = id;
         this.productId = productId;
         this.title = title;
@@ -27,4 +33,8 @@ public class ProductVariant {
         this.updatedAt = null;
     }
 
+    //@Entity required constructor
+    public ProductVariant() {
+
+    }
 }

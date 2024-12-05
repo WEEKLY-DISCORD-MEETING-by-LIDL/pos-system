@@ -5,6 +5,11 @@ import java.time.LocalDateTime;
 
 @Service
 public final class ReservationService {
+    private final IReservationRepository reservationRepository;
+
+    public ReservationService(IReservationRepository reservationRepository) {
+        this.reservationRepository = reservationRepository;
+    }
 
     public Reservation createReservation(ReservationDTO request) {
         Reservation reservation = new Reservation();

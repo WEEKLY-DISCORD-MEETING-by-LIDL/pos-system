@@ -1,13 +1,21 @@
 package com.example.wdmsystem.reservation.system;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.time.LocalDateTime;
 
+@Entity
 @Getter
 @Setter
 public final class Reservation {
-    public int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public Integer id;
     public int customerId;
     public int serviceId;
     public int employeeId;
@@ -18,7 +26,7 @@ public final class Reservation {
     public LocalDateTime createdAt;
     public LocalDateTime updatedAt;
 
-    public Reservation(int id, int customerId, int serviceId, int employeeId, LocalDateTime startTime, LocalDateTime endTime, ReservationStatus reservation, boolean sendConfirmation, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Reservation(Integer id, int customerId, int serviceId, int employeeId, LocalDateTime startTime, LocalDateTime endTime, ReservationStatus reservation, boolean sendConfirmation, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.customerId = customerId;
         this.serviceId = serviceId;
@@ -31,5 +39,7 @@ public final class Reservation {
         this.updatedAt = updatedAt;
     }
 
-    public Reservation(){};
+    //@Entity required constructor
+    public Reservation() {
+    }
 }

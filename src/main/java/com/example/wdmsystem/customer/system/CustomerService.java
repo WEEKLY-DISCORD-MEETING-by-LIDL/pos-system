@@ -1,6 +1,7 @@
 package com.example.wdmsystem.customer.system;
 
 
+import com.example.wdmsystem.reservation.system.IReservationRepository;
 import org.springframework.stereotype.Service;
 import com.example.wdmsystem.reservation.system.Reservation;
 
@@ -8,9 +9,14 @@ import java.util.Date;
 import java.util.List;
 
 @Service
+
 public final class CustomerService {
-    //TODO:Add database interaction logic
-    public CustomerService() {
+    private final ICustomerRepository customerRepository;
+    private final IReservationRepository reservationRepository;
+
+    public CustomerService(ICustomerRepository customerRepository, IReservationRepository reservationRepository) {
+        this.customerRepository = customerRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public Customer createCustomer(CustomerDTO createCustomer) {
