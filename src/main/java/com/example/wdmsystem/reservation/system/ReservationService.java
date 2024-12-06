@@ -18,7 +18,7 @@ public final class ReservationService {
         reservation.setEmployeeId(request.getEmployeeId());
         reservation.setStartTime(request.getStartTime());
         reservation.setSendConfirmation(request.isSendConfirmation());
-        reservation.setReservation(ReservationStatus.CONFIRMED); // Default set to CONFIRMED ? maybe add PENDING ?
+        reservation.setReservation(ReservationStatus.PENDING);
         reservation.setCreatedAt(LocalDateTime.now());
         reservation.setUpdatedAt(LocalDateTime.now());
 
@@ -35,8 +35,14 @@ public final class ReservationService {
         // TODO: Fetch the reservation, update fields, and save back to repository
     }
 
-    public void deleteReservation(int reservationId) {
-        // TODO: Delete the reservation from the repository
+    public void cancelReservation(int reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new RuntimeException("Reservation not found"));
+
+        reservation.setReservation(ReservationStatus.CANCELED);
+        reservation.setUpdatedAt(LocalDateTime.now());
+
+        reservationRepository.save(reservation);
     }
 
 }

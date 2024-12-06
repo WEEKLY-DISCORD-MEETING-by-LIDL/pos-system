@@ -34,11 +34,12 @@ public final class ReservationController {
         return new ResponseEntity<>(reservation, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{reservationId}")
-    public ResponseEntity<String> deleteReservation(@PathVariable int reservationId) {
-        reservationService.deleteReservation(reservationId);
-        return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+    @PutMapping("/{reservationId}/cancel")
+    public ResponseEntity<String> cancelReservation(@PathVariable int reservationId) {
+        reservationService.cancelReservation(reservationId);
+        return new ResponseEntity<>("Reservation canceled successfully", HttpStatus.OK);
     }
+
 
 }
 
