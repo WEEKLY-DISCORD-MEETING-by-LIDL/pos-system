@@ -1,5 +1,6 @@
 package com.example.wdmsystem.reservation.system;
 
+import com.example.wdmsystem.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 
@@ -37,7 +38,7 @@ public final class ReservationService {
 
     public void cancelReservation(int reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new RuntimeException("Reservation not found"));
+                .orElseThrow(() -> new NotFoundException("Reservation not found"));
 
         reservation.setReservation(ReservationStatus.CANCELED);
         reservation.setUpdatedAt(LocalDateTime.now());
