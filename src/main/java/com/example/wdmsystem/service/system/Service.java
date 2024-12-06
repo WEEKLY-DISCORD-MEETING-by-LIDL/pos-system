@@ -1,15 +1,11 @@
 package com.example.wdmsystem.service.system;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Getter
@@ -18,6 +14,7 @@ public final class Service {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer id;
+    public int merchantId;
     public String title;
     @Nullable public int categoryId;
     public double price;
@@ -27,8 +24,9 @@ public final class Service {
     public LocalDateTime createdAt;
     public LocalDateTime updatedAt;
 
-    public Service(Integer id, String title, int categoryId, double price, int discountId, int taxId, int durationMins, LocalDateTime createdAt) {
+    public Service(Integer id, int merchantId, String title, int categoryId, double price, int discountId, int taxId, int durationMins, LocalDateTime createdAt) {
         this.id = id;
+        this.merchantId = merchantId;
         this.title = title;
         this.categoryId = categoryId;
         this.price = price;

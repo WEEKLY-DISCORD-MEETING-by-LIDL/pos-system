@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -47,8 +47,8 @@ public final class ServiceController {
     }
 
     @GetMapping("/services/{serviceId}/available-times")
-    ResponseEntity<List<Date>> getAvailableTimes(@PathVariable int serviceId, @RequestParam Date date) {
-        List<Date> dateList = _serviceService.getAvailableTimes(serviceId, date);
+    ResponseEntity<List<LocalDateTime>> getAvailableTimes(@PathVariable int serviceId, @RequestParam LocalDateTime date) {
+        List<LocalDateTime> dateList = _serviceService.getAvailableTimes(serviceId, date);
         return  new ResponseEntity<>(dateList, HttpStatus.OK);
     }
 

@@ -1,6 +1,16 @@
 package com.example.wdmsystem.service.system;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
 
 public interface IServiceRepository extends JpaRepository<Service, Integer> {
+    @Query("SELECT s FROM Service s WHERE s.categoryId = :categoryId ORDER BY s.createdAt ASC")
+    List<Service> findServicesByCategoryId(
+            @Param("categoryId") int categoryId,
+            Pageable pageable
+    );
 }
