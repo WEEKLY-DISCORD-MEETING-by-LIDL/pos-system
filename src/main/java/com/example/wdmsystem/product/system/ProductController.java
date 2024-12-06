@@ -24,13 +24,13 @@ public class ProductController {
     }
 
     @PostMapping("/products")
-    ResponseEntity<Product> createProduct(@RequestBody ProductDTO request) {
+    ResponseEntity<Product> createProduct(@RequestBody Product request) {
         Product newProduct = _productService.createProduct(request);
         return new ResponseEntity<>(newProduct, HttpStatus.CREATED);
     }
 
     @PostMapping("/products/{productId}/variants")
-    ResponseEntity<ProductVariant> createVariant(@PathVariable int productId, @RequestBody VariantDTO request) {
+    ResponseEntity<ProductVariant> createVariant(@PathVariable int productId, @RequestBody ProductVariant request) {
         ProductVariant newVariant = _productService.createVariant(productId, request);
         return new ResponseEntity<>(newVariant, HttpStatus.CREATED);
     }
@@ -60,26 +60,26 @@ public class ProductController {
     }
 
     @PutMapping("/products/{productId}")
-    ResponseEntity<Product> updateProduct(@PathVariable int productId, @RequestBody ProductDTO request) {
+    ResponseEntity<Product> updateProduct(@PathVariable int productId, @RequestBody Product request) {
         _productService.updateProduct(productId, request);
-        return new ResponseEntity<>(null, HttpStatus.OK);
+        return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
     }
 
     @PutMapping("/variants/{variantId}")
-    ResponseEntity<ProductVariant> updateVariant(@PathVariable int variantId, @RequestBody VariantDTO request) {
+    ResponseEntity<ProductVariant> updateVariant(@PathVariable int variantId, @RequestBody ProductVariant request) {
         _productService.updateVariant(variantId, request);
-        return new ResponseEntity<>(null, HttpStatus.OK);
+        return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/products/{productId}")
     ResponseEntity<Product> deleteProduct(@PathVariable int productId) {
         _productService.deleteProduct(productId);
-        return new ResponseEntity<>(null, HttpStatus.OK);
+        return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
     }
 
-    @DeleteMapping("/products/{productId}/variants/{variantId}")
-    ResponseEntity<ProductVariant> deleteVariant(@PathVariable int productId, @PathVariable int variantId) {
-        _productService.deleteVariant(productId, variantId);
-        return new ResponseEntity<>(null, HttpStatus.OK);
+    @DeleteMapping("/variants/{variantId}")
+    ResponseEntity<ProductVariant> deleteVariant(@PathVariable int variantId) {
+        _productService.deleteVariant(variantId);
+        return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
     }
 }
