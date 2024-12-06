@@ -2,13 +2,9 @@ package com.example.wdmsystem.merchant.system;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
+@RestController
 public final class MerchantController {
 
     private final MerchantService _merchantService;
@@ -24,20 +20,20 @@ public final class MerchantController {
     }
 
     @GetMapping("/merchants/{merchantId}")
-    ResponseEntity<Merchant> getMerchant(@PathVariable int id) {
-        Merchant merchant = _merchantService.getMerchant(id);
+    ResponseEntity<Merchant> getMerchant(@PathVariable int merchantId) {
+        Merchant merchant = _merchantService.getMerchant(merchantId);
         return new ResponseEntity<>(merchant, HttpStatus.OK);
     }
 
     @PutMapping("/merchants/{merchantId}")
-    ResponseEntity<Merchant> updateMerchant(@PathVariable int id, @RequestBody MerchantDTO response) {
-        _merchantService.updateMerchant(id, response);
+    ResponseEntity<Merchant> updateMerchant(@PathVariable int merchantId, @RequestBody MerchantDTO response) {
+        _merchantService.updateMerchant(merchantId, response);
         return new ResponseEntity<>(null, HttpStatus.OK);
     }
     
     @DeleteMapping("/merchants/{merchantId}") // There is no delete method defined in the api but someone on the team requested it
-    ResponseEntity<Merchant> deleteMerchant(@PathVariable int id) {
-        _merchantService.deleteMerchant(id);
+    ResponseEntity<Merchant> deleteMerchant(@PathVariable int merchantId) {
+        _merchantService.deleteMerchant(merchantId);
         return new ResponseEntity<>(null, HttpStatus.OK);
     }
 
