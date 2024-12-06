@@ -2,6 +2,7 @@ package com.example.wdmsystem.service.system;
 
 
 import com.example.wdmsystem.category.system.Category;
+import com.example.wdmsystem.exception.InvalidInputException;
 import com.example.wdmsystem.exception.NotFoundException;
 import com.example.wdmsystem.reservation.system.IReservationRepository;
 import com.example.wdmsystem.reservation.system.Reservation;
@@ -38,6 +39,9 @@ public class ServiceService {
     }
 
     public List<Service> getServices(Category category, int limit) {
+        if (limit <= 0) {
+            throw new InvalidInputException("limit must be greater than 0. Current limit: " + limit);
+        }
         PageRequest pageRequest = PageRequest.of(0, limit);
         return serviceRepository.findServicesByCategoryId(category.id, pageRequest);
     }

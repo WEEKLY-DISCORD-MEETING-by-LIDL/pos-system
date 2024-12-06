@@ -23,4 +23,9 @@ public interface IReservationRepository extends JpaRepository<Reservation, Integ
             @Param("serviceId") int serviceId,
             @Param("date") LocalDateTime date
     );
+
+    @Query("SELECT r FROM Reservation r WHERE r.customerId = :customerId")
+    List<Reservation> findReservationsByCustomerId(
+            @Param("customerId") int customerId
+    );
 }
