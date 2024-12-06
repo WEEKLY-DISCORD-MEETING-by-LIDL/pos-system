@@ -1,9 +1,6 @@
 package com.example.wdmsystem.order.system;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
@@ -11,6 +8,7 @@ import org.springframework.lang.Nullable;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "orders")
 @Getter
 @Setter
 public final class Order {

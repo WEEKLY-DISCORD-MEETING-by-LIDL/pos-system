@@ -4,6 +4,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 public final class OrderController {
     private final OrderService _orderService;
@@ -13,8 +15,8 @@ public final class OrderController {
     }
 
     @PostMapping("/orders")
-    ResponseEntity<Order> createOrder(@RequestBody OrderDTO order) {
-        Order newOrder = _orderService.createOrder(order);
+    ResponseEntity<Order> createOrder(@RequestParam int orderDiscountId, @RequestBody List<OrderItem> orderItems) {
+        Order newOrder = _orderService.createOrder(orderDiscountId, orderItems);
         return new ResponseEntity<>(newOrder, HttpStatus.CREATED);
     }
 
@@ -26,29 +28,26 @@ public final class OrderController {
 
     @PutMapping("/orders/{orderId}")
     ResponseEntity<Order> updateOrderStatus(@PathVariable int orderId,
-                                            @RequestBody OrderStatus status) {
-        Order order = _orderService.updateOrderStatus(orderId, status);
+                                            @RequestParam String statusString) {
+        Order order = _orderService.updateOrderStatus(orderId, statusString);
         return new ResponseEntity<>(order, HttpStatus.OK);
     }
 
     @DeleteMapping("/orders/{orderId}")
     ResponseEntity<Order> deleteOrder(@PathVariable int orderId) {
-        HttpStatus httpStatus = _orderService.deleteOrder(orderId);
-        return new ResponseEntity<>(null, httpStatus);
+        _orderService.deleteOrder(orderId);
+        return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
     }
 
     @PatchMapping("/orders/{orderId}/cancel")
     ResponseEntity<Order> cancelOrder(@PathVariable int orderId) {
-        HttpStatus httpStatus = _orderService.cancelOrder(orderId);
-        return new ResponseEntity<>(null, httpStatus);
+        Order order = _orderService.cancelOrder(orderId);
+        return new ResponseEntity<>(order, HttpStatus.OK);
     }
 
-    //applies discount to order, but doesn't seem like theres anything indicating what discount its applying
-    //will probably need to be changed
-    @PostMapping("/orders/{orderId}/discount")
-    ResponseEntity<Order> applyDiscountToOrder(@PathVariable int orderId) {
-        //Doc says to return an object made of orderId and totalAmount so this could be changed later
-        Order order = _orderService.applyDiscountToOrder(orderId);
+    @PatchMapping("/orders/{orderId}/discount")
+    ResponseEntity<Order> applyDiscountToOrder(@PathVariable int orderId, @RequestParam int discountId) {
+        Order order = _orderService.applyDiscountToOrder(orderId, discountId);
         return new ResponseEntity<>(order, HttpStatus.OK);
     }
 }

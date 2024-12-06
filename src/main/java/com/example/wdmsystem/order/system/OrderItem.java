@@ -1,11 +1,18 @@
 package com.example.wdmsystem.order.system;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 
+@Entity
 @Getter
 @Setter
 public final class OrderItem {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public int id;
     public int orderId;
     public int productVariantId;
@@ -18,5 +25,9 @@ public final class OrderItem {
         this.productVariantId = productVariantId;
         this.quantity = quantity;
         this.price = price;
+    }
+
+    public OrderItem() {
+
     }
 }
