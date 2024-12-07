@@ -15,7 +15,7 @@ public final class OrderController {
     }
 
     @PostMapping("/orders")
-    ResponseEntity<Order> createOrder(@RequestParam int orderDiscountId, @RequestBody List<OrderItem> orderItems) {
+    ResponseEntity<Order> createOrder(@RequestParam(required = false) Integer orderDiscountId, @RequestBody List<OrderItem> orderItems) {
         Order newOrder = _orderService.createOrder(orderDiscountId, orderItems);
         return new ResponseEntity<>(newOrder, HttpStatus.CREATED);
     }
@@ -28,8 +28,8 @@ public final class OrderController {
 
     @PutMapping("/orders/{orderId}")
     ResponseEntity<Order> updateOrderStatus(@PathVariable int orderId,
-                                            @RequestParam String statusString) {
-        Order order = _orderService.updateOrderStatus(orderId, statusString);
+                                            @RequestParam OrderStatus status) {
+        Order order = _orderService.updateOrderStatus(orderId, status);
         return new ResponseEntity<>(order, HttpStatus.OK);
     }
 

@@ -1,5 +1,7 @@
 package com.example.wdmsystem.order.system;
 
-public record OrderDTO() {
+import java.time.LocalDateTime;
+
+public record OrderDTO(Integer id, OrderStatus status) {
 
 }

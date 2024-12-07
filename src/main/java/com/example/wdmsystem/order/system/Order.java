@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.springframework.lang.Nullable;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "orders")
@@ -16,19 +17,24 @@ public final class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer id;
     public int merchantId;
-    @Nullable
-    public Integer orderDiscountId;
+
+    @ManyToOne
+    @JoinColumn(name = "order_discount_id")
+    public OrderDiscount orderDiscount;
+
+    @Enumerated(EnumType.STRING)
     public OrderStatus status;
-    public double totalAmount;
     public LocalDateTime createdAt;
     public LocalDateTime updatedAt;
 
-    public Order(Integer id, int merchantId, int orderDiscountId, OrderStatus status, double totalAmount, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<OrderItem> orderItems;
+
+    public Order(Integer id, int merchantId, OrderDiscount orderDiscount, OrderStatus status, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.merchantId = merchantId;
-        this.orderDiscountId = orderDiscountId;
+        this.orderDiscount = orderDiscount;
         this.status = status;
-        this.totalAmount = totalAmount;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }

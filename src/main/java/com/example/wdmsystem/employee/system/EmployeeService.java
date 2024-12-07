@@ -1,10 +1,14 @@
 package com.example.wdmsystem.employee.system;
 
+import com.example.wdmsystem.exception.InvalidInputException;
+import com.example.wdmsystem.exception.NotFoundException;
+import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
-//TODO:Add logic to interact with database
 @Service
 public class EmployeeService {
     private final IEmployeeRepository employeeRepository;
@@ -14,20 +18,58 @@ public class EmployeeService {
     }
 
     public Employee createEmployee(EmployeeDTO request) {
-        return null;
+
+        Employee employee = new Employee(
+                0,
+                0, // placeholder
+                request.firstName(),
+                request.lastName(),
+                request.employeeType(),
+                request.username(),
+                request.password(),
+                LocalDateTime.now()
+        );
+        employee.setUpdatedAt(employee.getCreatedAt());
+
+        return employeeRepository.save(employee);
     }
 
     public List<Employee> getEmployees(EmployeeType type, int limit) {
-        return null;
+
+        if (limit <= 0) {
+            limit = 50;
+        }
+
+        return employeeRepository.getEmployeesByEmployeeType(type, Limit.of(limit));
     }
 
     public Employee getEmployee(int employeeId) {
-        return null;
+
+        return employeeRepository.findById(employeeId).orElseThrow(
+                () -> new NotFoundException("Employee with id " + employeeId + " not found"));
     }
 
     public void updateEmployee(int employeeId, EmployeeDTO request) {
+
+        Employee employee = employeeRepository.findById(employeeId).orElseThrow(
+                () -> new NotFoundException("Employee with id " + employeeId + " not found"));
+
+        employee.setFirstName(request.firstName());
+        employee.setLastName(request.lastName());
+        employee.setEmployeeType(request.employeeType());
+        employee.setUsername(request.username());
+        employee.setPassword(request.password());
+        employee.setUpdatedAt(LocalDateTime.now());
+
+        employeeRepository.save(employee);
     }
 
     public void deleteEmployee(int employeeId) {
+        if (employeeRepository.existsById(employeeId)) {
+            employeeRepository.deleteById(employeeId);
+        }
+        else {
+            throw new NotFoundException("Employee with id " + employeeId + " not found");
+        }
     }
 }

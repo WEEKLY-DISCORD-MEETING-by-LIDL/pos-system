@@ -70,7 +70,8 @@ public class ProductService {
                 categoryId,
                 LocalDateTime.parse(createdAtMin),
                 LocalDateTime.parse(createdAtMax),
-                Limit.of(limit));
+                Limit.of(limit)
+        );
 
         return filteredProducts;
     }

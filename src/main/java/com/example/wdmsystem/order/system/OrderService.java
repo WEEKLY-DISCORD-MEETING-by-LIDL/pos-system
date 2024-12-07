@@ -4,33 +4,38 @@ import com.example.wdmsystem.exception.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
 public class OrderService {
     private final IOrderRepository orderRepository;
     private final IOrderItemRepository orderItemRepository;
+    private final IOrderDiscountRepository orderDiscountRepository;
 
-    public OrderService(IOrderRepository orderRepository, IOrderItemRepository orderItemRepository) {
+    public OrderService(IOrderRepository orderRepository, IOrderItemRepository orderItemRepository, IOrderDiscountRepository orderDiscountRepository) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
+        this.orderDiscountRepository = orderDiscountRepository;
     }
 
-    public Order createOrder(int orderDiscountId, List<OrderItem> orderItems) {
+    public Order createOrder(Integer orderDiscountId, List<OrderItem> orderItems) {
 
-        if (orderDiscountId < 0) {
-            throw new InvalidInputException("Order discount id must be greater than or equal to 0. Current is: " + orderDiscountId);
+        OrderDiscount orderDiscount;
+
+        if (orderDiscountId != null) {
+            orderDiscount = orderDiscountRepository.findById(orderDiscountId).orElseThrow(() ->
+                    new NotFoundException("Order discount with id " + orderDiscountId + " not found"));
+        }
+        else {
+            orderDiscount = null;
         }
 
         Order order = new Order(
                 0,
                 10, //placeholder
-                orderDiscountId,
+                orderDiscount,
                 OrderStatus.OPENED,
-                0, //placeholder
                 LocalDateTime.now(),
                 LocalDateTime.now()
         );
@@ -46,7 +51,7 @@ public class OrderService {
                 throw new InvalidInputException("Order item quantity must be greater than 0. Current is: " + item.quantity);
             }
 
-            item.orderId = savedOrder.id;
+            item.order = savedOrder;
         }
 
         orderItemRepository.saveAll(orderItems);
@@ -55,99 +60,53 @@ public class OrderService {
     }
 
     public Order getOrder(int orderId) {
-
-        Optional<Order> order = orderRepository.findById(orderId);
-
-        if (order.isPresent()) {
-            return order.get();
-        }
-        else {
-            throw new NotFoundException("Order with id " + orderId + " not found");
-        }
+        return orderRepository.findById(orderId).orElseThrow(() ->
+                new NotFoundException("Order with id " + orderId + " not found"));
     }
 
-    public Order updateOrderStatus(int orderId, String statusString) {
+    public Order updateOrderStatus(int orderId, OrderStatus status) {
+        Order order = orderRepository.findById(orderId).orElseThrow(() ->
+                new NotFoundException("Order with id " + orderId + " not found"));
 
-        Optional<Order> order = orderRepository.findById(orderId);
-
-        OrderStatus status;
-
-        try {
-            status = OrderStatus.valueOf(statusString);
-        } catch (IllegalArgumentException e) {
-            throw new InvalidInputException("Order status must be one of " + Arrays.asList(OrderStatus.values()));
-        }
-
-        if (order.isPresent()) {
-            Order orderToUpdate = order.get();
-            orderToUpdate.status = status;
-            orderToUpdate.updatedAt = LocalDateTime.now();
-            return orderRepository.save(orderToUpdate);
-        }
-        else {
-            throw new NotFoundException("Order with id " + orderId + " not found");
-        }
+        order.status = status;
+        order.updatedAt = LocalDateTime.now();
+        return orderRepository.save(order);
     }
 
     public void deleteOrder(int orderId) {
-
-        Optional<Order> order = orderRepository.findById(orderId);
-
-        if (order.isPresent()) {
-            Order orderToDelete = order.get();
-
-            List<OrderItem> orderItems = orderItemRepository.getOrderItemsByOrderId(orderToDelete.id);
-            orderItemRepository.deleteAll(orderItems);
-
-            orderRepository.delete(orderToDelete);
+        if(orderRepository.existsById(orderId)) {
+            orderRepository.deleteById(orderId);
         }
         else {
             throw new NotFoundException("Order with id " + orderId + " not found");
         }
-
     }
 
     public Order cancelOrder(int orderId) {
 
-        Optional<Order> order = orderRepository.findById(orderId);
+        Order orderToUpdate = orderRepository.findById(orderId).orElseThrow(() ->
+                new NotFoundException("Order with id " + orderId + " not found"));
 
-        if (order.isPresent()) {
-            Order orderToUpdate = order.get();
-            if (orderToUpdate.status != OrderStatus.PAID && orderToUpdate.status != OrderStatus.PARTIALLY_PAID) {
-                orderToUpdate.status = OrderStatus.CANCELLED;
-                orderToUpdate.updatedAt = LocalDateTime.now();
-                orderRepository.save(orderToUpdate);
-
-                return orderToUpdate;
-            }
-            else {
-                throw new InsufficientPrivilegesException("Order with id " + orderId + " has already been paid for.");
-            }
+        if (orderToUpdate.status != OrderStatus.PAID && orderToUpdate.status != OrderStatus.PARTIALLY_PAID) {
+            orderToUpdate.status = OrderStatus.CANCELED;
+            orderToUpdate.updatedAt = LocalDateTime.now();
+            return orderRepository.save(orderToUpdate);
         }
         else {
-            throw new NotFoundException("Order with id " + orderId + " not found");
+            throw new InsufficientPrivilegesException("Order with id " + orderId + " has already been paid for.");
         }
     }
 
     public Order applyDiscountToOrder(int orderId, int discountId) {
 
-        Optional<Order> order = orderRepository.findById(orderId);
+        Order orderToUpdate = orderRepository.findById(orderId).orElseThrow(() ->
+                new NotFoundException("Order with id " + orderId + " not found"));
 
-        // maybe change this to check if order discount with this id even exists
-        if (discountId < 0) {
-            throw new InvalidInputException("Order discount id must be greater than 0. Current is: " + discountId);
-        }
+        orderToUpdate.orderDiscount = orderDiscountRepository.findById(discountId).orElseThrow(() ->
+                new NotFoundException("Order discount with id " + discountId + " not found"));
 
-        if (order.isPresent()) {
-            Order orderToUpdate = order.get();
-            orderToUpdate.orderDiscountId = discountId;
-            orderToUpdate.updatedAt = LocalDateTime.now();
-            orderRepository.save(orderToUpdate);
-            return orderToUpdate;
-        }
-        else {
-            throw new NotFoundException("Order with id " + orderId + " not found");
-        }
+        orderToUpdate.updatedAt = LocalDateTime.now();
+        return orderRepository.save(orderToUpdate);
 
     }
 }
