@@ -1,13 +1,12 @@
 package com.example.wdmsystem.customer.system;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.example.wdmsystem.reservation.system.Reservation;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -25,6 +24,8 @@ public class Customer {
     /// Not defined in document, but present in API contract
     public LocalDateTime createdAt;
     public LocalDateTime updatedAt;
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    public List<Reservation> reservations;
 
     public Customer(int id, int merchantId, String firstName, String lastName, String phone, LocalDateTime createdAt) {
         this.id = id;

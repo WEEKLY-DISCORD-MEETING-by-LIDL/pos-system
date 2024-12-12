@@ -25,6 +25,13 @@ public class CustomerService {
     }
 
     public Customer createCustomer(CustomerDTO createCustomer) {
+        if (createCustomer.firstName().length() > 30) {
+            throw new InvalidInputException("First name must be 30 characters or less");
+        }
+        if (createCustomer.lastName().length() > 30) {
+            throw new InvalidInputException("Last name must be 30 characters or less");
+        }
+
         Customer customer = new Customer();
         customer.setMerchantId(1); //what to set
         customer.setFirstName(createCustomer.firstName());
@@ -37,14 +44,24 @@ public class CustomerService {
     }
 
     public List<Customer> getCustomers(LocalDateTime createdAtMin, LocalDateTime createdAtMax, int limit) {
-        if (limit <= 0) {
-            throw new InvalidInputException("limit must be greater than 0. Current limit: " + limit);
+        if (createdAtMin != null && createdAtMax != null && createdAtMin.isAfter(createdAtMax)) {
+            throw new InvalidInputException("createdAtMin must be earlier than createdAtMax.");
+        }
+//        if (limit <= 0) {
+//            throw new InvalidInputException("limit must be greater than 0. Current limit: " + limit);
+//        }
+        if (limit < 0 || limit > 250) {
+            limit = 50;
         }
         PageRequest pageRequest = PageRequest.of(0, limit);
         return customerRepository.findCustomersWithinDateRange(createdAtMin, createdAtMax, pageRequest);
     }
 
     public Customer getCustomer(int id) {
+        if (id < 0) {
+            throw new InvalidInputException("id must be greater than 0");
+        }
+
         Optional<Customer> customer = customerRepository.findById(id);
 
         if (customer.isPresent()) {
@@ -71,13 +88,19 @@ public class CustomerService {
 
         if (request.firstName() != null) {
             if (request.firstName().trim().isEmpty()) {
-                throw new InvalidInputException("First name cannot be empty or whitespace");
+                throw new InvalidInputException("First name cannot be empty or only whitespace");
+            }
+            if (request.firstName().length() > 30) {
+                throw new InvalidInputException("First name must be 30 characters or less");
             }
             existingCustomer.setFirstName(request.firstName());
         }
         if (request.lastName() != null) {
             if (request.lastName().trim().isEmpty()) {
                 throw new InvalidInputException("Last name cannot be empty or whitespace");
+            }
+            if (request.lastName().length() > 30) {
+                throw new InvalidInputException("Last name must be 30 characters or less");
             }
             existingCustomer.setLastName(request.lastName());
         }
@@ -94,30 +117,25 @@ public class CustomerService {
             throw new InvalidInputException("Customer Id must be greater than 0");
         }
 
-        Optional<Customer> customer = customerRepository.findById(id);
+        Optional<Customer> customerOptional = customerRepository.findById(id);
 
-        if (customer.isPresent()) {
-            Customer customerToDelete = customer.get();
-
-            List<Reservation> reservations = reservationRepository.findReservationsByCustomerId(customerToDelete.id);
-            reservationRepository.deleteAll(reservations);
-
-            customerRepository.delete(customerToDelete);
-        }
-        else {
-            throw new NotFoundException("Customer with id " + id + " not found");
+        if (customerOptional.isEmpty()) {
+            throw new NotFoundException("Customer not found");
         }
 
-
-        customerRepository.deleteById(id);
+        Customer customer = customerOptional.get();
+        customerRepository.delete(customer);
     }
 
     public List<Reservation> getCustomerReservations(int customerId, boolean upcoming, int limit) {
         if (customerId < 0) {
             throw new InvalidInputException("Customer Id must be greater than 0");
         }
-        if (limit <= 0) {
-            throw new InvalidInputException("limit must be greater than 0. Current limit: " + limit);
+//        if (limit <= 0) {
+//            throw new InvalidInputException("limit must be greater than 0. Current limit: " + limit);
+//        }
+        if (limit < 0 || limit > 250) {
+            limit = 50;
         }
         if (!customerRepository.existsById(customerId)) {
             throw new NotFoundException("Customer with ID " + customerId + " does not exist");

@@ -9,7 +9,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ICustomerRepository extends JpaRepository<Customer, Integer> {
-    @Query("SELECT c FROM Customer c WHERE c.createdAt > :createdAtMin AND c.createdAt < :createdAtMax ORDER BY c.createdAt ASC")
+    @Query("SELECT c FROM Customer c " +
+            "WHERE (:createdAtMin IS NULL OR c.createdAt >= :createdAtMin) " +
+            "AND (:createdAtMax IS NULL OR c.createdAt <= :createdAtMax)")
     List<Customer> findCustomersWithinDateRange(
             @Param("createdAtMin")LocalDateTime createdAtMin,
             @Param("createdAtMax")LocalDateTime createdAtMax,
