@@ -2,6 +2,7 @@ package com.example.wdmsystem.product.system;
 
 import com.example.wdmsystem.order.system.Order;
 import com.example.wdmsystem.order.system.OrderItem;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,6 +19,7 @@ public class ProductVariant {
     public Integer id;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "product_id", nullable = false)
     public Product product;
 

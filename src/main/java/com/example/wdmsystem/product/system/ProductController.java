@@ -36,7 +36,10 @@ public class ProductController {
     }
 
     @GetMapping("/products")
-    ResponseEntity<List<Product>> getProducts(@RequestParam int categoryId, @RequestParam String createdAtMin, @RequestParam String createdAtMax, @RequestParam int limit) {
+    ResponseEntity<List<Product>> getProducts(@RequestParam(required = false) Integer categoryId,
+                                              @RequestParam(required = false) String createdAtMin,
+                                              @RequestParam(required = false) String createdAtMax,
+                                              @RequestParam(required = false) Integer limit) {
         List<Product> productList = _productService.getProducts(categoryId, createdAtMin, createdAtMax, limit);
         return new ResponseEntity<>(productList, HttpStatus.OK);
     }

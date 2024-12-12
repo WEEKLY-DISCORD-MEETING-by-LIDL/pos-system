@@ -57,18 +57,38 @@ public class ProductService {
         return productVariantRepository.save(request);
     }
 
-    public List<Product> getProducts(int categoryId, String createdAtMin, String createdAtMax, int limit) {
+    public List<Product> getProducts(Integer categoryId, String createdAtMin, String createdAtMax, Integer limit) {
 
-        if (limit <= 0) {
+        if(createdAtMin == null) {
+            createdAtMin = "0000-01-01T00:00:00.000";
+        }
+        if(createdAtMax == null) {
+            createdAtMax = "9999-01-01T00:00:00.000";
+        }
+        if (limit == null || limit <= 0) {
             limit = 50;
         }
+        if(categoryId != null && categoryId <= 0) {
+            categoryId = null;
+        }
 
-        List<Product> filteredProducts = productRepository.getProductsByCategoryIdAndCreatedAtGreaterThanEqualAndCreatedAtLessThanEqual(
-                categoryId,
-                LocalDateTime.parse(createdAtMin),
-                LocalDateTime.parse(createdAtMax),
-                Limit.of(limit)
-        );
+        List<Product> filteredProducts;
+
+        if(categoryId == null) {
+            filteredProducts = productRepository.getProductsByCreatedAtGreaterThanEqualAndCreatedAtLessThanEqual(
+                    LocalDateTime.parse(createdAtMin),
+                    LocalDateTime.parse(createdAtMax),
+                    Limit.of(limit)
+            );
+        }
+        else {
+            filteredProducts = productRepository.getProductsByCategoryIdAndCreatedAtGreaterThanEqualAndCreatedAtLessThanEqual(
+                    categoryId,
+                    LocalDateTime.parse(createdAtMin),
+                    LocalDateTime.parse(createdAtMax),
+                    Limit.of(limit)
+            );
+        }
 
         return filteredProducts;
     }

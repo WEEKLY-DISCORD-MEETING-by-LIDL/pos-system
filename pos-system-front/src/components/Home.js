@@ -7,21 +7,21 @@ const Home = () => {
     const [axiosText, setAxiosText] = useState([])
     const navigate = useNavigate();
 
-    useEffect(() => {
-        fetch('http://localhost:8080/test', {
-            method: 'GET',
-            credentials: 'include',
-        }) 
-            .then(response => response.text())
-            .then(data => setText(data))
-            .catch(error => console.error("Error doing something", error));
-
-        axios.get(`http://localhost:8080/test2`)
-            .then(res => {
-              const axiosText = res.data;
-              setAxiosText(axiosText);
-            })
-    }, []);
+    // useEffect(() => {
+    //     fetch('http://localhost:8080/test', {
+    //         method: 'GET',
+    //         credentials: 'include',
+    //     })
+    //         .then(response => response.text())
+    //         .then(data => setText(data))
+    //         .catch(error => console.error("Error doing something", error));
+    //
+    //     axios.get(`http://localhost:8080/test2`)
+    //         .then(res => {
+    //           const axiosText = res.data;
+    //           setAxiosText(axiosText);
+    //         })
+    // }, []);
 
     const returnBack = () => {
         navigate("/")
