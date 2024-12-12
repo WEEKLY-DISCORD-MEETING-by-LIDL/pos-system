@@ -39,6 +39,7 @@ public final class EmployeeController {
     @PutMapping("/employees/{employeeId}")
     ResponseEntity<Employee> updateEmployee(@PathVariable int employeeId, @RequestBody EmployeeDTO request) {
         _employeeService.updateEmployee(employeeId, request);
+        // changed to NO_CONTENT from OK
         return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
     }
 
