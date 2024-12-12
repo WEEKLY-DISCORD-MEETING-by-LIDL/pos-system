@@ -17,7 +17,8 @@ public final class Employee {
     //TODO: Add string restrictions of max length 30
     public String firstName;
     public String lastName;
-    @Enumerated(EnumType.STRING)
+    //It is saved as an int in the database
+    @Enumerated(EnumType.ORDINAL)
     public EmployeeType employeeType;
     public String username;
     public String password;

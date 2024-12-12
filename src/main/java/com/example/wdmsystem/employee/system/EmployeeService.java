@@ -2,7 +2,9 @@ package com.example.wdmsystem.employee.system;
 
 import com.example.wdmsystem.exception.InvalidInputException;
 import com.example.wdmsystem.exception.NotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Limit;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -13,12 +15,16 @@ import java.util.List;
 public class EmployeeService {
     private final IEmployeeRepository employeeRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public EmployeeService(IEmployeeRepository employeeRepository) {
         this.employeeRepository = employeeRepository;
     }
 
     public Employee createEmployee(EmployeeDTO request) {
 
+        String hashedPassword = passwordEncoder.encode(request.password());
         Employee employee = new Employee(
                 0,
                 0, // placeholder
@@ -26,7 +32,7 @@ public class EmployeeService {
                 request.lastName(),
                 request.employeeType(),
                 request.username(),
-                request.password(),
+                hashedPassword,
                 LocalDateTime.now()
         );
         employee.setUpdatedAt(employee.getCreatedAt());
@@ -58,7 +64,8 @@ public class EmployeeService {
         employee.setLastName(request.lastName());
         employee.setEmployeeType(request.employeeType());
         employee.setUsername(request.username());
-        employee.setPassword(request.password());
+        String hashedPassword = passwordEncoder.encode(request.password());
+        employee.setPassword(hashedPassword);
         employee.setUpdatedAt(LocalDateTime.now());
 
         employeeRepository.save(employee);
