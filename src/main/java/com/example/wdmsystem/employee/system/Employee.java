@@ -1,9 +1,6 @@
 package com.example.wdmsystem.employee.system;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,6 +17,7 @@ public final class Employee {
     //TODO: Add string restrictions of max length 30
     public String firstName;
     public String lastName;
+    @Enumerated(EnumType.STRING)
     public EmployeeType employeeType;
     public String username;
     public String password;

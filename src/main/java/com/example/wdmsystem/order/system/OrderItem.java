@@ -1,5 +1,6 @@
 package com.example.wdmsystem.order.system;
 
+import com.example.wdmsystem.product.system.ProductVariant;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,14 +16,18 @@ public final class OrderItem {
     @ManyToOne
     @JoinColumn(name = "order_id", nullable = false)
     public Order order;
-    public int productVariantId;
+
+    @ManyToOne
+    @JoinColumn(name = "variant_id", referencedColumnName = "id")
+    public ProductVariant productVariant;
+
     public int quantity;
     public double price;
 
-    public OrderItem(int id, Order order, int productVariantId, int quantity, double price) {
+    public OrderItem(int id, Order order, ProductVariant productVariant, int quantity, double price) {
         this.id = id;
         this.order = order;
-        this.productVariantId = productVariantId;
+        this.productVariant = productVariant;
         this.quantity = quantity;
         this.price = price;
     }

@@ -44,9 +44,9 @@ public class OrderService {
 
         for (OrderItem item : orderItems) {
 
-            if (item.productVariantId < 0) {
-                throw new InvalidInputException("Order item product variant id must be greater than 0. Current is: " + item.productVariantId);
-            }
+//            if (item.productVariantId < 0) {
+//                throw new InvalidInputException("Order item product variant id must be greater than 0. Current is: " + item.productVariantId);
+//            }
             if (item.quantity <= 0) {
                 throw new InvalidInputException("Order item quantity must be greater than 0. Current is: " + item.quantity);
             }

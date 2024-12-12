@@ -49,15 +49,12 @@ public class ProductService {
             throw new InvalidInputException("Product variant title is longer than 30 characters");
         }
 
-        if (productRepository.existsById(productId)) {
-            request.productId = productId;
-            request.createdAt = LocalDateTime.now();
-            request.updatedAt = LocalDateTime.now();
-            return productVariantRepository.save(request);
-        }
-        else {
-            throw new NotFoundException("Product with id " + productId + " not found");
-        }
+        request.product = productRepository.findById(productId).orElseThrow(() ->
+                new NotFoundException("Product with id " + productId + " not found"));
+        request.createdAt = LocalDateTime.now();
+        request.updatedAt = LocalDateTime.now();
+
+        return productVariantRepository.save(request);
     }
 
     public List<Product> getProducts(int categoryId, String createdAtMin, String createdAtMax, int limit) {
