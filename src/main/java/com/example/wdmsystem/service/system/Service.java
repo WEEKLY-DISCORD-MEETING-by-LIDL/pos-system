@@ -1,11 +1,13 @@
 package com.example.wdmsystem.service.system;
 
+import com.example.wdmsystem.reservation.system.Reservation;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -23,6 +25,8 @@ public final class Service {
     public int durationMins;
     public LocalDateTime createdAt;
     public LocalDateTime updatedAt;
+    @OneToMany(mappedBy = "service", cascade = CascadeType.ALL, orphanRemoval = true)
+    public List<Reservation> reservations;
 
     public Service(Integer id, int merchantId, String title, int categoryId, double price, int discountId, int taxId, int durationMins, LocalDateTime createdAt) {
         this.id = id;

@@ -39,8 +39,11 @@ public class ServiceService {
     }
 
     public List<Service> getServices(Category category, int limit) {
-        if (limit <= 0) {
-            throw new InvalidInputException("limit must be greater than 0. Current limit: " + limit);
+//        if (limit <= 0) {
+//            throw new InvalidInputException("limit must be greater than 0. Current limit: " + limit);
+//        }
+        if (limit < 0 || limit > 250) {
+            limit = 50;
         }
         PageRequest pageRequest = PageRequest.of(0, limit);
         return serviceRepository.findServicesByCategoryId(category.id, pageRequest);
@@ -48,16 +51,25 @@ public class ServiceService {
 
     @Transactional
     public void updateService(int serviceId, ServiceDTO request) {
+        if (serviceId < 0) {
+            throw new InvalidInputException("Service must be greater than 0");
+        }
+
         Optional<Service> service = serviceRepository.findById(serviceId);
+
         if (service.isEmpty()) {
             throw new NotFoundException("Service not found");
         }
+
         Service existingService = service.get();
 
-        if (request.merchantId() != null) {
-            existingService.setMerchantId(request.merchantId());
-        }
         if (request.title() != null) {
+            if (request.title().trim().isEmpty()) {
+                throw new InvalidInputException("Title cannot be empty");
+            }
+            if (request.title().length() > 30) {
+                throw new InvalidInputException("Title must be shorter than 30 characters");
+            }
             existingService.setTitle(request.title());
         }
         if (request.categoryId() != null) {
@@ -81,12 +93,25 @@ public class ServiceService {
     }
 
     public void deleteService(int serviceId) {
-        serviceRepository.deleteById(serviceId);
+        if (serviceId < 0) {
+            throw new InvalidInputException("Service id must be greater than 0");
+        }
+        Optional<Service> service = serviceRepository.findById(serviceId);
+        if (service.isEmpty()) {
+            throw new NotFoundException("Service not found");
+        }
+        Service existingService = service.get();
+        serviceRepository.delete(existingService);
     }
 
     public Service getService(int serviceId) {
         Optional<Service> service = serviceRepository.findById(serviceId);
-        return service.orElse(null);
+        if (service.isEmpty()) {
+            throw new NotFoundException("Service not found");
+        }
+        else {
+            return service.get();
+        }
     }
 
     public List<LocalDateTime> getAvailableTimes(int serviceId, LocalDateTime date) {
