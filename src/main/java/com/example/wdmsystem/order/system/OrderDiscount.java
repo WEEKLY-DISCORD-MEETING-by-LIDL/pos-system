@@ -1,13 +1,11 @@
 package com.example.wdmsystem.order.system;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -21,6 +19,9 @@ public final class OrderDiscount {
     public double percentage;
     public LocalDateTime createdAt;
     public LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "orderDiscount", cascade = CascadeType.REFRESH)
+    public List<Order> discountedOrders;
 
     public OrderDiscount (Integer id, int merchantId, String title, double percentage, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;

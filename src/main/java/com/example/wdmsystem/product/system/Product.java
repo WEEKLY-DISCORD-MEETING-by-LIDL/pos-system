@@ -1,14 +1,12 @@
 package com.example.wdmsystem.product.system;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.lang.Nullable;
 
@@ -29,6 +27,9 @@ public class Product {
     public String weightUnit;
     public LocalDateTime createdAt;
     public LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "product")
+    public List<ProductVariant> variants;
 
     public Product(Integer id, int merchantId, String title, int categoryId, double price, int discountId, int taxId, float weight, String weightUnit, LocalDateTime createdAt) {
         this.id = id;

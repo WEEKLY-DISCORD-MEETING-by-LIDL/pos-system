@@ -39,7 +39,7 @@ public final class EmployeeController {
     @PutMapping("/employees/{employeeId}")
     ResponseEntity<Employee> updateEmployee(@PathVariable int employeeId, @RequestBody EmployeeDTO request) {
         _employeeService.updateEmployee(employeeId, request);
-        return new ResponseEntity<>(null, HttpStatus.OK);
+        return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/employees/{employeeId}")
