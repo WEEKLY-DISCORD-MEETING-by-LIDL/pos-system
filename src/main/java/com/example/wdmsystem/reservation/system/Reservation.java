@@ -1,9 +1,8 @@
 package com.example.wdmsystem.reservation.system;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.example.wdmsystem.customer.system.Customer;
+import com.example.wdmsystem.service.system.Service;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,8 +15,12 @@ public final class Reservation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer id;
-    public int customerId;
-    public int serviceId;
+    @ManyToOne
+    @JoinColumn(name = "customer_id", nullable = false)
+    public Customer customer;
+    @ManyToOne
+    @JoinColumn(name = "service_id", nullable = false)
+    public Service service;
     public int employeeId;
     public LocalDateTime startTime; //using LocalDateTime, not Date because its just better lol
     public LocalDateTime endTime;
@@ -26,10 +29,10 @@ public final class Reservation {
     public LocalDateTime createdAt;
     public LocalDateTime updatedAt;
 
-    public Reservation(Integer id, int customerId, int serviceId, int employeeId, LocalDateTime startTime, LocalDateTime endTime, ReservationStatus reservation, boolean sendConfirmation, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Reservation(Integer id, Customer customer, Service service, int employeeId, LocalDateTime startTime, LocalDateTime endTime, ReservationStatus reservation, boolean sendConfirmation, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
-        this.customerId = customerId;
-        this.serviceId = serviceId;
+        this.customer = customer;
+        this.service = service;
         this.employeeId = employeeId;
         this.startTime = startTime;
         this.endTime = endTime;
