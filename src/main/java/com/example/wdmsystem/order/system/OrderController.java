@@ -21,15 +21,15 @@ public final class OrderController {
     }
 
     @GetMapping("/orders/{orderId}")
-    ResponseEntity<Order> getOrder(@PathVariable int orderId) {
-        Order order = _orderService.getOrder(orderId);
+    ResponseEntity<OrderDTO> getOrder(@PathVariable int orderId) {
+        OrderDTO order = _orderService.getOrder(orderId);
         return new ResponseEntity<>(order, HttpStatus.OK);
     }
 
     @PutMapping("/orders/{orderId}")
-    ResponseEntity<Order> updateOrderStatus(@PathVariable int orderId,
+    ResponseEntity<OrderDTO> updateOrderStatus(@PathVariable int orderId,
                                             @RequestParam OrderStatus status) {
-        Order order = _orderService.updateOrderStatus(orderId, status);
+        OrderDTO order = _orderService.updateOrderStatus(orderId, status);
         return new ResponseEntity<>(order, HttpStatus.OK);
     }
 
@@ -40,14 +40,14 @@ public final class OrderController {
     }
 
     @PatchMapping("/orders/{orderId}/cancel")
-    ResponseEntity<Order> cancelOrder(@PathVariable int orderId) {
-        Order order = _orderService.cancelOrder(orderId);
+    ResponseEntity<OrderDTO> cancelOrder(@PathVariable int orderId) {
+        OrderDTO order = _orderService.cancelOrder(orderId);
         return new ResponseEntity<>(order, HttpStatus.OK);
     }
 
     @PatchMapping("/orders/{orderId}/discount")
-    ResponseEntity<Order> applyDiscountToOrder(@PathVariable int orderId, @RequestParam int discountId) {
-        Order order = _orderService.applyDiscountToOrder(orderId, discountId);
+    ResponseEntity<OrderDTO> applyDiscountToOrder(@PathVariable int orderId, @RequestParam int discountId) {
+        OrderDTO order = _orderService.applyDiscountToOrder(orderId, discountId);
         return new ResponseEntity<>(order, HttpStatus.OK);
     }
 }

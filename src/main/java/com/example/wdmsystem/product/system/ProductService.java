@@ -24,42 +24,50 @@ public class ProductService {
         this.dtoMapper = dtoMapper;
     }
 
-    public Product createProduct(Product request) {
+    public ProductDTO createProduct(ProductDTO request) {
 
-        if (request.title.length() > 30) {
+        if (request.title().length() > 30) {
             throw new InvalidInputException("Product title is longer than 30 characters");
         }
-        if (request.weightUnit.length() > 10) {
+        if (request.weightUnit().length() > 10) {
             throw new InvalidInputException("Product weight unit is longer than 10 characters");
         }
-        if (request.weight <= 0) {
+        if (request.weight() <= 0) {
             throw new InvalidInputException("Product weight must be greater than 0");
         }
-        if (request.price < 0) {
+        if (request.price() < 0) {
             throw new InvalidInputException("Product price must be greater than or equal to 0");
         }
 
+        Product product = dtoMapper.Product_DTOToModel(request);
+
         // placeholder
-        request.merchantId = 10;
+        product.merchantId = 10;
 
-        request.createdAt = LocalDateTime.now();
-        request.updatedAt = LocalDateTime.now();
+        product.createdAt = LocalDateTime.now();
+        product.updatedAt = LocalDateTime.now();
 
-        return productRepository.save(request);
+        return dtoMapper.Product_ModelToDTO(productRepository.save(product));
     }
 
-    public ProductVariant createVariant(int productId, ProductVariant request) {
+    public ProductVariantDTO createVariant(int productId, ProductVariantDTO request) {
 
-        if (request.title.length() > 30) {
+        if (request.title().length() > 30) {
             throw new InvalidInputException("Product variant title is longer than 30 characters");
         }
+        if (request.additionalPrice() < 0) {
+            throw new InvalidInputException("Product variant additional price must be greater than or equal 0");
+        }
 
-        request.product = productRepository.findById(productId).orElseThrow(() ->
+        Product product = productRepository.findById(productId).orElseThrow(() ->
                 new NotFoundException("Product with id " + productId + " not found"));
-        request.createdAt = LocalDateTime.now();
-        request.updatedAt = LocalDateTime.now();
 
-        return productVariantRepository.save(request);
+        ProductVariant variant = dtoMapper.ProductVariant_DTOToModel(request, product);
+
+        variant.createdAt = LocalDateTime.now();
+        variant.updatedAt = LocalDateTime.now();
+
+        return dtoMapper.ProductVariant_ModelToDTO(productVariantRepository.save(variant));
     }
 
     public List<ProductDTO> getProducts(Integer categoryId, String createdAtMin, String createdAtMax, Integer limit) {
@@ -122,95 +130,71 @@ public class ProductService {
         }
     }
 
-    public Product getProduct(int productId) {
+    public ProductDTO getProduct(int productId) {
 
-        Optional<Product> product = productRepository.findById(productId);
+        Product product = productRepository.findById(productId).orElseThrow(() ->
+                new NotFoundException("Product with id " + productId + " not found"));
 
-        if (product.isPresent()) {
-            return product.get();
-        }
-        else {
-            throw new NotFoundException("Product with id " + productId + " not found");
-        }
+        return dtoMapper.Product_ModelToDTO(product);
     }
 
-    public ProductVariant getVariant(int variantId) {
+    public ProductVariantDTO getVariant(int variantId) {
 
-        Optional<ProductVariant> variant = productVariantRepository.findById(variantId);
+        ProductVariant variant = productVariantRepository.findById(variantId).orElseThrow(() ->
+                new NotFoundException("Variant with id " + variantId + " not found"));
 
-        if (variant.isPresent()) {
-            return variant.get();
-        }
-        else {
-            throw new NotFoundException("Product with id " + variantId + " not found");
-        }
+        return dtoMapper.ProductVariant_ModelToDTO(variant);
     }
 
-    public void updateProduct(int productId, Product request) {
+    public void updateProduct(int productId, ProductDTO request) {
 
-        Optional<Product> product = productRepository.findById(productId);
+        Product product = productRepository.findById(productId).orElseThrow(() ->
+                new NotFoundException("Product with id " + productId + " not found"));
 
-        if(request.title.length() > 30) {
+        if(request.title().length() > 30) {
             throw new InvalidInputException("Product title is longer than 30 characters");
         }
-        if(request.weightUnit.length() > 10) {
+        if(request.weightUnit().length() > 10) {
             throw new InvalidInputException("Product weight unit is longer than 10 characters");
         }
-        if(request.weight <= 0) {
+        if(request.weight() <= 0) {
             throw new InvalidInputException("Product weight must be greater than 0");
         }
-        if(request.price < 0) {
+        if(request.price() < 0) {
             throw new InvalidInputException("Product price must be greater than or equal to 0");
         }
 
+        product.title = request.title();
+        product.weight = request.weight();
+        product.weightUnit = request.weightUnit();
+        product.price = request.price();
+        product.updatedAt = LocalDateTime.now();
 
-        if (product.isPresent()) {
-            Product updatedProduct = product.get();
-
-            updatedProduct.title = request.title;
-            updatedProduct.weight = request.weight;
-            updatedProduct.weightUnit = request.weightUnit;
-            updatedProduct.price = request.price;
-            updatedProduct.updatedAt = LocalDateTime.now();
-
-            productRepository.save(updatedProduct);
-        }
-        else {
-            throw new NotFoundException("Product with id " + productId + " not found");
-        }
+        productRepository.save(product);
     }
 
-    public void updateVariant(int variantId, ProductVariant request) {
+    public void updateVariant(int variantId, ProductVariantDTO request) {
 
-        Optional<ProductVariant> variant = productVariantRepository.findById(variantId);
+        ProductVariant variant = productVariantRepository.findById(variantId).orElseThrow(() ->
+                new NotFoundException("Variant with id " + variantId + " not found"));
 
-        if(request.title.length() > 30) {
+        if(request.title().length() > 30) {
             throw new InvalidInputException("Product variant title is longer than 30 characters");
         }
-
-        if (variant.isPresent()) {
-            ProductVariant updatedVariant = variant.get();
-
-            updatedVariant.title = request.title;
-            updatedVariant.additionalPrice = request.additionalPrice;
-            updatedVariant.updatedAt = LocalDateTime.now();
-
-            productVariantRepository.save(updatedVariant);
+        if (request.additionalPrice() < 0) {
+            throw new InvalidInputException("Product variant additional price must be greater than or equal 0");
         }
-        else {
-            throw new NotFoundException("Product with id " + variantId + " not found");
-        }
+
+        variant.title = request.title();
+        variant.additionalPrice = request.additionalPrice();
+        variant.updatedAt = LocalDateTime.now();
+
+        productVariantRepository.save(variant);
     }
 
     public void deleteProduct(int productId) {
 
-        Optional<Product> product = productRepository.findById(productId);
-
-        if (product.isPresent()) {
-
-            List<ProductVariant> variants = productVariantRepository.getProductVariantsByProductId(productId);
-            productVariantRepository.deleteAll(variants);
-
+        if(productRepository.existsById(productId)) {
             productRepository.deleteById(productId);
         }
         else {
@@ -220,13 +204,11 @@ public class ProductService {
 
     public void deleteVariant(int variantId) {
 
-        Optional<ProductVariant> variant = productVariantRepository.findById(variantId);
-
-        if (variant.isPresent()) {
+        if(productVariantRepository.existsById(variantId)) {
             productVariantRepository.deleteById(variantId);
         }
         else {
-            throw new NotFoundException("Product variant with id " + variantId + " not found");
+            throw new NotFoundException("Variant with id " + variantId + " not found");
         }
     }
 

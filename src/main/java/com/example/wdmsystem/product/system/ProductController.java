@@ -24,14 +24,14 @@ public class ProductController {
     }
 
     @PostMapping("/products")
-    ResponseEntity<Product> createProduct(@RequestBody Product request) {
-        Product newProduct = _productService.createProduct(request);
+    ResponseEntity<ProductDTO> createProduct(@RequestBody ProductDTO request) {
+        ProductDTO newProduct = _productService.createProduct(request);
         return new ResponseEntity<>(newProduct, HttpStatus.CREATED);
     }
 
     @PostMapping("/products/{productId}/variants")
-    ResponseEntity<ProductVariant> createVariant(@PathVariable int productId, @RequestBody ProductVariant request) {
-        ProductVariant newVariant = _productService.createVariant(productId, request);
+    ResponseEntity<ProductVariantDTO> createVariant(@PathVariable int productId, @RequestBody ProductVariantDTO request) {
+        ProductVariantDTO newVariant = _productService.createVariant(productId, request);
         return new ResponseEntity<>(newVariant, HttpStatus.CREATED);
     }
 
@@ -51,37 +51,37 @@ public class ProductController {
     }
 
     @GetMapping("/products/{productId}")
-    ResponseEntity<Product> getProduct(@PathVariable int productId) {
-        Product product = _productService.getProduct(productId);
+    ResponseEntity<ProductDTO> getProduct(@PathVariable int productId) {
+        ProductDTO product = _productService.getProduct(productId);
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
     @GetMapping("/variants/{variantId}")
-    ResponseEntity<ProductVariant> getVariant(@PathVariable int variantId) {
-        ProductVariant productVariant = _productService.getVariant(variantId);
+    ResponseEntity<ProductVariantDTO> getVariant(@PathVariable int variantId) {
+        ProductVariantDTO productVariant = _productService.getVariant(variantId);
         return new ResponseEntity<>(productVariant, HttpStatus.OK);
     }
 
     @PutMapping("/products/{productId}")
-    ResponseEntity<Product> updateProduct(@PathVariable int productId, @RequestBody Product request) {
+    ResponseEntity<ProductDTO> updateProduct(@PathVariable int productId, @RequestBody ProductDTO request) {
         _productService.updateProduct(productId, request);
         return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
     }
 
     @PutMapping("/variants/{variantId}")
-    ResponseEntity<ProductVariant> updateVariant(@PathVariable int variantId, @RequestBody ProductVariant request) {
+    ResponseEntity<ProductVariantDTO> updateVariant(@PathVariable int variantId, @RequestBody ProductVariantDTO request) {
         _productService.updateVariant(variantId, request);
         return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/products/{productId}")
-    ResponseEntity<Product> deleteProduct(@PathVariable int productId) {
+    ResponseEntity<ProductDTO> deleteProduct(@PathVariable int productId) {
         _productService.deleteProduct(productId);
         return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/variants/{variantId}")
-    ResponseEntity<ProductVariant> deleteVariant(@PathVariable int variantId) {
+    ResponseEntity<ProductVariantDTO> deleteVariant(@PathVariable int variantId) {
         _productService.deleteVariant(variantId);
         return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
     }

@@ -29,9 +29,17 @@ public class DTOMapper {
         return new ProductDTO(product.id, product.merchantId, product.title, product.categoryId, product.price, product.discountId, product.taxId, product.weight, product.weightUnit);
     }
 
+    public Product Product_DTOToModel(ProductDTO productDTO) {
+        return new Product(productDTO.id(), productDTO.merchantId(), productDTO.title(), productDTO.categoryId(), productDTO.price(), productDTO.discountId(), productDTO.taxId(), productDTO.weight(), productDTO.weightUnit());
+    }
+
     /// PRODUCT VARIANT
     public ProductVariantDTO ProductVariant_ModelToDTO(ProductVariant productVariant) {
         return new ProductVariantDTO(productVariant.id, productVariant.product.id, productVariant.title, productVariant.additionalPrice);
+    }
+
+    public ProductVariant ProductVariant_DTOToModel(ProductVariantDTO productVariantDTO, Product product) {
+        return new ProductVariant(productVariantDTO.id(), product, productVariantDTO.title(), productVariantDTO.additionalPrice());
     }
 
     /// ORDER ITEMS

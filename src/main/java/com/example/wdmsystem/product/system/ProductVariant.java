@@ -30,13 +30,11 @@ public class ProductVariant {
     @OneToMany(mappedBy = "productVariant")
     public List<OrderItem> orderItems;
 
-    public ProductVariant(Integer id, Product product, String title, double additionalPrice, LocalDateTime createdAt) {
+    public ProductVariant(Integer id, Product product, String title, double additionalPrice) {
         this.id = id;
         this.product = product;
         this.title = title;
         this.additionalPrice = additionalPrice;
-        this.createdAt = createdAt;
-        this.updatedAt = createdAt;
     }
 
     //@Entity required constructor
