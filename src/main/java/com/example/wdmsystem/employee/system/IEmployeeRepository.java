@@ -8,5 +8,6 @@ import java.util.Optional;
 
 public interface IEmployeeRepository extends JpaRepository<Employee, Integer> {
     List<Employee> getEmployeesByEmployeeType(EmployeeType employeeType, Limit limit);
+    List<Employee> getEmployeesByEmployeeTypeAndMerchantId(EmployeeType employeeType, int merchantId, Limit limit);
     Optional<Employee> findByUsername(String username);
 }

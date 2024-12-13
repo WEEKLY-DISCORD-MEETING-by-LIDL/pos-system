@@ -8,9 +8,6 @@ import com.example.wdmsystem.reservation.system.Reservation;
 import java.util.Date;
 import java.util.List;
 
-//TODO: Request validation
-//TODO: Error response codes
-//TODO: Custom response messages
 @RestController
 public final class CustomerController {
 
@@ -27,7 +24,6 @@ public final class CustomerController {
     }
 
     /// In the API contract Limit is an entity, but in the doc it isn't mentioned.
-    //TODO: Decide which package Limit should be in. (It is used in several modules)
     @GetMapping("/customers")
     ResponseEntity<List<Customer>> getCustomers(@RequestParam(required = false) Date createdAtMin,
                                                 @RequestParam(required = false) Date createdAtMax,

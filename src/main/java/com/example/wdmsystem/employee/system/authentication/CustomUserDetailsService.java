@@ -2,10 +2,9 @@ package com.example.wdmsystem.employee.system.authentication;
 
 import com.example.wdmsystem.employee.system.Employee;
 import com.example.wdmsystem.employee.system.IEmployeeRepository;
-import com.example.wdmsystem.exception.UnauthorizedException;
+import com.example.wdmsystem.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
@@ -18,14 +17,15 @@ public class CustomUserDetailsService implements UserDetailsService {
     private IEmployeeRepository employeeRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UnauthorizedException {
+    public CustomUserDetails loadUserByUsername(String username) {
         Employee employee = employeeRepository.findByUsername(username)
-                .orElseThrow(() -> new UnauthorizedException("Invalid credentials"));
+                .orElseThrow(() -> new NotFoundException("Employee not found: " + username));
 
-        return new org.springframework.security.core.userdetails.User(
+        return new CustomUserDetails(
                 employee.getUsername(),
                 employee.getPassword(),
-                List.of(new SimpleGrantedAuthority(employee.getEmployeeType().name()))
+                employee.getMerchantId(),
+                List.of(new SimpleGrantedAuthority("ROLE_" + employee.getEmployeeType().name()))
         );
     }
 }

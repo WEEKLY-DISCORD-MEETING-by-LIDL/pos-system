@@ -1,12 +1,16 @@
 package com.example.wdmsystem.util;
 
+import com.example.wdmsystem.employee.system.authentication.CustomUserDetails;
+import com.example.wdmsystem.exception.UnauthorizedException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
+import org.springframework.security.core.GrantedAuthority;
 import java.security.Key;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtUtil {
@@ -16,10 +20,13 @@ public class JwtUtil {
 
     private final Key signingKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
 
-    public String generateToken(org.springframework.security.core.userdetails.UserDetails userDetails) {
+    public String generateToken(CustomUserDetails userDetails, int merchantId) {
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
-                .claim("roles", userDetails.getAuthorities())
+                .claim("roles", userDetails.getAuthorities().stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .collect(Collectors.toList()))
+                .claim("merchantId", merchantId)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(signingKey, SignatureAlgorithm.HS256)
@@ -27,10 +34,14 @@ public class JwtUtil {
     }
 
     public Claims validateToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(signingKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        try{
+            return Jwts.parserBuilder()
+                    .setSigningKey(signingKey)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (Exception e) {
+            throw new UnauthorizedException("Token validation failed: " + e.getMessage());
+        }
     }
 }

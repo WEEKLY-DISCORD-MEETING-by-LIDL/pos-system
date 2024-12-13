@@ -28,8 +28,8 @@ public class AuthenticationController {
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
-        String token = jwtUtil.generateToken(userDetails);
+        CustomUserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
+        String token = jwtUtil.generateToken(userDetails, userDetails.getMerchantId());
 
         return ResponseEntity.ok(new LoginResponse(token));
     }
