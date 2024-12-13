@@ -19,7 +19,6 @@ public class ProductVariant {
     public Integer id;
 
     @ManyToOne
-    @JsonIgnore
     @JoinColumn(name = "product_id", nullable = false)
     public Product product;
 

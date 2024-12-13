@@ -2,11 +2,13 @@ import React, {useEffect, useState} from "react";
 import {ProductSelection} from "./ProductSelection";
 import {fetchProducts} from "../api/ProductAPI";
 import {createOrderStyle as CreateOrderStyle} from "../styles/CreateOrderStyle";
+import {createOrder} from "../api/OrderAPI";
 
 export const CreateOrderPage = () => {
 
     const [items, setItems] = useState([]);
     const [products, setProducts] = useState([]);
+    const [discountId, setDiscountId] = useState(null);
 
     useEffect(() => {
         fetchProducts(null, null, null, null, setProducts);
@@ -14,11 +16,6 @@ export const CreateOrderPage = () => {
 
     const onPlus = (item) => {
         item.quantity++;
-
-        // let index = items.indexOf(item);
-        // if (index > -1) {
-        //     items[index].quantity++;
-        // }
 
         setItems([...items]);
     }
@@ -44,7 +41,19 @@ export const CreateOrderPage = () => {
     }
 
     const onCreate = () => {
+        let orderItems = [];
 
+        for(let i = 0;i<items.length;++i) {
+            let orderItem = {
+                id: 0,
+                productVariantId: items[i].productVariant.id,
+                quantity: items[i].quantity
+            }
+
+            orderItems.push(orderItem);
+        }
+
+        createOrder(discountId, orderItems);
     }
 
 
@@ -74,7 +83,7 @@ export const CreateOrderPage = () => {
                     ))}
                 </ul>
 
-                <button style={CreateOrderStyle.createOrderButton}>Create</button>
+                <button style={CreateOrderStyle.createOrderButton} onClick={onCreate}>Create</button>
             </div>
 
             <div style={CreateOrderStyle.selectionBox}>

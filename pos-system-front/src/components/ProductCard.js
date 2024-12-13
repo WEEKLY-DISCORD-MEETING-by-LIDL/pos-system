@@ -4,16 +4,19 @@ import {ProductCardStyle} from "../styles/ProductCardStyle";
 
 export const ProductCard = (props) => {
 
-    const [selectedVariant, setSelectedVariants] = useState("0");
+    const [selectedVariant, setSelectedVariants] = useState(0);
+    const [variants, setVariants] = useState([]);
+    
+    useEffect(() => {
+        fetchVariants(props.product.id, setVariants)
+    }, []);
 
-    // useEffect(() => {
-    //     fetchVariants(props.product.id, setVariants)
-    // }, []);
+    const currentVariant = variants[selectedVariant];
 
-    const onAdd = () =>{
+    const onAdd = () => {
 
         for(let i = 0; i<props.items.length; ++i) {
-            if (props.items[i].productVariant === props.product.variants[selectedVariant]) {
+            if (props.items[i].productVariant === variants[selectedVariant]) {
                 props.items[i].quantity++;
                 props.setItems([...props.items]);
                 return;
@@ -22,7 +25,7 @@ export const ProductCard = (props) => {
 
         const newItem = {
             product: props.product,
-            productVariant: props.product.variants[selectedVariant],
+            productVariant: variants[selectedVariant],
             quantity: 1
         }
 
@@ -38,13 +41,17 @@ export const ProductCard = (props) => {
             <h4>{props.product.title}</h4>
             <p>Price: {props.product.price}</p>
             <button onClick={onAdd}>Add</button>
-            <select value={selectedVariant} onChange={e => setSelectedVariants(e.target.value)}>
-                {props.product.variants.map((variant) => (
-                    <option value={index++}>{variant.title}</option>
+            <select value={selectedVariant} onChange={e => setSelectedVariants(Number(e.target.value))}>
+                {variants.map((variant) => (
+                    <option value={index++} key={variant.id}>{variant.title}</option>
                 ))}
             </select>
-            <p>Variant: {props.product.variants[selectedVariant].title}</p>
-            <p>Additional price: {props.product.variants[selectedVariant].additionalPrice}</p>
+            {currentVariant && (
+                <>
+                    <p>Variant: {currentVariant.title}</p>
+                    <p>Additional price: {currentVariant.additionalPrice}</p>
+                </>
+            )}
         </div>
     );
 }

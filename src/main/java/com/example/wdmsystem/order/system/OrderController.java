@@ -15,8 +15,8 @@ public final class OrderController {
     }
 
     @PostMapping("/orders")
-    ResponseEntity<Order> createOrder(@RequestParam(required = false) Integer orderDiscountId, @RequestBody List<OrderItem> orderItems) {
-        Order newOrder = _orderService.createOrder(orderDiscountId, orderItems);
+    ResponseEntity<OrderDTO> createOrder(@RequestParam(required = false) Integer orderDiscountId, @RequestBody List<OrderItemDTO> orderItems) {
+        OrderDTO newOrder = _orderService.createOrder(orderDiscountId, orderItems);
         return new ResponseEntity<>(newOrder, HttpStatus.CREATED);
     }
 

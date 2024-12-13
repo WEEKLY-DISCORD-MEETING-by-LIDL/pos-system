@@ -2,10 +2,12 @@ package com.example.wdmsystem.product.system;
 
 import com.example.wdmsystem.exception.InvalidInputException;
 import com.example.wdmsystem.exception.NotFoundException;
+import com.example.wdmsystem.utility.DTOMapper;
 import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,9 +16,12 @@ public class ProductService {
     private final IProductRepository productRepository;
     private final IProductVariantRepository productVariantRepository;
 
-    public ProductService(IProductRepository productRepository, IProductVariantRepository productVariantRepository) {
+    private final DTOMapper dtoMapper;
+
+    public ProductService(IProductRepository productRepository, IProductVariantRepository productVariantRepository, DTOMapper dtoMapper) {
         this.productRepository = productRepository;
         this.productVariantRepository = productVariantRepository;
+        this.dtoMapper = dtoMapper;
     }
 
     public Product createProduct(Product request) {
@@ -57,7 +62,7 @@ public class ProductService {
         return productVariantRepository.save(request);
     }
 
-    public List<Product> getProducts(Integer categoryId, String createdAtMin, String createdAtMax, Integer limit) {
+    public List<ProductDTO> getProducts(Integer categoryId, String createdAtMin, String createdAtMax, Integer limit) {
 
         if(createdAtMin == null) {
             createdAtMin = "0000-01-01T00:00:00.000";
@@ -90,13 +95,27 @@ public class ProductService {
             );
         }
 
-        return filteredProducts;
+        List<ProductDTO> productDTOs = new ArrayList<>();
+
+        for(Product product : filteredProducts) {
+            productDTOs.add(dtoMapper.Product_ModelToDTO(product));
+        }
+
+        return productDTOs;
     }
 
-    public List<ProductVariant> getVariants(int productId) {
+    public List<ProductVariantDTO> getVariants(int productId) {
 
         if (productRepository.existsById(productId)) {
-            return productVariantRepository.getProductVariantsByProductId(productId);
+            List<ProductVariant> variants = productVariantRepository.getProductVariantsByProductId(productId);
+
+            List<ProductVariantDTO> variantDTOs = new ArrayList<>();
+
+            for(ProductVariant variant : variants) {
+                variantDTOs.add(dtoMapper.ProductVariant_ModelToDTO(variant));
+            }
+
+            return variantDTOs;
         }
         else {
             throw new NotFoundException("Product with id " + productId + " not found");

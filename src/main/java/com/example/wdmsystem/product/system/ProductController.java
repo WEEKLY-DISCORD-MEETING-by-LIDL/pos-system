@@ -36,17 +36,17 @@ public class ProductController {
     }
 
     @GetMapping("/products")
-    ResponseEntity<List<Product>> getProducts(@RequestParam(required = false) Integer categoryId,
+    ResponseEntity<List<ProductDTO>> getProducts(@RequestParam(required = false) Integer categoryId,
                                               @RequestParam(required = false) String createdAtMin,
                                               @RequestParam(required = false) String createdAtMax,
                                               @RequestParam(required = false) Integer limit) {
-        List<Product> productList = _productService.getProducts(categoryId, createdAtMin, createdAtMax, limit);
+        List<ProductDTO> productList = _productService.getProducts(categoryId, createdAtMin, createdAtMax, limit);
         return new ResponseEntity<>(productList, HttpStatus.OK);
     }
 
     @GetMapping("/products/{productId}/variants")
-    ResponseEntity<List<ProductVariant>> getVariants(@PathVariable int productId) {
-        List<ProductVariant> productList = _productService.getVariants(productId);
+    ResponseEntity<List<ProductVariantDTO>> getVariants(@PathVariable int productId) {
+        List<ProductVariantDTO> productList = _productService.getVariants(productId);
         return new ResponseEntity<>(productList, HttpStatus.OK);
     }
 

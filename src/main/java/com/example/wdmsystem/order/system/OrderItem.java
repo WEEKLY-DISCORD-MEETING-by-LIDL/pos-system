@@ -15,24 +15,20 @@ public final class OrderItem {
     public int id;
 
     @ManyToOne
-    @JsonIgnore
     @JoinColumn(name = "order_id", nullable = false)
     public Order order;
 
     @ManyToOne
-    @JsonIgnore
     @JoinColumn(name = "variant_id", referencedColumnName = "id")
     public ProductVariant productVariant;
 
     public int quantity;
-    public double price;
 
-    public OrderItem(int id, Order order, ProductVariant productVariant, int quantity, double price) {
+    public OrderItem(int id, Order order, ProductVariant productVariant, int quantity) {
         this.id = id;
         this.order = order;
         this.productVariant = productVariant;
         this.quantity = quantity;
-        this.price = price;
     }
 
     public OrderItem() {
