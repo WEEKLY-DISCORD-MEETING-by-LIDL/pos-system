@@ -1,4 +1,5 @@
 import {ProductCard} from "./ProductCard";
+import {ProductSelectionStyle} from "../styles/ProductSelectionStyle";
 
 export const ProductSelection = (props) => {
 
@@ -7,14 +8,12 @@ export const ProductSelection = (props) => {
 
 
     return (
-        <div>
-            <ul>
-                {props.products.map((product) => (
-                    <li>
-                        <ProductCard product={product}/>
-                    </li>
-                ))}
-            </ul>
-        </div>
+        <ul style={ProductSelectionStyle.list}>
+            {props.products.map((product) => (
+                <li style={ProductSelectionStyle.cardListItem}>
+                    <ProductCard product={product} items={props.items} setItems={props.setItems}/>
+                </li>
+            ))}
+        </ul>
     );
 }
