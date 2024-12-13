@@ -1,9 +1,11 @@
 package com.example.wdmsystem.order.system;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -50,4 +52,14 @@ public final class OrderController {
         Order order = _orderService.applyDiscountToOrder(orderId, discountId);
         return new ResponseEntity<>(order, HttpStatus.OK);
     }
+
+    @GetMapping("/orders/{orderId}/price")
+    public ResponseEntity<Double> getPrice(@PathVariable int orderId) {
+        double price = _orderService.getPrice(orderId);
+        return new ResponseEntity<>(price, HttpStatus.OK);
+    }
+
+
+
+
 }

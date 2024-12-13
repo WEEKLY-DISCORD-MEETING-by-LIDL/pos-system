@@ -109,4 +109,18 @@ public class OrderService {
         return orderRepository.save(orderToUpdate);
 
     }
+
+    public double getPrice(int orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new NotFoundException("Order with id " + orderId + " not found"));
+
+        double totalPrice = order.getOrderItems()
+                .stream()
+                .mapToDouble(OrderItem::getTotalPrice)
+                .sum();
+
+        return totalPrice;
+    }
+
+
 }
