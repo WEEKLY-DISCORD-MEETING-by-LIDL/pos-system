@@ -50,4 +50,10 @@ public final class OrderController {
         OrderDTO order = _orderService.applyDiscountToOrder(orderId, discountId);
         return new ResponseEntity<>(order, HttpStatus.OK);
     }
+
+    @GetMapping("/orders/{orderId}/price")
+    public ResponseEntity<Double> getPrice(@PathVariable int orderId) {
+        double price = _orderService.getPrice(orderId);
+        return new ResponseEntity<>(price, HttpStatus.OK);
+    }
 }

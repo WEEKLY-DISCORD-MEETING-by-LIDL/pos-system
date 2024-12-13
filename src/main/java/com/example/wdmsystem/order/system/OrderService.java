@@ -116,4 +116,14 @@ public class OrderService {
         Order savedOrder = orderRepository.save(orderToUpdate);
         return dtoMapper.Order_ModelToDTO(savedOrder);
     }
+
+    public double getPrice(int orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new NotFoundException("Order with id " + orderId + " not found"));
+
+        return order.getOrderItems()
+                .stream()
+                .mapToDouble(OrderItem::getTotalPrice)
+                .sum();
+    }
 }

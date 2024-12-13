@@ -40,7 +40,7 @@ public final class OrderItem {
         if (productVariant != null && productVariant.getProduct() != null) {
             return (productVariant.getProduct().getPrice() + productVariant.getAdditionalPrice()) * quantity;
         }
-        throw new NotFoundException("Product or ProductVariant is missing.");
+        throw new NotFoundException("Product or ProductVariant was not found.");
     }
 
 }
