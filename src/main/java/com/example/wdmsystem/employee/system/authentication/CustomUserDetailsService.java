@@ -3,7 +3,6 @@ package com.example.wdmsystem.employee.system.authentication;
 import com.example.wdmsystem.employee.system.Employee;
 import com.example.wdmsystem.employee.system.IEmployeeRepository;
 import com.example.wdmsystem.exception.NotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
@@ -13,8 +12,11 @@ import java.util.List;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    @Autowired
-    private IEmployeeRepository employeeRepository;
+    private final IEmployeeRepository employeeRepository;
+
+    public CustomUserDetailsService(IEmployeeRepository employeeRepository) {
+        this.employeeRepository = employeeRepository;
+    }
 
     @Override
     public CustomUserDetails loadUserByUsername(String username) {
