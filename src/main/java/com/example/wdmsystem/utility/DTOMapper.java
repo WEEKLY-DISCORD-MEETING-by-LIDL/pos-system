@@ -1,23 +1,25 @@
 package com.example.wdmsystem.utility;
 
+import com.example.wdmsystem.employee.system.CreateEmployeeDTO;
+import com.example.wdmsystem.employee.system.Employee;
+import com.example.wdmsystem.employee.system.IEmployeeRepository;
+import com.example.wdmsystem.employee.system.UpdateEmployeeDTO;
 import com.example.wdmsystem.exception.NotFoundException;
 import com.example.wdmsystem.order.system.*;
 import com.example.wdmsystem.product.system.*;
+import lombok.AllArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@AllArgsConstructor
 public class DTOMapper {
+    private PasswordEncoder passwordEncoder;
     IOrderRepository orderRepository;
     IOrderItemRepository orderItemRepository;
     IProductRepository productRepository;
     IProductVariantRepository productVariantRepository;
-
-    public DTOMapper(IOrderItemRepository orderItemRepository, IProductRepository productRepository, IOrderRepository orderRepository, IProductVariantRepository productVariantRepository) {
-        this.orderItemRepository = orderItemRepository;
-        this.productRepository = productRepository;
-        this.orderRepository = orderRepository;
-        this.productVariantRepository = productVariantRepository;
-    }
+    IEmployeeRepository employeeRepository;
 
     /// ORDER
     public OrderDTO Order_ModelToDTO(Order order) {
@@ -57,5 +59,22 @@ public class DTOMapper {
                 new NotFoundException("Product variant not found"));
 
         return new OrderItem(orderItemDTO.id(), order, productVariant, orderItemDTO.quantity());
+    }
+
+    /// EMPLOYEE
+    public Employee CreateEmployee_DTOToModel(CreateEmployeeDTO createEmployeeDTO) {
+        return new Employee(0, 0, createEmployeeDTO.firstName(), createEmployeeDTO.lastName(),
+                createEmployeeDTO.employeeType(), createEmployeeDTO.username(),
+                passwordEncoder.encode(createEmployeeDTO.password()),null);
+    }
+
+    public Employee UpdateEmployee_DTOToModel(UpdateEmployeeDTO updateEmployeeDTO, Employee employee){
+        employee.setMerchantId(updateEmployeeDTO.merchantId());
+        employee.setFirstName(updateEmployeeDTO.firstName());
+        employee.setLastName(updateEmployeeDTO.lastName());
+        employee.setEmployeeType(updateEmployeeDTO.employeeType());
+        employee.setUsername(updateEmployeeDTO.username());
+        employee.setPassword(passwordEncoder.encode(updateEmployeeDTO.password()));
+        return employee;
     }
 }
