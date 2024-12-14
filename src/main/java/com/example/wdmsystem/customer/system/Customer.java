@@ -20,8 +20,6 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "merchant_id", nullable = false)
     public Integer merchantId;
 
     //TODO: Add string restrictions of max length 30

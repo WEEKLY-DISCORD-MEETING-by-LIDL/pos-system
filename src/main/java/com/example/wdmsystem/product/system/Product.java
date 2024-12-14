@@ -10,6 +10,8 @@ import java.util.List;
 
 import org.springframework.lang.Nullable;
 
+import com.example.wdmsystem.merchant.system.Merchant;
+
 @Entity
 @Getter
 @Setter
@@ -18,8 +20,10 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "merchant_id", nullable = false)
+    //@ManyToOne
+    //@JoinColumn(name = "merchant_id", nullable = false)
+    //public Merchant merchant;
+
     public Integer merchantId;
 
     public String title;

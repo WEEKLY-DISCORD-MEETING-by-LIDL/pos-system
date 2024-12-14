@@ -21,7 +21,7 @@ public class DTOMapper {
 
     /// ORDER
     public OrderDTO Order_ModelToDTO(Order order) {
-        return new OrderDTO(order.id, order.merchantId, (order.orderDiscount == null ? null : order.orderDiscount.id), order.status);
+        return new OrderDTO(order.id, order.merchant.id, (order.orderDiscount == null ? null : order.orderDiscount.id), order.status); // making note for merchantId
     }
 
     /// PRODUCT

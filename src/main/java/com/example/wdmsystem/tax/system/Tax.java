@@ -19,8 +19,6 @@ public class Tax {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "merchant_id", nullable = false)
     public Integer merchantId;
 
     public String title;
