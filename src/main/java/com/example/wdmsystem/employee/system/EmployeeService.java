@@ -1,6 +1,6 @@
 package com.example.wdmsystem.employee.system;
 
-import com.example.wdmsystem.employee.system.authentication.CustomUserDetails;
+import com.example.wdmsystem.auth.CustomUserDetails;
 import com.example.wdmsystem.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Limit;

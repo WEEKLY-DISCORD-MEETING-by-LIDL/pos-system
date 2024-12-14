@@ -1,6 +1,5 @@
-package com.example.wdmsystem.util;
+package com.example.wdmsystem.auth;
 
-import com.example.wdmsystem.employee.system.authentication.CustomUserDetails;
 import com.example.wdmsystem.exception.UnauthorizedException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

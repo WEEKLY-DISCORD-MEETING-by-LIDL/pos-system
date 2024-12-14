@@ -1,4 +1,4 @@
-package com.example.wdmsystem.employee.system.authentication;
+package com.example.wdmsystem.auth;
 
 import com.example.wdmsystem.employee.system.Employee;
 import com.example.wdmsystem.employee.system.IEmployeeRepository;

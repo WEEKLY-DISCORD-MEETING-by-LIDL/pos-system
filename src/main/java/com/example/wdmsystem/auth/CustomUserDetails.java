@@ -1,4 +1,4 @@
-package com.example.wdmsystem.employee.system.authentication;
+package com.example.wdmsystem.auth;
 
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
