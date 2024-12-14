@@ -56,6 +56,16 @@ export const CreateOrderPage = () => {
         createOrder(discountId, orderItems);
     }
 
+    const getTotalAmount = () => {
+        let sum = 0;
+        items.forEach((item) => {
+            sum += item.quantity * (item.product.price + item.productVariant.additionalPrice) * (item.tax != null ? item.tax.percentage + 1 : 1);
+        });
+
+        return sum;
+    }
+
+
 
     return (
         <div style={CreateOrderStyle.page}>
@@ -65,7 +75,7 @@ export const CreateOrderPage = () => {
                         <li>
                             <div>
                                 <p>{item.product.title} {item.productVariant.title} x{item.quantity}</p>
-                                <p>Price: {item.quantity * (item.product.price + item.productVariant.additionalPrice)}</p>
+                                <p>Price: {item.quantity * (item.product.price + item.productVariant.additionalPrice) * (item.tax != null ? item.tax.percentage + 1 : 1)}</p>
                                 <button onClick={() => {
                                     onMinus(item)
                                 }}>-
@@ -83,6 +93,7 @@ export const CreateOrderPage = () => {
                     ))}
                 </ul>
 
+                <h2>Total amount: {getTotalAmount()}</h2>
                 <button style={CreateOrderStyle.createOrderButton} onClick={onCreate}>Create</button>
             </div>
 
