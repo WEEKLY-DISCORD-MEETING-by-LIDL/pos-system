@@ -31,7 +31,7 @@ public class Product {
     @OneToMany(mappedBy = "product")
     public List<ProductVariant> variants;
 
-    public Product(Integer id, int merchantId, String title, int categoryId, double price, int discountId, int taxId, float weight, String weightUnit, LocalDateTime createdAt) {
+    public Product(Integer id, int merchantId, String title, int categoryId, double price, int discountId, int taxId, float weight, String weightUnit) {
         this.id = id;
         this.merchantId = merchantId;
         this.title = title;
@@ -40,8 +40,6 @@ public class Product {
         this.taxId = taxId;
         this.weight = weight;
         this.weightUnit = weightUnit;
-        this.createdAt = createdAt;
-        this.updatedAt = null;
     }
 
     //@Entity required constructor

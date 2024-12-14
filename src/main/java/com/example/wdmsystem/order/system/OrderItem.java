@@ -1,6 +1,7 @@
 package com.example.wdmsystem.order.system;
 
 import com.example.wdmsystem.product.system.ProductVariant;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,14 +23,12 @@ public final class OrderItem {
     public ProductVariant productVariant;
 
     public int quantity;
-    public double price;
 
-    public OrderItem(int id, Order order, ProductVariant productVariant, int quantity, double price) {
+    public OrderItem(int id, Order order, ProductVariant productVariant, int quantity) {
         this.id = id;
         this.order = order;
         this.productVariant = productVariant;
         this.quantity = quantity;
-        this.price = price;
     }
 
     public OrderItem() {

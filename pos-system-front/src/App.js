@@ -5,7 +5,7 @@ function App() {
   const navigate = useNavigate();
 
   const goHome = () => {
-    navigate("/home")
+    navigate("/order")
   }
 
   return (
