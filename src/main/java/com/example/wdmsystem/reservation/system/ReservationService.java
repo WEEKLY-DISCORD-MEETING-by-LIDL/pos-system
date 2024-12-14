@@ -86,9 +86,10 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new NotFoundException("Reservation not found"));
 
-        reservation.setReservationStatus(ReservationStatus.CANCELLED);
-
+        reservation.setReservation(ReservationStatus.CANCELED);
         reservation.setUpdatedAt(LocalDateTime.now());
+
+        reservationRepository.save(reservation);
     }
 
     public void deleteReservation(int reservationId) {

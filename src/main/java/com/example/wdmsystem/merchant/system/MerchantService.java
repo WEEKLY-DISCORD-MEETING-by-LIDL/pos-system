@@ -1,11 +1,14 @@
 package com.example.wdmsystem.merchant.system;
 
-import java.util.List;
+import org.springframework.stereotype.Service;
 
+
+@Service
 public class MerchantService {
 
-    public MerchantService() {
-
+    private final IMerchantRepository merchantRepository;
+    public MerchantService(IMerchantRepository merchantRepository) {
+        this.merchantRepository = merchantRepository;
     }
 
     public Merchant createMerchant(MerchantDTO request) {

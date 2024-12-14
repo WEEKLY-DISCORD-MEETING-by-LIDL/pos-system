@@ -2,15 +2,13 @@ package com.example.wdmsystem.employee.system;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-//TODO: Request validation
-//TODO: Error response codes
-//TODO: Custom response messages
 @RestController
-public final class EmployeeController {
+public class EmployeeController {
     private final EmployeeService _employeeService;
 
     public EmployeeController(EmployeeService employeeService) {
@@ -18,31 +16,38 @@ public final class EmployeeController {
     }
 
     @PostMapping("/employees")
-    ResponseEntity<Employee> createEmployee(@RequestBody EmployeeDTO request) {
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_OWNER')")
+    ResponseEntity<Employee> createEmployee(@RequestBody CreateEmployeeDTO request) {
         Employee newEmployee = _employeeService.createEmployee(request);
         return new ResponseEntity<>(newEmployee, HttpStatus.CREATED);
     }
 
     @GetMapping("/employees")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_OWNER')")
     ResponseEntity<List<Employee>> getEmployees(@RequestParam EmployeeType type,
-                                                @RequestParam(required = false) int limit) {
+                                                @RequestParam(required = false) Integer limit) {
+
         List<Employee> employees = _employeeService.getEmployees(type, limit);
         return new ResponseEntity<>(employees, HttpStatus.OK);
     }
 
     @GetMapping("/employees/{employeeId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_OWNER') and @employeeService.isOwnedByCurrentUser(#employeeId))")
     ResponseEntity<Employee> getEmployee(@PathVariable int employeeId) {
         Employee employee = _employeeService.getEmployee(employeeId);
         return new ResponseEntity<>(employee, HttpStatus.OK);
     }
 
     @PutMapping("/employees/{employeeId}")
-    ResponseEntity<Employee> updateEmployee(@PathVariable int employeeId, @RequestBody EmployeeDTO request) {
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_OWNER') and @employeeService.isOwnedByCurrentUser(#employeeId))")
+    ResponseEntity<Employee> updateEmployee(@PathVariable int employeeId, @RequestBody UpdateEmployeeDTO request) {
         _employeeService.updateEmployee(employeeId, request);
-        return new ResponseEntity<>(null, HttpStatus.OK);
+        // changed to NO_CONTENT from OK
+        return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/employees/{employeeId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_OWNER') and @employeeService.isOwnedByCurrentUser(#employeeId))")
     ResponseEntity<Employee> deleteEmployee(@PathVariable int employeeId) {
         _employeeService.deleteEmployee(employeeId);
         return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);

@@ -39,6 +39,13 @@ public final class ReservationController {
         reservationService.deleteReservation(reservationId);
         return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
     }
+  
+    @PutMapping("/reservations/{reservationId}/cancel")
+    public ResponseEntity<String> cancelReservation(@PathVariable int reservationId) {
+        reservationService.cancelReservation(reservationId);
+        return new ResponseEntity<>("Reservation canceled successfully", HttpStatus.OK);
+    }
+
 
 }
 

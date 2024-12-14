@@ -1,5 +1,12 @@
 package com.example.wdmsystem.merchant.system;
 
+import jakarta.persistence.Embeddable;
+import lombok.Getter;
+import lombok.Setter;
+
+@Embeddable //If we decide address should have its own table, this should be changed to @Entity
+@Getter
+@Setter
 public class Address {
 
     public String address1;
@@ -18,4 +25,8 @@ public class Address {
         this.zipCode = zipCode;
     }
 
+    //@Embeddable required constructor
+    public Address() {
+
+    }
 }

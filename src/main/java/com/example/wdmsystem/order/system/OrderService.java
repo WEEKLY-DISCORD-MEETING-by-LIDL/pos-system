@@ -1,55 +1,129 @@
 package com.example.wdmsystem.order.system;
 
 import com.example.wdmsystem.exception.*;
-import org.springframework.http.HttpStatus;
+import com.example.wdmsystem.utility.DTOMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+@Slf4j
 @Service
 public class OrderService {
     private final IOrderRepository orderRepository;
+    private final IOrderItemRepository orderItemRepository;
+    private final IOrderDiscountRepository orderDiscountRepository;
+    private final DTOMapper dtoMapper;
 
-    public OrderService(IOrderRepository orderRepository) {
+    public OrderService(IOrderRepository orderRepository, IOrderItemRepository orderItemRepository, IOrderDiscountRepository orderDiscountRepository, DTOMapper dtoMapper) {
         this.orderRepository = orderRepository;
+        this.orderItemRepository = orderItemRepository;
+        this.orderDiscountRepository = orderDiscountRepository;
+        this.dtoMapper = dtoMapper;
     }
 
-    public Order createOrder(OrderDTO order) {
-        return null;
-    }
+    public OrderDTO createOrder(Integer orderDiscountId, List<OrderItemDTO> orderItemDTOs) {
 
-    public Order getOrder(int orderId) {
+        OrderDiscount orderDiscount;
 
-        switch (orderId) {
-            case 1:
-                throw new InvalidInputException("INVALID INPUT");
-            case 2:
-                throw new NotFoundException("NOT FOUND");
-            case 3:
-                throw new ConflictException("Conflict");
-            case 4:
-                throw new UnauthorizedException("UNAUTHROIZED");
-            case 5:
-                throw new InsufficientPrivilegesException("insufficient privileges");
-            default:
-                break;
+        if (orderDiscountId != null) {
+            orderDiscount = orderDiscountRepository.findById(orderDiscountId).orElseThrow(() ->
+                    new NotFoundException("Order discount with id " + orderDiscountId + " not found"));
+        }
+        else {
+            orderDiscount = null;
         }
 
+        Order order = new Order(
+                0,
+                10, //placeholder
+                orderDiscount,
+                OrderStatus.OPENED,
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
 
-        return null;
+        Order savedOrder = orderRepository.save(order);
+        List<OrderItem> orderItems = new ArrayList<>();
+
+        for (OrderItemDTO item : orderItemDTOs) {
+
+            if (item.quantity() <= 0) {
+                throw new InvalidInputException("Order item quantity must be greater than 0. Current is: " + item.quantity());
+            }
+
+            orderItems.add(dtoMapper.OrderItem_DTOToModel(item, savedOrder));
+        }
+
+        orderItemRepository.saveAll(orderItems);
+
+        return dtoMapper.Order_ModelToDTO(savedOrder);
     }
 
-    public Order updateOrderStatus(int orderId, OrderStatus status) {
-        return null;
+    public OrderDTO getOrder(int orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(() ->
+                new NotFoundException("Order with id " + orderId + " not found"));
+
+        return dtoMapper.Order_ModelToDTO(order);
     }
 
-    public HttpStatus deleteOrder(int orderId) {
-        return HttpStatus.NO_CONTENT;
+    public OrderDTO updateOrderStatus(int orderId, OrderStatus status) {
+        Order order = orderRepository.findById(orderId).orElseThrow(() ->
+                new NotFoundException("Order with id " + orderId + " not found"));
+
+        order.status = status;
+        order.updatedAt = LocalDateTime.now();
+        Order savedOrder = orderRepository.save(order);
+
+        return dtoMapper.Order_ModelToDTO(savedOrder);
     }
 
-    public HttpStatus cancelOrder(int orderId) {
-        return HttpStatus.OK;
+    public void deleteOrder(int orderId) {
+        if(orderRepository.existsById(orderId)) {
+            orderRepository.deleteById(orderId);
+        }
+        else {
+            throw new NotFoundException("Order with id " + orderId + " not found");
+        }
     }
 
-    public Order applyDiscountToOrder(int orderId) {
-        return null;
+    public OrderDTO cancelOrder(int orderId) {
+
+        Order orderToUpdate = orderRepository.findById(orderId).orElseThrow(() ->
+                new NotFoundException("Order with id " + orderId + " not found"));
+
+        if (orderToUpdate.status != OrderStatus.PAID && orderToUpdate.status != OrderStatus.PARTIALLY_PAID) {
+            orderToUpdate.status = OrderStatus.CANCELED;
+            orderToUpdate.updatedAt = LocalDateTime.now();
+            Order savedOrder = orderRepository.save(orderToUpdate);
+            return dtoMapper.Order_ModelToDTO(savedOrder);
+        }
+        else {
+            throw new InsufficientPrivilegesException("Order with id " + orderId + " has already been paid for.");
+        }
+    }
+
+    public OrderDTO applyDiscountToOrder(int orderId, int discountId) {
+
+        Order orderToUpdate = orderRepository.findById(orderId).orElseThrow(() ->
+                new NotFoundException("Order with id " + orderId + " not found"));
+
+        orderToUpdate.orderDiscount = orderDiscountRepository.findById(discountId).orElseThrow(() ->
+                new NotFoundException("Order discount with id " + discountId + " not found"));
+
+        orderToUpdate.updatedAt = LocalDateTime.now();
+        Order savedOrder = orderRepository.save(orderToUpdate);
+        return dtoMapper.Order_ModelToDTO(savedOrder);
+    }
+
+    public double getPrice(int orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new NotFoundException("Order with id " + orderId + " not found"));
+
+        return order.getOrderItems()
+                .stream()
+                .mapToDouble(OrderItem::getTotalPrice)
+                .sum();
     }
 }
