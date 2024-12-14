@@ -1,6 +1,7 @@
 package com.example.wdmsystem.config;
 
 import com.example.wdmsystem.employee.system.authentication.CustomUserDetailsService;
+import com.example.wdmsystem.exception.CustomAuthenticationEntryPoint;
 import com.example.wdmsystem.util.JwtAuthTokenFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,16 +22,21 @@ public class SecurityConfig {
 
     private final JwtAuthTokenFilter jwtAuthTokenFilter;
     private final CustomUserDetailsService customUserDetailsService;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
-    public SecurityConfig(JwtAuthTokenFilter jwtAuthTokenFilter, CustomUserDetailsService customUserDetailsService) {
+    public SecurityConfig(JwtAuthTokenFilter jwtAuthTokenFilter, CustomUserDetailsService customUserDetailsService,
+                          CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
         this.jwtAuthTokenFilter = jwtAuthTokenFilter;
         this.customUserDetailsService = customUserDetailsService;
+        this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable()) // Disable CSRF (for development; re-enable for production)
+                .exceptionHandling(exceptionHandling ->
+                        exceptionHandling.authenticationEntryPoint(customAuthenticationEntryPoint))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login").permitAll()
                         .requestMatchers("/employees/**").hasAnyRole("ADMIN", "OWNER")
