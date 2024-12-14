@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
 
+import com.example.wdmsystem.exception.NotFoundException;
+
 
 @Service
 public class MerchantService {
@@ -17,7 +19,7 @@ public class MerchantService {
     public Merchant createMerchant(MerchantDTO request) {
 
         Merchant merchant = new Merchant(
-            0,
+            request.id(),
             request.name(),
             request.vat(),
             request.address(),
@@ -30,7 +32,9 @@ public class MerchantService {
     }
 
     public Merchant getMerchant(int id) {
-        return null;
+        return merchantRepository.findById(id).orElseThrow(
+            () -> new NotFoundException("Merchant with ID " + id + " not found")
+        );
     }
 
     public void updateMerchant(int id, MerchantDTO request) {
