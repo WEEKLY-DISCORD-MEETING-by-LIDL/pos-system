@@ -42,7 +42,7 @@ public class ReservationService {
                 request.employeeId(), //probably change to employee
                 request.startTime(),
                 request.endTime(),
-                request.reservationStatus(),
+                request.reservationStatus() != null ? request.reservationStatus() : ReservationStatus.CONFIRMED, // if null, Default set to CONFIRMED
                 request.sendConfirmation(),
                 LocalDateTime.now(),
                 LocalDateTime.now()

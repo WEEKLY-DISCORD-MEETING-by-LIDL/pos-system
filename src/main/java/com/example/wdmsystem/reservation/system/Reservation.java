@@ -36,7 +36,7 @@ public final class Reservation {
         this.employeeId = employeeId;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.reservationStatus = reservationStatus != null ? reservationStatus : ReservationStatus.CONFIRMED; // if null, Default set to CONFIRMED
+        this.reservationStatus = reservationStatus;
         this.sendConfirmation = sendConfirmation;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
