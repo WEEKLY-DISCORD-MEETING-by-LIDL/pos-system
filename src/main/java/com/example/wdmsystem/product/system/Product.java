@@ -1,5 +1,6 @@
 package com.example.wdmsystem.product.system;
 
+import com.example.wdmsystem.tax.system.Tax;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,7 +23,10 @@ public class Product {
     @Nullable public int categoryId;
     public double price;
     @Nullable public int discountId;
-    @Nullable public int taxId;
+
+    @ManyToOne
+    @JoinColumn(name = "tax_id")
+    public Tax tax;
     public float weight;
     public String weightUnit;
     public LocalDateTime createdAt;
@@ -31,13 +35,13 @@ public class Product {
     @OneToMany(mappedBy = "product")
     public List<ProductVariant> variants;
 
-    public Product(Integer id, int merchantId, String title, int categoryId, double price, int discountId, int taxId, float weight, String weightUnit) {
+    public Product(Integer id, int merchantId, String title, int categoryId, double price, int discountId, Tax tax, float weight, String weightUnit) {
         this.id = id;
         this.merchantId = merchantId;
         this.title = title;
         this.price = price;
         this.discountId = discountId;
-        this.taxId = taxId;
+        this.tax = tax;
         this.weight = weight;
         this.weightUnit = weightUnit;
     }

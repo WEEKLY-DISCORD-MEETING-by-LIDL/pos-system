@@ -3,6 +3,8 @@ package com.example.wdmsystem.utility;
 import com.example.wdmsystem.exception.NotFoundException;
 import com.example.wdmsystem.order.system.*;
 import com.example.wdmsystem.product.system.*;
+import com.example.wdmsystem.tax.system.Tax;
+import com.example.wdmsystem.tax.system.TaxDTO;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -26,7 +28,7 @@ public class DTOMapper {
 
     /// PRODUCT
     public ProductDTO Product_ModelToDTO(Product product) {
-        return new ProductDTO(product.id, product.merchantId, product.title, product.categoryId, product.price, product.discountId, product.taxId, product.weight, product.weightUnit);
+        return new ProductDTO(product.id, product.merchantId, product.title, product.categoryId, product.price, product.discountId, product.tax.id, product.weight, product.weightUnit);
     }
 
     public Product Product_DTOToModel(ProductDTO productDTO) {
@@ -57,5 +59,15 @@ public class DTOMapper {
                 new NotFoundException("Product variant not found"));
 
         return new OrderItem(orderItemDTO.id(), order, productVariant, orderItemDTO.quantity());
+    }
+
+    /// TAX
+
+    public Tax Tax_DTOToModel(TaxDTO taxDTO) {
+        return new Tax(taxDTO.id(), taxDTO.merchantId(), taxDTO.title(), taxDTO.percentage());
+    }
+
+    public TaxDTO Tax_ModelToDTO(Tax tax) {
+        return new TaxDTO(tax.id, tax.merchantId, tax.title, tax.percentage);
     }
 }
