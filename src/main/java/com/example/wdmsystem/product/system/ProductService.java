@@ -1,9 +1,11 @@
 package com.example.wdmsystem.product.system;
 
+import com.example.wdmsystem.auth.CustomUserDetails;
 import com.example.wdmsystem.exception.InvalidInputException;
 import com.example.wdmsystem.exception.NotFoundException;
 import com.example.wdmsystem.utility.DTOMapper;
 import org.springframework.data.domain.Limit;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -41,8 +43,10 @@ public class ProductService {
 
         Product product = dtoMapper.Product_DTOToModel(request);
 
-        // placeholder
-        product.merchantId = 10;
+        CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+        product.merchantId = currentUser.getMerchantId();
 
         product.createdAt = LocalDateTime.now();
         product.updatedAt = LocalDateTime.now();
@@ -85,23 +89,7 @@ public class ProductService {
             categoryId = null;
         }
 
-        List<Product> filteredProducts;
-
-        if(categoryId == null) {
-            filteredProducts = productRepository.getProductsByCreatedAtGreaterThanEqualAndCreatedAtLessThanEqual(
-                    LocalDateTime.parse(createdAtMin),
-                    LocalDateTime.parse(createdAtMax),
-                    Limit.of(limit)
-            );
-        }
-        else {
-            filteredProducts = productRepository.getProductsByCategoryIdAndCreatedAtGreaterThanEqualAndCreatedAtLessThanEqual(
-                    categoryId,
-                    LocalDateTime.parse(createdAtMin),
-                    LocalDateTime.parse(createdAtMax),
-                    Limit.of(limit)
-            );
-        }
+        List<Product> filteredProducts = filterProducts(categoryId, createdAtMin, createdAtMax, limit);
 
         List<ProductDTO> productDTOs = new ArrayList<>();
 
@@ -110,6 +98,51 @@ public class ProductService {
         }
 
         return productDTOs;
+    }
+
+    private List<Product> filterProducts(Integer categoryId, String createdAtMin, String createdAtMax, Integer limit){
+        List<Product> filteredProducts;
+        CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+        boolean isAdmin = currentUser.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+        if(isAdmin) {
+            if(categoryId == null) {
+                filteredProducts = productRepository.getProductsByCreatedAtGreaterThanEqualAndCreatedAtLessThanEqual(
+                        LocalDateTime.parse(createdAtMin),
+                        LocalDateTime.parse(createdAtMax),
+                        Limit.of(limit)
+                );
+            }
+            else {
+                filteredProducts = productRepository.getProductsByCategoryIdAndCreatedAtGreaterThanEqualAndCreatedAtLessThanEqual(
+                        categoryId,
+                        LocalDateTime.parse(createdAtMin),
+                        LocalDateTime.parse(createdAtMax),
+                        Limit.of(limit)
+                );
+            }
+        } else {
+            if(categoryId == null) {
+                filteredProducts = productRepository.getProductsByCreatedAtGreaterThanEqualAndCreatedAtLessThanEqualAndMerchantId(
+                        LocalDateTime.parse(createdAtMin),
+                        LocalDateTime.parse(createdAtMax),
+                        Limit.of(limit),
+                        currentUser.getMerchantId()
+                );
+            }
+            else {
+                filteredProducts = productRepository.getProductsByCategoryIdAndCreatedAtGreaterThanEqualAndCreatedAtLessThanEqualAndMerchantId(
+                        categoryId,
+                        LocalDateTime.parse(createdAtMin),
+                        LocalDateTime.parse(createdAtMax),
+                        Limit.of(limit),
+                        currentUser.getMerchantId()
+                );
+            }
+        }
+        return filteredProducts;
     }
 
     public List<ProductVariantDTO> getVariants(int productId) {
@@ -210,6 +243,26 @@ public class ProductService {
         else {
             throw new NotFoundException("Variant with id " + variantId + " not found");
         }
+    }
+
+    public boolean productIsOwnedByCurrentUser(int productId) {
+        CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        Product product = productRepository.findById(productId).orElseThrow(() ->
+                new NotFoundException("Product with id " + productId + " not found"));
+        return product.getMerchantId() == currentUser.getMerchantId();
+    }
+
+    public boolean variantIsOwnedByCurrentUser(int variantId) {
+        CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        ProductVariant variant = productVariantRepository.findById(variantId).orElseThrow(() ->
+                new NotFoundException("Variant with id " + variantId + " not found"));
+        return variant.getProduct().getMerchantId() == currentUser.getMerchantId();
     }
 
 }

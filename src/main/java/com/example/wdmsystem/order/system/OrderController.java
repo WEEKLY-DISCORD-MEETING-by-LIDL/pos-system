@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-public final class OrderController {
+public class OrderController {
     private final OrderService _orderService;
 
     public OrderController(OrderService orderService) {

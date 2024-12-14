@@ -43,6 +43,8 @@ public class SecurityConfig {
                         .requestMatchers("/categories/**").hasAnyRole("ADMIN", "OWNER")
                         .requestMatchers("/orders/**").hasAnyRole("ADMIN", "OWNER", "REGULAR")
                         .requestMatchers("/orderDiscounts/**").hasAnyRole("ADMIN", "OWNER", "REGULAR")
+                        .requestMatchers("/products/**").hasAnyRole("ADMIN", "OWNER", "REGULAR")
+                        .requestMatchers("/variants/**").hasAnyRole("ADMIN", "OWNER")
                         .anyRequest().permitAll() //Temporary, will change as the other modules are updated.
                 )
                 .addFilterBefore(jwtAuthTokenFilter, UsernamePasswordAuthenticationFilter.class);

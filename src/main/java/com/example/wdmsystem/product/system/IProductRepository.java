@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface IProductRepository extends JpaRepository<Product, Integer> {
     List<Product> getProductsByCategoryIdAndCreatedAtGreaterThanEqualAndCreatedAtLessThanEqual(int categoryId, LocalDateTime createdAtIsGreaterThan, LocalDateTime createdAtIsLessThan, Limit limit);
+    List<Product> getProductsByCategoryIdAndCreatedAtGreaterThanEqualAndCreatedAtLessThanEqualAndMerchantId(int categoryId, LocalDateTime createdAtIsGreaterThan, LocalDateTime createdAtIsLessThan, Limit limit, int merchantId);
 
     List<Product> getProductsByCreatedAtGreaterThanEqualAndCreatedAtLessThanEqual(LocalDateTime createdAtIsGreaterThan, LocalDateTime createdAtIsLessThan, Limit limit);
+    List<Product> getProductsByCreatedAtGreaterThanEqualAndCreatedAtLessThanEqualAndMerchantId(LocalDateTime createdAtIsGreaterThan, LocalDateTime createdAtIsLessThan, Limit limit, int merchantId);
 }

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-public final class OrderDiscountController {
+public class OrderDiscountController {
 
     private final OrderDiscountService _orderDiscountService;
 
