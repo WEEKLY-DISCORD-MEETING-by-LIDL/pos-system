@@ -45,10 +45,10 @@ public class ReservationService {
         reservation.setSendConfirmation(request.sendConfirmation());
 
         if (request.reservationStatus() == null) {
-            reservation.setReservation(ReservationStatus.CONFIRMED); // Default set to CONFIRMED ? maybe add PENDING ?
+            reservation.setReservationStatus(ReservationStatus.CONFIRMED); // Default set to CONFIRMED ? maybe add PENDING ?
         }
         else {
-            reservation.setReservation(request.reservationStatus());
+            reservation.setReservationStatus(request.reservationStatus());
         }
 
         reservation.setCreatedAt(LocalDateTime.now());
@@ -80,12 +80,21 @@ public class ReservationService {
             reservation.setEndTime(request.endTime());
         }
         if (request.reservationStatus() != null) {
-            reservation.setReservation(request.reservationStatus());
+            reservation.setReservationStatus(request.reservationStatus());
         }
 
         reservation.setUpdatedAt(LocalDateTime.now());
 
         reservationRepository.save(reservation);
+    }
+
+    public void cancelReservation(int reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new NotFoundException("Reservation not found"));
+
+        reservation.setReservationStatus(ReservationStatus.CANCELLED);
+
+        reservation.setUpdatedAt(LocalDateTime.now());
     }
 
     public void deleteReservation(int reservationId) {
