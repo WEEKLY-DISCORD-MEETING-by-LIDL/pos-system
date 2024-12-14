@@ -27,14 +27,13 @@ public class Customer {
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     public List<Reservation> reservations;
 
-    public Customer(int id, int merchantId, String firstName, String lastName, String phone, LocalDateTime createdAt) {
-        this.id = id;
+    public Customer(int merchantId, String firstName, String lastName, String phone, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.merchantId = merchantId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phone = phone;
         this.createdAt = createdAt;
-        this.updatedAt = null;
+        this.updatedAt = updatedAt;
     }
 
     //@Entity required constructor

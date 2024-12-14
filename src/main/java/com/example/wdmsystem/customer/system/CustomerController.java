@@ -31,7 +31,7 @@ public final class CustomerController {
     @GetMapping("/customers")
     ResponseEntity<List<Customer>> getCustomers(@RequestParam(required = false) LocalDateTime createdAtMin,
                                                 @RequestParam(required = false) LocalDateTime createdAtMax,
-                                                @RequestParam(required = false) int limit) {
+                                                @RequestParam(required = false) Integer limit) {
         List<Customer> customers = _customerService.getCustomers(createdAtMin, createdAtMax, limit);
         return new ResponseEntity<>(customers, HttpStatus.OK);
     }
@@ -58,7 +58,7 @@ public final class CustomerController {
     @GetMapping("/customers/{customerId}/reservations")
     ResponseEntity<List<Reservation>> getCustomerReservations(@PathVariable int customerId,
                                                               @RequestParam(required = false) boolean upcoming,
-                                                              @RequestParam(required = false) int limit) {
+                                                              @RequestParam(required = false) Integer limit) {
         List<Reservation> reservations = _customerService.getCustomerReservations(customerId, upcoming, limit);
         return new ResponseEntity<>(reservations, HttpStatus.OK);
     }
