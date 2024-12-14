@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from "react-router-dom";
-import "../styles/HomeStyle.css";
+import {homeStyle as HomeStyle} from "../styles/HomeStyle";
 
 const Home = () => {
     const navigate = useNavigate();
@@ -14,13 +14,13 @@ const Home = () => {
     }
 
     return (
-        <div className="home-container">
-            <h1>Home/Navigation Page</h1>
+        <div style={HomeStyle.homeContainer}>
+            <h1 style={HomeStyle.homeContainer}> Home/Navigation Page</h1>
 
-            <div className="button-container">
-                <button onClick={goToCreateOrder}>Orders</button>
+            <div style={HomeStyle.buttonContainer}>
+                <button style = {HomeStyle.button} onClick={goToCreateOrder}>Orders</button>
 
-                <button onClick={returnBack}>Back to Login</button>
+                <button style = {HomeStyle.button} onClick={returnBack}>Back to Login</button>
             </div>
         </div>
     )
