@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
 
+import com.example.wdmsystem.exception.InvalidInputException;
 import com.example.wdmsystem.exception.NotFoundException;
 
 
@@ -17,6 +18,38 @@ public class MerchantService {
     }
 
     public Merchant createMerchant(MerchantDTO request) {
+
+        if(request.address().countryCode.length() != 3) {
+            throw new InvalidInputException("Country code must be exactly 3 symbols long.");
+        }
+
+        if(request.address().address1.length() > 30 || request.address().address2.length() > 30) {
+            throw new InvalidInputException("Neither address can be longer than 30 characters.");
+        }
+
+        if(request.address().city.length() > 30) {
+            throw new InvalidInputException("City of merchant cannot be longer than 30 characters.");
+        }
+
+        if(request.address().country.length() > 30) {
+            throw new InvalidInputException("Country of merchant cannot be longer than 30 characters.");
+        }
+
+        if(request.address().zipCode.length() > 30) {
+            throw new InvalidInputException("Zip code of merchant cannot be longer than 30 characters.");
+        }
+
+        if(request.name().length() > 30) {
+            throw new InvalidInputException("Merchant name cannot be longer than 30 characters");
+        }
+
+        if(request.phone().length() > 30) {
+            throw new InvalidInputException("Merchant phone number cannot be longer than 30 characters");
+        }
+
+        if(request.email().length() > 30) {
+            throw new InvalidInputException("Merchant email cannot be longer than 30 characters");
+        }
 
         Merchant merchant = new Merchant(
             0,
