@@ -2,6 +2,7 @@ package com.example.wdmsystem.order.system;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,18 +16,21 @@ public final class OrderController {
     }
 
     @PostMapping("/orders")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('OWNER') or hasRole('REGULAR')")
     ResponseEntity<OrderDTO> createOrder(@RequestParam(required = false) Integer orderDiscountId, @RequestBody List<OrderItemDTO> orderItems) {
         OrderDTO newOrder = _orderService.createOrder(orderDiscountId, orderItems);
         return new ResponseEntity<>(newOrder, HttpStatus.CREATED);
     }
 
     @GetMapping("/orders/{orderId}")
+    @PreAuthorize("hasRole('ADMIN') or ((hasRole('OWNER') or hasRole('REGULAR')) and @orderService.isOwnedByCurrentUser(#orderId))")
     ResponseEntity<OrderDTO> getOrder(@PathVariable int orderId) {
         OrderDTO order = _orderService.getOrder(orderId);
         return new ResponseEntity<>(order, HttpStatus.OK);
     }
 
     @PutMapping("/orders/{orderId}")
+    @PreAuthorize("hasRole('ADMIN') or ((hasRole('OWNER') or hasRole('REGULAR')) and @orderService.isOwnedByCurrentUser(#orderId))")
     ResponseEntity<OrderDTO> updateOrderStatus(@PathVariable int orderId,
                                             @RequestParam OrderStatus status) {
         OrderDTO order = _orderService.updateOrderStatus(orderId, status);
@@ -34,24 +38,29 @@ public final class OrderController {
     }
 
     @DeleteMapping("/orders/{orderId}")
+    @PreAuthorize("hasRole('ADMIN') or ((hasRole('OWNER') or hasRole('REGULAR')) and @orderService.isOwnedByCurrentUser(#orderId))")
     ResponseEntity<Order> deleteOrder(@PathVariable int orderId) {
         _orderService.deleteOrder(orderId);
         return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
     }
 
     @PatchMapping("/orders/{orderId}/cancel")
+    @PreAuthorize("hasRole('ADMIN') or ((hasRole('OWNER') or hasRole('REGULAR')) and @orderService.isOwnedByCurrentUser(#orderId))")
     ResponseEntity<OrderDTO> cancelOrder(@PathVariable int orderId) {
         OrderDTO order = _orderService.cancelOrder(orderId);
         return new ResponseEntity<>(order, HttpStatus.OK);
     }
 
     @PatchMapping("/orders/{orderId}/discount")
+    @PreAuthorize("hasRole('ADMIN') or ((hasRole('OWNER') or hasRole('REGULAR')) " +
+            "and (@orderService.isOwnedByCurrentUser(#orderId) and @orderDiscountService.isOwnedByCurrentUser(#discountId)))")
     ResponseEntity<OrderDTO> applyDiscountToOrder(@PathVariable int orderId, @RequestParam int discountId) {
         OrderDTO order = _orderService.applyDiscountToOrder(orderId, discountId);
         return new ResponseEntity<>(order, HttpStatus.OK);
     }
 
     @GetMapping("/orders/{orderId}/price")
+    @PreAuthorize("hasRole('ADMIN') or ((hasRole('OWNER') or hasRole('REGULAR')) and @orderService.isOwnedByCurrentUser(#orderId))")
     public ResponseEntity<Double> getPrice(@PathVariable int orderId) {
         double price = _orderService.getPrice(orderId);
         return new ResponseEntity<>(price, HttpStatus.OK);

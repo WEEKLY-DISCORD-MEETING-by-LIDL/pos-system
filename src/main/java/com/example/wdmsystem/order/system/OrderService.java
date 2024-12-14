@@ -1,8 +1,10 @@
 package com.example.wdmsystem.order.system;
 
+import com.example.wdmsystem.auth.CustomUserDetails;
 import com.example.wdmsystem.exception.*;
 import com.example.wdmsystem.utility.DTOMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,10 +36,13 @@ public class OrderService {
         else {
             orderDiscount = null;
         }
+        CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
 
         Order order = new Order(
                 0,
-                10, //placeholder
+                currentUser.getMerchantId(),
                 orderDiscount,
                 OrderStatus.OPENED,
                 LocalDateTime.now(),
@@ -125,5 +130,16 @@ public class OrderService {
                 .stream()
                 .mapToDouble(OrderItem::getTotalPrice)
                 .sum();
+    }
+
+    public boolean isOwnedByCurrentUser(int orderId) {
+        CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        Order order = orderRepository.findById(orderId).orElseThrow(() ->
+                new NotFoundException("Order with id " + orderId + " not found"));
+
+        return order.getMerchantId() == currentUser.getMerchantId();
     }
 }

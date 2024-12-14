@@ -1,6 +1,9 @@
 package com.example.wdmsystem.order.system;
 
+import com.example.wdmsystem.auth.CustomUserDetails;
+import com.example.wdmsystem.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,5 +32,16 @@ public class OrderDiscountService {
 
     public HttpStatus deleteOrderDiscount(int orderDiscountId) {
         return null;
+    }
+
+    public boolean isOwnedByCurrentUser(int discountId) {
+        CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        OrderDiscount orderDiscount = orderDiscountRepository.findById(discountId).orElseThrow(() ->
+                new NotFoundException("Discount with id " + discountId + " not found"));
+
+        return orderDiscount.getMerchantId() == currentUser.getMerchantId();
     }
 }
