@@ -3,23 +3,21 @@ package com.example.wdmsystem.utility;
 import com.example.wdmsystem.exception.NotFoundException;
 import com.example.wdmsystem.order.system.*;
 import com.example.wdmsystem.product.system.*;
+import com.example.wdmsystem.tax.system.ITaxRepository;
 import com.example.wdmsystem.tax.system.Tax;
 import com.example.wdmsystem.tax.system.TaxDTO;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@AllArgsConstructor
 public class DTOMapper {
     IOrderRepository orderRepository;
     IOrderItemRepository orderItemRepository;
     IProductRepository productRepository;
     IProductVariantRepository productVariantRepository;
+    ITaxRepository taxRepository;
 
-    public DTOMapper(IOrderItemRepository orderItemRepository, IProductRepository productRepository, IOrderRepository orderRepository, IProductVariantRepository productVariantRepository) {
-        this.orderItemRepository = orderItemRepository;
-        this.productRepository = productRepository;
-        this.orderRepository = orderRepository;
-        this.productVariantRepository = productVariantRepository;
-    }
 
     /// ORDER
     public OrderDTO Order_ModelToDTO(Order order) {
@@ -32,7 +30,9 @@ public class DTOMapper {
     }
 
     public Product Product_DTOToModel(ProductDTO productDTO) {
-        return new Product(productDTO.id(), productDTO.merchantId(), productDTO.title(), productDTO.categoryId(), productDTO.price(), productDTO.discountId(), productDTO.taxId(), productDTO.weight(), productDTO.weightUnit());
+        Tax tax = taxRepository.findById(productDTO.taxId()).orElse(null);
+
+        return new Product(productDTO.id(), productDTO.merchantId(), productDTO.title(), productDTO.categoryId(), productDTO.price(), productDTO.discountId(), tax, productDTO.weight(), productDTO.weightUnit());
     }
 
     /// PRODUCT VARIANT
