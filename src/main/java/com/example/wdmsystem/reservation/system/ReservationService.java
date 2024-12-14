@@ -36,23 +36,17 @@ public class ReservationService {
             throw new NotFoundException("Employee not found");
         }
 
-        Reservation reservation = new Reservation();
-        reservation.setCustomer(customer);
-        reservation.setService(service);
-        reservation.setEmployeeId(request.employeeId());
-        reservation.setStartTime(request.startTime());
-        reservation.setEndTime(request.endTime());
-        reservation.setSendConfirmation(request.sendConfirmation());
-
-        if (request.reservationStatus() == null) {
-            reservation.setReservationStatus(ReservationStatus.CONFIRMED); // Default set to CONFIRMED ? maybe add PENDING ?
-        }
-        else {
-            reservation.setReservationStatus(request.reservationStatus());
-        }
-
-        reservation.setCreatedAt(LocalDateTime.now());
-        reservation.setUpdatedAt(LocalDateTime.now());
+        Reservation reservation = new Reservation(
+                customer,
+                service,
+                request.employeeId(), //probably change to employee
+                request.startTime(),
+                request.endTime(),
+                request.reservationStatus(),
+                request.sendConfirmation(),
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
 
         return reservationRepository.save(reservation);
     }

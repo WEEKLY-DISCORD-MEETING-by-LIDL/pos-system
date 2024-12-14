@@ -1,6 +1,7 @@
 package com.example.wdmsystem.reservation.system;
 
 
+import com.example.wdmsystem.customer.system.Customer;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -10,22 +11,17 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface IReservationRepository extends JpaRepository<Reservation, Integer> {
-    @Query("SELECT r FROM Reservation r WHERE r.customer_id = :customerId AND " +
-            "(:upcomingDate IS NULL OR r.startTime > :upcomingDate)")
+    @Query("SELECT r FROM Reservation r WHERE r.customer.id = :customerId AND r.startTime > :upcomingDate")
     List<Reservation> findReservationByCustomerId(
-            @Param("customerId") int customerId,
+            @Param("customerId") Integer customerId,
             @Param("upcomingDate") LocalDateTime upcomingDate,
             Pageable pageable
     );
 
-    @Query("SELECT r FROM Reservation r WHERE r.service_id = :serviceId AND DATE(r.startTime) = DATE(:date)")
-    List<Reservation> findReservationByServiceIdAndDate(
+    @Query("SELECT r FROM Reservation r WHERE r.service.id = :serviceId AND r.startTime >= :dayStart AND r.startTime < :dayEnd")
+    List<Reservation> findReservationsByServiceIdAndDate(
             @Param("serviceId") int serviceId,
-            @Param("date") LocalDateTime date
-    );
-
-    @Query("SELECT r FROM Reservation r WHERE r.customer_id = :customerId")
-    List<Reservation> findReservationsByCustomerId(
-            @Param("customerId") int customerId
+            @Param("dayStart") LocalDateTime dayStart,
+            @Param("dayEnd") LocalDateTime dayEnd
     );
 }

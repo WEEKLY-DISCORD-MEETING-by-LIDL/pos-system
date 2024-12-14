@@ -22,21 +22,21 @@ public final class Reservation {
     @JoinColumn(name = "service_id", nullable = false)
     public Service service;
     public int employeeId;
-    public LocalDateTime startTime; //using LocalDateTime, not Date because its just better lol
+    public LocalDateTime startTime;
     public LocalDateTime endTime;
     public ReservationStatus reservationStatus;
     public boolean sendConfirmation;
     public LocalDateTime createdAt;
     public LocalDateTime updatedAt;
 
-    public Reservation(Integer id, Customer customer, Service service, int employeeId, LocalDateTime startTime, LocalDateTime endTime, ReservationStatus reservationStatus, boolean sendConfirmation, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.id = id;
+    public Reservation(Customer customer, Service service, int employeeId, LocalDateTime startTime, LocalDateTime endTime,
+                       ReservationStatus reservationStatus, boolean sendConfirmation, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.customer = customer;
         this.service = service;
         this.employeeId = employeeId;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.reservationStatus = reservationStatus;
+        this.reservationStatus = reservationStatus != null ? reservationStatus : ReservationStatus.CONFIRMED; // if null, Default set to CONFIRMED
         this.sendConfirmation = sendConfirmation;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
