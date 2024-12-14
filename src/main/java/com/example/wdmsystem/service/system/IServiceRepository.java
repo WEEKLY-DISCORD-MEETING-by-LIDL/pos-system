@@ -8,9 +8,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface IServiceRepository extends JpaRepository<Service, Integer> {
-    @Query("SELECT s FROM Service s WHERE (:categoryId IS NULL OR s.categoryId = :categoryId)")
+    @Query("SELECT s FROM Service s WHERE (:categoryId IS NULL OR s.category.id = :categoryId)")
     List<Service> findServicesByCategoryId(
-            @Param("categoryId") int categoryId,
+            @Param("categoryId") Integer categoryId,
             Pageable pageable
     );
 }

@@ -1,6 +1,9 @@
 package com.example.wdmsystem.service.system;
 
+import com.example.wdmsystem.category.system.Category;
+import com.example.wdmsystem.discount.system.Discount;
 import com.example.wdmsystem.reservation.system.Reservation;
+import com.example.wdmsystem.tax.system.Tax;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,27 +21,39 @@ public final class Service {
     public Integer id;
     public int merchantId;
     public String title;
-    @Nullable public int categoryId;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    public Category category;
+
     public double price;
-    @Nullable public int discountId;
-    @Nullable public int taxId;
+
+    @ManyToOne
+    @JoinColumn(name = "discount_id")
+    public Discount discount;
+
+    @ManyToOne
+    @JoinColumn(name = "tax_id")
+    public Tax tax;
+
     public int durationMins;
     public LocalDateTime createdAt;
     public LocalDateTime updatedAt;
+
     @OneToMany(mappedBy = "service", cascade = CascadeType.ALL, orphanRemoval = true)
     public List<Reservation> reservations;
 
-    public Service(Integer id, int merchantId, String title, int categoryId, double price, int discountId, int taxId, int durationMins, LocalDateTime createdAt) {
-        this.id = id;
+    public Service(int merchantId, String title, Category category, double price, Discount discount,
+                   Tax tax, int durationMins, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.merchantId = merchantId;
         this.title = title;
-        this.categoryId = categoryId;
+        this.category = category;
         this.price = price;
-        this.discountId = discountId;
-        this.taxId = taxId;
+        this.discount = discount;
+        this.tax = tax;
         this.durationMins = durationMins;
         this.createdAt = createdAt;
-        this.updatedAt = null;
+        this.updatedAt = updatedAt;
     }
 
     //@Entity required constructor
