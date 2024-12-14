@@ -7,11 +7,14 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.example.wdmsystem.category.system.Category;
 import com.example.wdmsystem.customer.system.Customer;
 import com.example.wdmsystem.employee.system.Employee;
 import com.example.wdmsystem.order.system.Order;
+import com.example.wdmsystem.order.system.OrderDiscount;
 import com.example.wdmsystem.product.system.Product;
 import com.example.wdmsystem.service.system.Service;
+import com.example.wdmsystem.tax.system.Tax;
 
 @Entity
 @Getter
@@ -43,6 +46,15 @@ public class Merchant {
 
     @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL)
     List<Service> services;
+
+    @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL)
+    List<OrderDiscount> orderDiscounts;
+
+    @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL)
+    List<Tax> taxes;
+
+    @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL)
+    List<Category> categories;
 
     public Merchant(Integer id, String name, Integer vat, Address address, String email, String phone, LocalDateTime createdAt) {
         this.id = id;

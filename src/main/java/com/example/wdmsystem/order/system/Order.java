@@ -16,7 +16,10 @@ public final class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer id;
-    public int merchantId;
+
+    @ManyToOne
+    @JoinColumn(name = "merchant_id", nullable = false)
+    public Integer merchantId;
 
     @ManyToOne
     @JoinColumn(name = "order_discount_id")
@@ -30,7 +33,7 @@ public final class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems;
 
-    public Order(Integer id, int merchantId, OrderDiscount orderDiscount, OrderStatus status, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Order(Integer id, Integer merchantId, OrderDiscount orderDiscount, OrderStatus status, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.merchantId = merchantId;
         this.orderDiscount = orderDiscount;

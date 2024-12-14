@@ -17,7 +17,11 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer id;
-    public int merchantId;
+
+    @ManyToOne
+    @JoinColumn(name = "merchant_id", nullable = false)
+    public Integer merchantId;
+
     public String title;
     public int categoryId; //nullable
     public double price;
@@ -31,7 +35,7 @@ public class Product {
     @OneToMany(mappedBy = "product")
     public List<ProductVariant> variants;
 
-    public Product(Integer id, int merchantId, String title, int categoryId, double price, int discountId, int taxId, float weight, String weightUnit) {
+    public Product(Integer id, Integer merchantId, String title, int categoryId, double price, int discountId, int taxId, float weight, String weightUnit) {
         this.id = id;
         this.merchantId = merchantId;
         this.title = title;

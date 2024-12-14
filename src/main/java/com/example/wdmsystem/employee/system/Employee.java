@@ -13,7 +13,11 @@ public final class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer id;
-    public int merchantId;
+
+    @ManyToOne
+    @JoinColumn(name = "merchant_id", nullable = false)
+    public Integer merchantId;
+
     //TODO: Add string restrictions of max length 30
     public String firstName;
     public String lastName;
@@ -26,7 +30,7 @@ public final class Employee {
     public LocalDateTime createdAt;
     public LocalDateTime updatedAt;
 
-    public Employee(Integer id, int merchantId, String firstName, String lastName, EmployeeType employeeType, String username, String password, LocalDateTime createdAt) {
+    public Employee(Integer id, Integer merchantId, String firstName, String lastName, EmployeeType employeeType, String username, String password, LocalDateTime createdAt) {
         this.id = id;
         this.merchantId = merchantId;
         this.firstName = firstName;

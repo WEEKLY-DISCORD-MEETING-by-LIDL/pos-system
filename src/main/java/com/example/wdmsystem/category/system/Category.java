@@ -12,10 +12,14 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer id;
-    public int merchantId;
+
+    @ManyToOne
+    @JoinColumn(name = "merchant_id", nullable = false)
+    public Integer merchantId;
+
     public String title;
 
-    public Category(Integer id, int merchantId, String title) {
+    public Category(Integer id, Integer merchantId, String title) {
         this.id = id;
         this.merchantId = merchantId;
         this.title = title;
