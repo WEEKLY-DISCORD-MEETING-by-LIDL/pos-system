@@ -19,7 +19,7 @@ public class MerchantService {
     public Merchant createMerchant(MerchantDTO request) {
 
         Merchant merchant = new Merchant(
-            request.id(),
+            0,
             request.name(),
             request.vat(),
             request.address(),
@@ -38,7 +38,19 @@ public class MerchantService {
     }
 
     public void updateMerchant(int id, MerchantDTO request) {
-        
+        Merchant merchantToUpdate = merchantRepository.findById(id).orElseThrow(
+            () -> new NotFoundException("Merchant with ID " + id + " not found")
+        );
+
+        merchantToUpdate.setName(request.name());
+        merchantToUpdate.setVat(request.vat());
+        merchantToUpdate.setAddress(request.address());
+        merchantToUpdate.setEmail(request.email());
+        merchantToUpdate.setPhone(request.phone());
+        merchantToUpdate.setUpdatedAt(LocalDateTime.now());
+
+        merchantRepository.save(merchantToUpdate);
+
     }
 
     public void deleteMerchant(int id) { // There is no delete method defined in the api but someone on the team requested it
