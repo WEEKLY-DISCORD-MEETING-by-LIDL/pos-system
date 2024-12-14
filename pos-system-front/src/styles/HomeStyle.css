@@ -1,0 +1,26 @@
+.home-container {
+  text-align: center;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.button-container {
+  margin-top: 20px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  margin: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+button:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+h1, h2 {
+  color: #333;
+}
