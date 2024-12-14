@@ -53,8 +53,13 @@ public class MerchantService {
 
     }
 
-    public void deleteMerchant(int id) { // There is no delete method defined in the api but someone on the team requested it
-
+    public void deleteMerchant(int merchantId) { // There is no delete method defined in the api but someone on the team requested it
+        if(merchantRepository.existsById(merchantId)) {
+            merchantRepository.deleteById(merchantId); // for now just deletes the merchant
+        }
+        else {
+            throw new NotFoundException("Merchant with id " + merchantId + " not found");
+        }
     }
 
 }
