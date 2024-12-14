@@ -9,6 +9,7 @@ function Root() {
         <Router>
             <Routes>
                 <Route exact path="/" element={<App />} />
+                <Route path="/home" element={<Home />} />
                 <Route path="/order" element={<CreateOrderPage />} />
             </Routes>
         </Router>
