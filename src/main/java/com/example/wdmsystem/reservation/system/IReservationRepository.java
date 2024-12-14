@@ -1,7 +1,5 @@
 package com.example.wdmsystem.reservation.system;
 
-
-import com.example.wdmsystem.customer.system.Customer;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
