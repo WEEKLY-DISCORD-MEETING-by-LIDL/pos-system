@@ -33,16 +33,13 @@ public class ServiceService {
         service.setTaxId(request.taxId());
         service.setDurationMins(request.durationMins());
         service.setCreatedAt(LocalDateTime.now());
-        service.setUpdatedAt(null);
+        service.setUpdatedAt(LocalDateTime.now());
 
         return serviceRepository.save(service);
     }
 
-    public List<Service> getServices(Category category, int limit) {
-//        if (limit <= 0) {
-//            throw new InvalidInputException("limit must be greater than 0. Current limit: " + limit);
-//        }
-        if (limit < 0 || limit > 250) {
+    public List<Service> getServices(Category category, Integer limit) {
+        if (limit == null || limit < 0 || limit > 250) {
             limit = 50;
         }
         PageRequest pageRequest = PageRequest.of(0, limit);
@@ -51,67 +48,49 @@ public class ServiceService {
 
     @Transactional
     public void updateService(int serviceId, ServiceDTO request) {
-        if (serviceId < 0) {
-            throw new InvalidInputException("Service must be greater than 0");
-        }
-
-        Optional<Service> service = serviceRepository.findById(serviceId);
-
-        if (service.isEmpty()) {
-            throw new NotFoundException("Service not found");
-        }
-
-        Service existingService = service.get();
+        Service service = serviceRepository.findById(serviceId)
+                .orElseThrow(() -> new NotFoundException("Service not found"));
 
         if (request.title() != null) {
-            if (request.title().trim().isEmpty()) {
-                throw new InvalidInputException("Title cannot be empty");
-            }
             if (request.title().length() > 30) {
-                throw new InvalidInputException("Title must be shorter than 30 characters");
+                throw new InvalidInputException("Title must be less than 30 characters");
             }
-            existingService.setTitle(request.title());
+            service.setTitle(request.title());
         }
         if (request.categoryId() != null) {
-            existingService.setCategoryId(request.categoryId());
+            //TODO check if category exists
+            service.setCategoryId(request.categoryId());
         }
         if (request.price() != null) {
-            existingService.setPrice(request.price());
+            service.setPrice(request.price());
         }
         if (request.discountId() != null) {
-            existingService.setDiscountId(request.discountId());
+            //TODO check if discount exists
+            service.setDiscountId(request.discountId());
         }
         if (request.taxId() != null) {
-            existingService.setTaxId(request.taxId());
+            //TODO check if tax exists
+            service.setTaxId(request.taxId());
         }
         if (request.durationMins() != null) {
-            existingService.setDurationMins(request.durationMins());
+            service.setDurationMins(request.durationMins());
         }
 
-        existingService.setUpdatedAt(LocalDateTime.now());
-        serviceRepository.save(existingService);
+        service.setUpdatedAt(LocalDateTime.now());
+        serviceRepository.save(service);
     }
 
     public void deleteService(int serviceId) {
-        if (serviceId < 0) {
-            throw new InvalidInputException("Service id must be greater than 0");
-        }
-        Optional<Service> service = serviceRepository.findById(serviceId);
-        if (service.isEmpty()) {
+        if (!serviceRepository.existsById(serviceId)) {
             throw new NotFoundException("Service not found");
         }
-        Service existingService = service.get();
-        serviceRepository.delete(existingService);
+
+        serviceRepository.deleteById(serviceId);
     }
 
     public Service getService(int serviceId) {
-        Optional<Service> service = serviceRepository.findById(serviceId);
-        if (service.isEmpty()) {
-            throw new NotFoundException("Service not found");
-        }
-        else {
-            return service.get();
-        }
+        return serviceRepository.findById(serviceId)
+                .orElseThrow(() -> new NotFoundException("Service not found"));
     }
 
     public List<LocalDateTime> getAvailableTimes(int serviceId, LocalDateTime date) {
