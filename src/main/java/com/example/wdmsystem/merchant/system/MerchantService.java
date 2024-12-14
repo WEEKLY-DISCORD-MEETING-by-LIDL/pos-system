@@ -1,5 +1,7 @@
 package com.example.wdmsystem.merchant.system;
 
+import java.time.LocalDateTime;
+
 import org.springframework.stereotype.Service;
 
 
@@ -7,12 +9,24 @@ import org.springframework.stereotype.Service;
 public class MerchantService {
 
     private final IMerchantRepository merchantRepository;
+
     public MerchantService(IMerchantRepository merchantRepository) {
         this.merchantRepository = merchantRepository;
     }
 
     public Merchant createMerchant(MerchantDTO request) {
-        return null;
+
+        Merchant merchant = new Merchant(
+            0,
+            request.name(),
+            request.vat(),
+            request.address(),
+            request.email(),
+            request.phone(),
+            LocalDateTime.now()
+        );
+        merchant.setUpdatedAt(LocalDateTime.now());
+        return merchantRepository.save(merchant);
     }
 
     public Merchant getMerchant(int id) {

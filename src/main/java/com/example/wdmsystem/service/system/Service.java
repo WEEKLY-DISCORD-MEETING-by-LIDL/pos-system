@@ -19,10 +19,10 @@ public final class Service {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer id;
     public String title;
-    @Nullable public int categoryId;
+    public int categoryId; //nullable
     public double price;
-    @Nullable public int discountId;
-    @Nullable public int taxId;
+    public int discountId; //nullable
+    public int taxId; //nullable
     public int durationMins;
     public LocalDateTime createdAt;
     public LocalDateTime updatedAt;

@@ -19,10 +19,10 @@ public class Product {
     public Integer id;
     public int merchantId;
     public String title;
-    @Nullable public int categoryId;
+    public int categoryId; //nullable
     public double price;
-    @Nullable public int discountId;
-    @Nullable public int taxId;
+    public int discountId; //nullable
+    public int taxId; //nullable
     public float weight;
     public String weightUnit;
     public LocalDateTime createdAt;
