@@ -40,6 +40,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login").permitAll()
                         .requestMatchers("/employees/**").hasAnyRole("ADMIN", "OWNER")
+                        .requestMatchers("/categories/**").hasAnyRole("ADMIN", "OWNER")
                         .anyRequest().permitAll() //Temporary, will change as the other modules are updated.
                 )
                 .addFilterBefore(jwtAuthTokenFilter, UsernamePasswordAuthenticationFilter.class);

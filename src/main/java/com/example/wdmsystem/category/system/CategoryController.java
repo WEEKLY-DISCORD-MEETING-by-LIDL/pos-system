@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,24 +23,28 @@ public class CategoryController {
     }
 
     @PostMapping("/categories")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_OWNER')")
     ResponseEntity<Category> createCategory(@RequestBody CategoryDTO request) {
         Category newCategory = _categoryService.createCategory(request);
         return new ResponseEntity<>(newCategory, HttpStatus.CREATED);
     }
 
     @GetMapping("/categories")
-    ResponseEntity<List<Category>> getCategories() { // this has no required parameters so idk
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_OWNER')")
+    ResponseEntity<List<Category>> getCategories() {
         List<Category> categoryList = _categoryService.getCategories();
         return new ResponseEntity<>(categoryList, HttpStatus.OK);
     }
 
     @PutMapping("/categories/{categoryId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_OWNER') and @categoryService.isOwnedByCurrentUser(#categoryId))")
     ResponseEntity<Category> updateCategory(@PathVariable int categoryId, @RequestBody CategoryDTO request) {
-        _categoryService.updateCategory(categoryId, request);
-        return new ResponseEntity<>(null, HttpStatus.OK);
+        Category updatedCategory = _categoryService.updateCategory(categoryId, request);
+        return new ResponseEntity<>(updatedCategory, HttpStatus.OK);
     }
 
     @DeleteMapping("/categories/{categoryId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_OWNER') and @categoryService.isOwnedByCurrentUser(#categoryId))")
     ResponseEntity<Category> deleteCategory(@PathVariable int categoryId) {
         _categoryService.deleteCategory(categoryId);
         return new ResponseEntity<>(null, HttpStatus.OK);

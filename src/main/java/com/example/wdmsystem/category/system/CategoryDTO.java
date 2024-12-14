@@ -1,5 +1,3 @@
 package com.example.wdmsystem.category.system;
 
-public record CategoryDTO() {
-
-}
+public record CategoryDTO(String title) {}

@@ -46,7 +46,6 @@ public class EmployeeService {
         boolean isAdmin = currentUser.getAuthorities().stream()
                 .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
 
-        System.out.println(isAdmin);
         if(isAdmin) {
             return employeeRepository.getEmployeesByEmployeeType(type, Limit.of(limit));
         } else {
