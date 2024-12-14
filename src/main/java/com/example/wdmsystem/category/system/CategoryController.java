@@ -23,28 +23,28 @@ public class CategoryController {
     }
 
     @PostMapping("/categories")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_OWNER')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('OWNER')")
     ResponseEntity<Category> createCategory(@RequestBody CategoryDTO request) {
         Category newCategory = _categoryService.createCategory(request);
         return new ResponseEntity<>(newCategory, HttpStatus.CREATED);
     }
 
     @GetMapping("/categories")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_OWNER')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('OWNER')")
     ResponseEntity<List<Category>> getCategories() {
         List<Category> categoryList = _categoryService.getCategories();
         return new ResponseEntity<>(categoryList, HttpStatus.OK);
     }
 
     @PutMapping("/categories/{categoryId}")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_OWNER') and @categoryService.isOwnedByCurrentUser(#categoryId))")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('OWNER') and @categoryService.isOwnedByCurrentUser(#categoryId))")
     ResponseEntity<Category> updateCategory(@PathVariable int categoryId, @RequestBody CategoryDTO request) {
         Category updatedCategory = _categoryService.updateCategory(categoryId, request);
         return new ResponseEntity<>(updatedCategory, HttpStatus.OK);
     }
 
     @DeleteMapping("/categories/{categoryId}")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_OWNER') and @categoryService.isOwnedByCurrentUser(#categoryId))")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('OWNER') and @categoryService.isOwnedByCurrentUser(#categoryId))")
     ResponseEntity<Category> deleteCategory(@PathVariable int categoryId) {
         _categoryService.deleteCategory(categoryId);
         return new ResponseEntity<>(null, HttpStatus.OK);
