@@ -4,14 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -83,6 +76,12 @@ public class ProductController {
     @DeleteMapping("/variants/{variantId}")
     ResponseEntity<ProductVariantDTO> deleteVariant(@PathVariable int variantId) {
         _productService.deleteVariant(variantId);
+        return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+    }
+
+    @PatchMapping("/products/{productId}/tax/{taxId}")
+    ResponseEntity<ProductDTO> updateTax(@PathVariable int productId, @PathVariable int taxId) {
+        _productService.applyTax(productId, taxId);
         return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
     }
 }

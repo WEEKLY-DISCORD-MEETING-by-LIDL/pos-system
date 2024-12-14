@@ -26,13 +26,22 @@ public class DTOMapper {
 
     /// PRODUCT
     public ProductDTO Product_ModelToDTO(Product product) {
-        return new ProductDTO(product.id, product.merchantId, product.title, product.categoryId, product.price, product.discountId, product.tax.id, product.weight, product.weightUnit);
+        return new ProductDTO(product.id, product.merchantId, product.title, (product.category == null ? null : product.category.id), product.price, product.discountId, (product.tax == null ? null : product.tax.id), product.weight, product.weightUnit);
     }
 
     public Product Product_DTOToModel(ProductDTO productDTO) {
-        Tax tax = taxRepository.findById(productDTO.taxId()).orElse(null);
+        Tax tax;
 
-        return new Product(productDTO.id(), productDTO.merchantId(), productDTO.title(), productDTO.categoryId(), productDTO.price(), productDTO.discountId(), tax, productDTO.weight(), productDTO.weightUnit());
+        if(productDTO.taxId() == null) {
+            tax = null;
+        }
+        else {
+            tax = taxRepository.findById(productDTO.taxId()).orElse(null);
+        }
+
+        //category pulling
+
+        return new Product(productDTO.id(), productDTO.merchantId(), productDTO.title(), null, productDTO.price(), productDTO.discountId(), tax, productDTO.weight(), productDTO.weightUnit());
     }
 
     /// PRODUCT VARIANT

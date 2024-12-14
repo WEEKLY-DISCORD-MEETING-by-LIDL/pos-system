@@ -37,8 +37,15 @@ public class OrderItem {
     }
 
     public double getTotalPrice() {
+
         if (productVariant != null && productVariant.getProduct() != null) {
-            return (productVariant.getProduct().getPrice() + productVariant.getAdditionalPrice()) * quantity;
+            if(productVariant.getProduct().getTax() != null) {
+                return (productVariant.getProduct().getPrice() + productVariant.getAdditionalPrice()) * (productVariant.getProduct().getTax().percentage + 1) * quantity;
+            }
+            else {
+                return (productVariant.getProduct().getPrice() + productVariant.getAdditionalPrice()) * quantity;
+            }
+
         }
         throw new NotFoundException("Product or ProductVariant was not found.");
     }

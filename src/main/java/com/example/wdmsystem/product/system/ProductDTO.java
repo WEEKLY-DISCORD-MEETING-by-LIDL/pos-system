@@ -1,4 +1,4 @@
 package com.example.wdmsystem.product.system;
 
-public record ProductDTO(Integer id, int merchantId, String title, int categoryId, double price, int discountId, int taxId, float weight, String weightUnit) {
+public record ProductDTO(Integer id, Integer merchantId, String title, Integer categoryId, double price, Integer discountId, Integer taxId, float weight, String weightUnit) {
 }

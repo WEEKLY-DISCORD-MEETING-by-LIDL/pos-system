@@ -1,5 +1,6 @@
 package com.example.wdmsystem.tax.system;
 
+import com.example.wdmsystem.exception.InvalidInputException;
 import com.example.wdmsystem.exception.NotFoundException;
 import com.example.wdmsystem.utility.DTOMapper;
 import org.springframework.data.domain.Limit;
@@ -20,6 +21,13 @@ public class TaxService {
     }
 
     public TaxDTO createTax(TaxDTO request) {
+
+        if(request.title().length() > 30) {
+            throw new InvalidInputException("Tax title is longer than 30 characters");
+        }
+        if(request.percentage() < 0) {
+            throw new InvalidInputException("Tax percentage is negative");
+        }
 
         Tax tax = dtoMapper.Tax_DTOToModel(request);
 

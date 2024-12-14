@@ -18,7 +18,7 @@ public class Tax {
     public Integer id;
     public int merchantId;
     public String title;
-    public double percentage;
+    public double percentage; //0.0 - 1.0 ~ 0% - 100%
     public LocalDateTime createdAt;
     public LocalDateTime updatedAt;
 
