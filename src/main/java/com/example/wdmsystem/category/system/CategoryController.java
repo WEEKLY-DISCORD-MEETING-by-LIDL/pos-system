@@ -24,15 +24,15 @@ public class CategoryController {
 
     @PostMapping("/categories")
     @PreAuthorize("hasRole('ADMIN') or hasRole('OWNER')")
-    ResponseEntity<Category> createCategory(@RequestBody CategoryDTO request) {
-        Category newCategory = _categoryService.createCategory(request);
+    ResponseEntity<CategoryDTO> createCategory(@RequestBody CategoryDTO request) {
+        CategoryDTO newCategory = _categoryService.createCategory(request);
         return new ResponseEntity<>(newCategory, HttpStatus.CREATED);
     }
 
     @GetMapping("/categories")
     @PreAuthorize("hasRole('ADMIN') or hasRole('OWNER')")
-    ResponseEntity<List<Category>> getCategories() {
-        List<Category> categoryList = _categoryService.getCategories();
+    ResponseEntity<List<CategoryDTO>> getCategories() {
+        List<CategoryDTO> categoryList = _categoryService.getCategories();
         return new ResponseEntity<>(categoryList, HttpStatus.OK);
     }
 

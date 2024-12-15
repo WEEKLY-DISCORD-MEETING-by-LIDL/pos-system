@@ -1,12 +1,18 @@
 package com.example.wdmsystem.service.system;
 
 
+import com.example.wdmsystem.auth.CustomUserDetails;
 import com.example.wdmsystem.category.system.Category;
 import com.example.wdmsystem.exception.InvalidInputException;
 import com.example.wdmsystem.exception.NotFoundException;
+import com.example.wdmsystem.merchant.system.IMerchantRepository;
+import com.example.wdmsystem.merchant.system.Merchant;
 import com.example.wdmsystem.reservation.system.IReservationRepository;
 import com.example.wdmsystem.reservation.system.Reservation;
+import com.example.wdmsystem.utility.DTOMapper;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -15,19 +21,25 @@ import java.time.LocalTime;
 import java.util.*;
 
 @org.springframework.stereotype.Service
+@AllArgsConstructor
 public class ServiceService {
     private final IServiceRepository serviceRepository;
     private final IReservationRepository reservationRepository;
+    private final IMerchantRepository merchantRepository;
+    private final DTOMapper dtoMapper;
 
-    public ServiceService(IServiceRepository serviceRepository, IReservationRepository reservationRepository) {
-        this.serviceRepository = serviceRepository;
-        this.reservationRepository = reservationRepository;
-    }
-
-    public Service createService(ServiceDTO request) {
+    public ServiceDTO createService(ServiceDTO request) {
         //TODO check if category exists
+        CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        Merchant merchant = merchantRepository.findById(currentUser.getMerchantId()).orElseThrow(
+                () -> new NotFoundException("Merchant with ID " + currentUser.getMerchantId() + " not found")
+        );
+
         Service service = new Service(
-                1,
+                merchant,
                 request.title(),
                 null,//placeholder null category
                 request.price(),
@@ -37,18 +49,23 @@ public class ServiceService {
                 LocalDateTime.now(),
                 LocalDateTime.now()
         );
-
-        return serviceRepository.save(service);
+        serviceRepository.save(service);
+        return dtoMapper.Service_ModelToDTO(service);
     }
 
-    public List<Service> getServices(Category category, Integer limit) {
+    public List<ServiceDTO> getServices(Category category, Integer limit) {
         Integer categoryId = (category != null) ? category.getId() : null;
 
         if (limit == null || limit < 0 || limit > 250) {
             limit = 50;
         }
         PageRequest pageRequest = PageRequest.of(0, limit);
-        return serviceRepository.findServicesByCategoryId(categoryId, pageRequest);
+        List<Service> serviceList = serviceRepository.findServicesByCategoryId(categoryId, pageRequest);
+        List<ServiceDTO> dtoList = new ArrayList<>();
+        for (Service service : serviceList) {
+            dtoList.add(dtoMapper.Service_ModelToDTO(service));
+        }
+        return dtoList;
     }
 
     public void updateService(int serviceId, ServiceDTO request) {
@@ -92,9 +109,10 @@ public class ServiceService {
         serviceRepository.deleteById(serviceId);
     }
 
-    public Service getService(int serviceId) {
-        return serviceRepository.findById(serviceId)
+    public ServiceDTO getService(int serviceId) {
+        Service service = serviceRepository.findById(serviceId)
                 .orElseThrow(() -> new NotFoundException("Service not found"));
+        return dtoMapper.Service_ModelToDTO(service);
     }
 
     public List<LocalDateTime> getAvailableTimes(int serviceId, LocalDate date) {

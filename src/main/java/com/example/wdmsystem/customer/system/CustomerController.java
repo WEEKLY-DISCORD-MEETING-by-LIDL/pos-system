@@ -1,5 +1,6 @@
 package com.example.wdmsystem.customer.system;
 
+import com.example.wdmsystem.reservation.system.ReservationDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,23 +19,23 @@ public final class CustomerController {
     }
 
     @PostMapping("/customers")
-    ResponseEntity<Customer> createCustomer(@RequestBody CustomerDTO request) {
-        Customer newCustomer = _customerService.createCustomer(request);
+    ResponseEntity<CustomerDTO> createCustomer(@RequestBody CustomerDTO request) {
+        CustomerDTO newCustomer = _customerService.createCustomer(request);
         return new ResponseEntity<>(newCustomer, HttpStatus.CREATED);
     }
 
     /// In the API contract Limit is an entity, but in the doc it isn't mentioned.
     @GetMapping("/customers")
-    ResponseEntity<List<Customer>> getCustomers(@RequestParam(required = false) LocalDateTime createdAtMin,
+    ResponseEntity<List<CustomerDTO>> getCustomers(@RequestParam(required = false) LocalDateTime createdAtMin,
                                                 @RequestParam(required = false) LocalDateTime createdAtMax,
                                                 @RequestParam(required = false) Integer limit) {
-        List<Customer> customers = _customerService.getCustomers(createdAtMin, createdAtMax, limit);
+        List<CustomerDTO> customers = _customerService.getCustomers(createdAtMin, createdAtMax, limit);
         return new ResponseEntity<>(customers, HttpStatus.OK);
     }
 
     @GetMapping("/customers/{customerId}")
-    ResponseEntity<Customer> getCustomer(@PathVariable int customerId) {
-        Customer customer = _customerService.getCustomer(customerId);
+    ResponseEntity<CustomerDTO> getCustomer(@PathVariable int customerId) {
+        CustomerDTO customer = _customerService.getCustomer(customerId);
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }
 
@@ -52,10 +53,10 @@ public final class CustomerController {
     }
 
     @GetMapping("/customers/{customerId}/reservations")
-    ResponseEntity<List<Reservation>> getCustomerReservations(@PathVariable int customerId,
+    ResponseEntity<List<ReservationDTO>> getCustomerReservations(@PathVariable int customerId,
                                                               @RequestParam(required = false) boolean upcoming,
                                                               @RequestParam(required = false) Integer limit) {
-        List<Reservation> reservations = _customerService.getCustomerReservations(customerId, upcoming, limit);
+        List<ReservationDTO> reservations = _customerService.getCustomerReservations(customerId, upcoming, limit);
         return new ResponseEntity<>(reservations, HttpStatus.OK);
     }
 }

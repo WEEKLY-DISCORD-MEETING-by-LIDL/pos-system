@@ -25,6 +25,7 @@ public class ProductService {
     private final IProductVariantRepository productVariantRepository;
     private final ITaxRepository taxRepository;
     private final DTOMapper dtoMapper;
+    private final IMerchantRepository merchantRepository;
 
     public ProductDTO createProduct(ProductDTO request) {
 

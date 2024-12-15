@@ -4,23 +4,23 @@ import com.example.wdmsystem.auth.*;
 import com.example.wdmsystem.exception.NotFoundException;
 import com.example.wdmsystem.merchant.system.IMerchantRepository;
 import com.example.wdmsystem.merchant.system.Merchant;
+import com.example.wdmsystem.utility.DTOMapper;
+import lombok.AllArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class CategoryService {
 
     private final ICategoryRepository categoryRepository;
     private final IMerchantRepository merchantRepository;
+    private final DTOMapper dtoMapper;
 
-    public CategoryService(ICategoryRepository categoryRepository, IMerchantRepository merchantRepository) {
-        this.categoryRepository = categoryRepository;
-        this.merchantRepository = merchantRepository;
-    }
-
-    public Category createCategory(CategoryDTO request) {
+    public CategoryDTO createCategory(CategoryDTO request) {
         CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getPrincipal();
@@ -33,22 +33,29 @@ public class CategoryService {
                 merchant,
                 request.title()
         );
-        return categoryRepository.save(category);
+        categoryRepository.save(category);
+        return dtoMapper.Category_ModelToDTO(category);
     }
 
-    public List<Category> getCategories() {
+    public List<CategoryDTO> getCategories() {
         CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getPrincipal();
-
         boolean isAdmin = currentUser.getAuthorities().stream()
                 .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
 
+        List<Category> categoryList;
         if(isAdmin) {
-            return categoryRepository.findAll();
+            categoryList = categoryRepository.findAll();
         } else {
-            return categoryRepository.findByMerchantId(currentUser.getMerchantId());
+            categoryList = categoryRepository.findByMerchantId(currentUser.getMerchantId());
         }
+
+        List<CategoryDTO> categoryDTOList = new ArrayList<>();
+        for(Category category : categoryList) {
+            categoryDTOList.add(dtoMapper.Category_ModelToDTO(category));
+        }
+        return categoryDTOList;
     }
 
     public Category updateCategory(int categoryId, CategoryDTO request) {

@@ -18,14 +18,14 @@ public final class ServiceController {
     }
 
     @PostMapping("/services")
-    ResponseEntity<Service> createService(@RequestBody ServiceDTO request) {
-        Service newService = _serviceService.createService(request);
+    ResponseEntity<ServiceDTO> createService(@RequestBody ServiceDTO request) {
+        ServiceDTO newService = _serviceService.createService(request);
         return new ResponseEntity<>(newService, HttpStatus.CREATED);
     }
 
     @GetMapping("/services")
-    ResponseEntity<List<Service>> getServices(@RequestParam(required = false) Category category, @RequestParam(required = false) Integer limit) {
-        List<Service> serviceList = _serviceService.getServices(category, limit);
+    ResponseEntity<List<ServiceDTO>> getServices(@RequestParam(required = false) Category category, @RequestParam(required = false) Integer limit) {
+        List<ServiceDTO> serviceList = _serviceService.getServices(category, limit);
         return new ResponseEntity<>(serviceList, HttpStatus.OK);
     }
 
@@ -42,8 +42,8 @@ public final class ServiceController {
     }
 
     @GetMapping("/services/{serviceId}")
-    ResponseEntity<Service> getService(@PathVariable int serviceId) {
-        Service service = _serviceService.getService(serviceId);
+    ResponseEntity<ServiceDTO> getService(@PathVariable int serviceId) {
+        ServiceDTO service = _serviceService.getService(serviceId);
         return new ResponseEntity<>(service, HttpStatus.OK);
     }
 

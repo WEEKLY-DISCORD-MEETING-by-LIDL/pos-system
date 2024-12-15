@@ -17,8 +17,8 @@ public final class ReservationController {
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<Reservation> createReservation(@RequestBody ReservationDTO request) {
-        Reservation createdReservation = reservationService.createReservation(request);
+    public ResponseEntity<ReservationDTO> createReservation(@RequestBody ReservationDTO request) {
+        ReservationDTO createdReservation = reservationService.createReservation(request);
         return new ResponseEntity<>(createdReservation, HttpStatus.CREATED);
     }
 
@@ -29,8 +29,8 @@ public final class ReservationController {
     }
 
     @GetMapping("/reservations/{reservationId}")
-    public ResponseEntity<Reservation> getReservation(@PathVariable int reservationId) {
-        Reservation reservation = reservationService.getReservation(reservationId);
+    public ResponseEntity<ReservationDTO> getReservation(@PathVariable int reservationId) {
+        ReservationDTO reservation = reservationService.getReservation(reservationId);
         return new ResponseEntity<>(reservation, HttpStatus.OK);
     }
 

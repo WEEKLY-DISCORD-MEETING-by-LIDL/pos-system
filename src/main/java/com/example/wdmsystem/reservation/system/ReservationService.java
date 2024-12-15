@@ -6,26 +6,22 @@ import com.example.wdmsystem.employee.system.IEmployeeRepository;
 import com.example.wdmsystem.exception.NotFoundException;
 import com.example.wdmsystem.service.system.IServiceRepository;
 import com.example.wdmsystem.service.system.Service;
+import com.example.wdmsystem.utility.DTOMapper;
+import lombok.AllArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
 @org.springframework.stereotype.Service
+@AllArgsConstructor
 public class ReservationService {
     private final IReservationRepository reservationRepository;
     private final ICustomerRepository customerRepository;
     private final IServiceRepository serviceRepository;
     private final IEmployeeRepository employeeRepository;
+    private final DTOMapper dtoMapper;
 
-    public ReservationService(IReservationRepository reservationRepository, ICustomerRepository customerRepository,
-                              IServiceRepository serviceRepository, IEmployeeRepository employeeRepository) {
-        this.reservationRepository = reservationRepository;
-        this.customerRepository = customerRepository;
-        this.serviceRepository = serviceRepository;
-        this.employeeRepository = employeeRepository;
-    }
-
-    public Reservation createReservation(ReservationDTO request) {
+    public ReservationDTO createReservation(ReservationDTO request) {
         Customer customer = customerRepository.findById(request.customerId())
                 .orElseThrow(() -> new NotFoundException("Customer not found"));
 
@@ -47,13 +43,14 @@ public class ReservationService {
                 LocalDateTime.now(),
                 LocalDateTime.now()
         );
-
-        return reservationRepository.save(reservation);
+        reservationRepository.save(reservation);
+        return dtoMapper.Reservation_ModelToDTO(reservation);
     }
 
-    public Reservation getReservation(int reservationId) {
-        return reservationRepository.findById(reservationId)
+    public ReservationDTO getReservation(int reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new NotFoundException("Reservation not found"));
+        return dtoMapper.Reservation_ModelToDTO(reservation);
     }
 
     public void updateReservation(int reservationId, ReservationDTO request) {
@@ -85,7 +82,7 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new NotFoundException("Reservation not found"));
 
-        reservation.setReservation(ReservationStatus.CANCELED);
+        reservation.setReservationStatus(ReservationStatus.CANCELED);
         reservation.setUpdatedAt(LocalDateTime.now());
 
         reservationRepository.save(reservation);

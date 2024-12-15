@@ -31,7 +31,7 @@ public class Tax {
     @OneToMany(mappedBy = "tax")
     public List<Product> products;
 
-    public Tax(Integer id, Merchant merchant, String title, double percentage, Date createdAt) {
+    public Tax(Integer id, Merchant merchant, String title, double percentage) {
         this.id = id;
         this.merchant = merchant;
         this.title = title;

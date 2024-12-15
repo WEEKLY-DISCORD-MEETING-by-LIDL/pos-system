@@ -1,41 +1,53 @@
 package com.example.wdmsystem.customer.system;
 
 
+import com.example.wdmsystem.auth.CustomUserDetails;
 import com.example.wdmsystem.exception.InvalidInputException;
 import com.example.wdmsystem.exception.NotFoundException;
+import com.example.wdmsystem.merchant.system.IMerchantRepository;
+import com.example.wdmsystem.merchant.system.Merchant;
 import com.example.wdmsystem.reservation.system.IReservationRepository;
+import com.example.wdmsystem.reservation.system.ReservationDTO;
+import com.example.wdmsystem.utility.DTOMapper;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.example.wdmsystem.reservation.system.Reservation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class CustomerService {
     private final ICustomerRepository customerRepository;
     private final IReservationRepository reservationRepository;
+    private final IMerchantRepository merchantRepository;
+    private final DTOMapper dtoMapper;
 
-    public CustomerService(ICustomerRepository customerRepository, IReservationRepository reservationRepository) {
-        this.customerRepository = customerRepository;
-        this.reservationRepository = reservationRepository;
-    }
+    public CustomerDTO createCustomer(CustomerDTO createCustomer) {
+        CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
 
-    public Customer createCustomer(CustomerDTO createCustomer) {
+        Merchant merchant = merchantRepository.findById(currentUser.getMerchantId()).orElseThrow(() ->
+                new NotFoundException("Merchant with id " + currentUser.getMerchantId() + " not found"));
+
         Customer customer = new Customer(
-                1,
+                merchant,
                 createCustomer.firstName(),
                 createCustomer.lastName(),
                 createCustomer.phone(),
                 LocalDateTime.now(),
                 LocalDateTime.now()
         );
-
-        return customerRepository.save(customer);
+        customerRepository.save(customer);
+        return dtoMapper.Customer_ModelToDTO(customer);
     }
 
-    public List<Customer> getCustomers(LocalDateTime createdAtMin, LocalDateTime createdAtMax, Integer limit) {
+    public List<CustomerDTO> getCustomers(LocalDateTime createdAtMin, LocalDateTime createdAtMax, Integer limit) {
         if (createdAtMin != null && createdAtMax != null && createdAtMin.isAfter(createdAtMax)) {
             throw new InvalidInputException("createdAtMin must be earlier than createdAtMax.");
         }
@@ -53,12 +65,19 @@ public class CustomerService {
             limit = 50;
         }
         PageRequest pageRequest = PageRequest.of(0, limit);
-        return customerRepository.findCustomersWithinDateRange(lowerDate, upperDate, pageRequest);
+
+        List<Customer> customerList = customerRepository.findCustomersWithinDateRange(lowerDate, upperDate, pageRequest);
+        List<CustomerDTO> customerDTOList = new ArrayList<>();
+        for (Customer customer : customerList) {
+            customerDTOList.add(dtoMapper.Customer_ModelToDTO(customer));
+        }
+        return customerDTOList;
     }
 
-    public Customer getCustomer(int id) {
-        return customerRepository.findById(id)
+    public CustomerDTO getCustomer(int id) {
+        Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Customer with id " + id + " not found"));
+        return dtoMapper.Customer_ModelToDTO(customer);
     }
 
     public void updateCustomer(int id, CustomerDTO request) {
@@ -93,7 +112,7 @@ public class CustomerService {
         customerRepository.deleteById(id);
     }
 
-    public List<Reservation> getCustomerReservations(int customerId, boolean upcoming, Integer limit) {
+    public List<ReservationDTO> getCustomerReservations(int customerId, boolean upcoming, Integer limit) {
         if (limit == null || limit <= 0 || limit > 250) {
             limit = 50;
         }
@@ -107,6 +126,11 @@ public class CustomerService {
         }
         PageRequest pageRequest = PageRequest.of(0, limit);
 
-        return reservationRepository.findReservationByCustomerId(customerId, upcomingDate, pageRequest);
+        List<Reservation> reservationList = reservationRepository.findReservationByCustomerId(customerId, upcomingDate, pageRequest);
+        List<ReservationDTO> reservationDTOList = new ArrayList<>();
+        for (Reservation reservation : reservationList) {
+            reservationDTOList.add(dtoMapper.Reservation_ModelToDTO(reservation));
+        }
+        return reservationDTOList;
     }
 }
