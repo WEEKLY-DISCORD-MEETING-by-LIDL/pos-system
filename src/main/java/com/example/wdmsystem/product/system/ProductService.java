@@ -42,12 +42,17 @@ public class ProductService {
         Product product = dtoMapper.Product_DTOToModel(request);
 
         // placeholder
-        product.merchantId = 10;
+        //product.merchant.id = 10; idk what to do with this
 
         product.createdAt = LocalDateTime.now();
         product.updatedAt = LocalDateTime.now();
 
-        return dtoMapper.Product_ModelToDTO(productRepository.save(product));
+        Product savedProduct = productRepository.save(product);
+
+        ProductVariantDTO defaultVariantRequest = new ProductVariantDTO(null, savedProduct.getId(), "Default", 0);
+        createVariant(savedProduct.getId(), defaultVariantRequest);
+
+        return dtoMapper.Product_ModelToDTO(savedProduct);
     }
 
     public ProductVariantDTO createVariant(int productId, ProductVariantDTO request) {
