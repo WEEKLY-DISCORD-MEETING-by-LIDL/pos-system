@@ -6,7 +6,8 @@ import {
     deleteProduct,
     fetchVariants,
     createVariant,
-    deleteVariant 
+    deleteVariant,
+    updateVariant
 } from '../api/ProductAPI';
 
 const ProductManagementPage = () => {
@@ -15,6 +16,8 @@ const ProductManagementPage = () => {
     const [variants, setVariants] = useState([]);
     const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
     const [isAddVariantModalOpen, setIsAddVariantModalOpen] = useState(false);
+    const [isEditProductModalOpen, setIsEditProductModalOpen] = useState(false);
+    const [isEditVariantModalOpen, setIsEditVariantModalOpen] = useState(false);
     const [newProduct, setNewProduct] = useState({
         title: '',
         price: 0,
@@ -27,6 +30,8 @@ const ProductManagementPage = () => {
         title: '',
         additionalPrice: 0
     });
+    const [editingProduct, setEditingProduct] = useState(null);
+    const [editingVariant, setEditingVariant] = useState(null);
 
     useEffect(() => {
         loadProducts();
@@ -92,6 +97,32 @@ const ProductManagementPage = () => {
         }
     };
 
+    const handleEditProduct = async () => {
+        if (!editingProduct) return;
+        try {
+            await updateProduct(editingProduct.id, editingProduct);
+            setIsEditProductModalOpen(false);
+            setEditingProduct(null);
+            await loadProducts();
+        } catch (error) {
+            console.error('Error updating product:', error);
+        }
+    };
+
+    const handleEditVariant = async () => {
+        if (!editingVariant) return;
+        try {
+            await updateVariant(editingVariant.id, editingVariant);
+            setIsEditVariantModalOpen(false);
+            setEditingVariant(null);
+            if (selectedProduct) {
+                await loadVariants(selectedProduct.id);
+            }
+        } catch (error) {
+            console.error('Error updating variant:', error);
+        }
+    };
+
     return (
         <div style={{ padding: '20px' }}>
             <h2>Product Management</h2>
@@ -118,12 +149,18 @@ const ProductManagementPage = () => {
                             >
                                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                     <span>{product.title}</span>
-                                    <button onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleDeleteProduct(product.id);
-                                    }}>Delete</button>
+                                    <div>
+                                        <button onClick={() => {
+                                            setEditingProduct(product);
+                                            setIsEditProductModalOpen(true);
+                                        }}>Edit</button>
+                                        <button onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleDeleteProduct(product.id);
+                                        }}>Delete</button>
+                                    </div>
                                 </div>
-                                <div>Price: ${product.price}</div>
+                                <div>Price: €{product.price}</div>
                             </div>
                         ))}
                     </div>
@@ -150,9 +187,15 @@ const ProductManagementPage = () => {
                                 >
                                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                         <span>{variant.title}</span>
-                                        <button onClick={() => handleDeleteVariant(variant.id)}>Delete</button>
+                                        <div>
+                                            <button onClick={() => {
+                                                setEditingVariant(variant);
+                                                setIsEditVariantModalOpen(true);
+                                            }}>Edit</button>
+                                            <button onClick={() => handleDeleteVariant(variant.id)}>Delete</button>
+                                        </div>
                                     </div>
-                                    <div>Additional Price: ${variant.additionalPrice}</div>
+                                    <div>Additional Price: €{variant.additionalPrice}</div>
                                 </div>
                             ))
                         ) : (
@@ -283,6 +326,124 @@ const ProductManagementPage = () => {
                         <div style={{ marginTop: '10px' }}>
                             <button onClick={handleAddVariant}>Add</button>
                             <button onClick={() => setIsAddVariantModalOpen(false)}>Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Edit Product Modal */}
+            {isEditProductModalOpen && (
+                <div style={{ 
+                    position: 'fixed', 
+                    top: 0, 
+                    left: 0, 
+                    right: 0, 
+                    bottom: 0, 
+                    backgroundColor: 'rgba(0,0,0,0.5)',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                }}>
+                    <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '4px' }}>
+                        <h3>Edit Product</h3>
+                        <div style={{ marginBottom: '10px' }}>
+                            <label>Title:</label>
+                            <input
+                                type="text"
+                                value={editingProduct?.title || ''}
+                                onChange={e => setEditingProduct({
+                                    ...editingProduct,
+                                    title: e.target.value
+                                })}
+                            />
+                        </div>
+                        <div style={{ marginBottom: '10px' }}>
+                            <label>Price:</label>
+                            <input
+                                type="number"
+                                value={editingProduct?.price || 0}
+                                onChange={e => setEditingProduct({
+                                    ...editingProduct,
+                                    price: parseFloat(e.target.value)
+                                })}
+                            />
+                        </div>
+                        <div style={{ marginBottom: '10px' }}>
+                            <label>Weight:</label>
+                            <input
+                                type="number"
+                                value={editingProduct?.weight || 0}
+                                onChange={e => setEditingProduct({
+                                    ...editingProduct,
+                                    weight: parseFloat(e.target.value)
+                                })}
+                            />
+                        </div>
+                        <div style={{ marginBottom: '10px' }}>
+                            <label>Weight Unit:</label>
+                            <input
+                                type="text"
+                                value={editingProduct?.weightUnit || ''}
+                                onChange={e => setEditingProduct({
+                                    ...editingProduct,
+                                    weightUnit: e.target.value
+                                })}
+                            />
+                        </div>
+                        <div>
+                            <button onClick={handleEditProduct}>Save</button>
+                            <button onClick={() => {
+                                setIsEditProductModalOpen(false);
+                                setEditingProduct(null);
+                            }}>Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Edit Variant Modal */}
+            {isEditVariantModalOpen && (
+                <div style={{ 
+                    position: 'fixed', 
+                    top: 0, 
+                    left: 0, 
+                    right: 0, 
+                    bottom: 0, 
+                    backgroundColor: 'rgba(0,0,0,0.5)',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                }}>
+                    <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '4px' }}>
+                        <h3>Edit Variant</h3>
+                        <div style={{ marginBottom: '10px' }}>
+                            <label>Title:</label>
+                            <input
+                                type="text"
+                                value={editingVariant?.title || ''}
+                                onChange={e => setEditingVariant({
+                                    ...editingVariant,
+                                    title: e.target.value
+                                })}
+                            />
+                        </div>
+                        <div style={{ marginBottom: '10px' }}>
+                            <label>Additional Price:</label>
+                            <input
+                                type="number"
+                                value={editingVariant?.additionalPrice || 0}
+                                onChange={e => setEditingVariant({
+                                    ...editingVariant,
+                                    additionalPrice: parseFloat(e.target.value)
+                                })}
+                            />
+                        </div>
+                        <div>
+                            <button onClick={handleEditVariant}>Save</button>
+                            <button onClick={() => {
+                                setIsEditVariantModalOpen(false);
+                                setEditingVariant(null);
+                            }}>Cancel</button>
                         </div>
                     </div>
                 </div>

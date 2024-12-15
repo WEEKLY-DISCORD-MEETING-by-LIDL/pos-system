@@ -75,3 +75,13 @@ export const deleteVariant = async (variantId) => {
         throw err;
     }
 };
+
+export const updateVariant = async (variantId, variantData) => {
+    try {
+        const response = await axios.put(`http://localhost:8080/variants/${variantId}`, variantData);
+        return response.data;
+    } catch (err) {
+        console.error(err.message);
+        throw err;
+    }
+};
