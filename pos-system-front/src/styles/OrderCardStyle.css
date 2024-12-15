@@ -1,0 +1,13 @@
+.order-card {
+    margin: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #000000;
+    background-color: #c3b9b9;
+    transition: background-color 0.1s ease; /* Smooth hover effect */
+}
+
+.order-card:hover {
+    background-color: #d3afaf;
+    cursor: pointer;
+}

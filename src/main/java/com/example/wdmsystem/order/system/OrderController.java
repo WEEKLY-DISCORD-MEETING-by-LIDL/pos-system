@@ -20,6 +20,16 @@ public final class OrderController {
         return new ResponseEntity<>(newOrder, HttpStatus.CREATED);
     }
 
+    //new method
+    @GetMapping("/orders")
+    ResponseEntity<List<OrderDTO>> getOrders(@RequestParam(required = false) OrderStatus status,
+                                             @RequestParam(required = false) String createdAtMin,
+                                             @RequestParam(required = false) String createdAtMax,
+                                             @RequestParam(required = false) Integer limit) {
+        List<OrderDTO> orders = _orderService.getOrders(status, createdAtMin, createdAtMax, limit);
+        return new ResponseEntity<>(orders, HttpStatus.OK);
+    }
+
     @GetMapping("/orders/{orderId}")
     ResponseEntity<OrderDTO> getOrder(@PathVariable int orderId) {
         OrderDTO order = _orderService.getOrder(orderId);
@@ -55,5 +65,12 @@ public final class OrderController {
     public ResponseEntity<Double> getPrice(@PathVariable int orderId) {
         double price = _orderService.getPrice(orderId);
         return new ResponseEntity<>(price, HttpStatus.OK);
+    }
+
+    //new method
+    @GetMapping("/orders/{orderId}/items")
+    ResponseEntity<List<OrderItemDTO>> getOrderItems(@PathVariable int orderId) {
+        List<OrderItemDTO> orderItems = _orderService.getOrderItems(orderId);
+        return new ResponseEntity<>(orderItems, HttpStatus.OK);
     }
 }

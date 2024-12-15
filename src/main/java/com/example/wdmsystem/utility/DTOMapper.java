@@ -1,8 +1,12 @@
 package com.example.wdmsystem.utility;
 
+import com.example.wdmsystem.exception.InvalidInputException;
 import com.example.wdmsystem.exception.NotFoundException;
 import com.example.wdmsystem.order.system.*;
+import com.example.wdmsystem.payment.system.Payment;
+import com.example.wdmsystem.payment.system.PaymentDTO;
 import com.example.wdmsystem.product.system.*;
+import com.example.wdmsystem.reservation.system.Reservation;
 import com.example.wdmsystem.tax.system.ITaxRepository;
 import com.example.wdmsystem.tax.system.Tax;
 import com.example.wdmsystem.tax.system.TaxDTO;
@@ -70,6 +74,10 @@ public class DTOMapper {
         return new OrderItem(orderItemDTO.id(), order, productVariant, orderItemDTO.quantity());
     }
 
+    public OrderItemDTO OrderItem_ModelToDTO(OrderItem orderItem) {
+        return new OrderItemDTO(orderItem.id, orderItem.order.id, orderItem.productVariant.id, orderItem.quantity);
+    }
+
     /// TAX
 
     public Tax Tax_DTOToModel(TaxDTO taxDTO) {
@@ -78,5 +86,22 @@ public class DTOMapper {
 
     public TaxDTO Tax_ModelToDTO(Tax tax) {
         return new TaxDTO(tax.id, tax.merchantId, tax.title, tax.percentage);
+    }
+
+    /// PAYMENT
+
+    public Payment Payment_DTOToModel(PaymentDTO paymentDTO) {
+        Order order = orderRepository.findById(paymentDTO.orderId()).orElse(null);
+        Reservation reservation = null; //will change once reservations work
+
+        if(order == null && reservation == null) {
+            throw new NotFoundException("Payment is not applied to any order or reservation");
+        }
+
+        return new Payment(paymentDTO.id(), paymentDTO.tipAmount(), paymentDTO.totalAmount(), paymentDTO.method(), order);
+    }
+
+    public PaymentDTO Payment_ModelToDTO(Payment payment) {
+        return new PaymentDTO(payment.id, payment.tipAmount, payment.totalAmount, payment.method, (payment.order == null ? null : payment.order.id));
     }
 }

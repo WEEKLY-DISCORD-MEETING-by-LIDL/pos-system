@@ -5,13 +5,14 @@ function App() {
   const navigate = useNavigate();
 
   const goHome = () => {
-    navigate("/order")
+    navigate("/create-order")
   }
 
   return (
     <div className="App">
       <h1>Welcome</h1>
-      <button onClick={goHome}>go to Home</button>
+      <button onClick={goHome}>new order</button>
+      <button onClick={() => {navigate("/all-orders")}}>view orders</button>
     </div>
   );
 }
