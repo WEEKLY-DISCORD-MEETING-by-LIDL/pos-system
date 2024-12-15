@@ -1,6 +1,5 @@
 package wdmsystem.config;
 
-import com.example.wdmsystem.auth.*;
 import wdmsystem.auth.CustomUserDetailsService;
 import wdmsystem.auth.JwtAuthTokenFilter;
 import wdmsystem.exception.CustomAuthenticationEntryPoint;

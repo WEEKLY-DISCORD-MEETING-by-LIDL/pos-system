@@ -1,32 +1,30 @@
 package wdmsystem.utility;
 
 import wdmsystem.auth.CustomUserDetails;
-import wdmsystem.category.system.Category;
-import wdmsystem.category.system.CategoryDTO;
-import wdmsystem.category.system.ICategoryRepository;
-import wdmsystem.customer.system.Customer;
-import wdmsystem.customer.system.CustomerDTO;
-import wdmsystem.employee.system.EmployeeDTO;
-import wdmsystem.employee.system.Employee;
-import wdmsystem.employee.system.IEmployeeRepository;
+import wdmsystem.category.Category;
+import wdmsystem.category.CategoryDTO;
+import wdmsystem.category.ICategoryRepository;
+import wdmsystem.customer.Customer;
+import wdmsystem.customer.CustomerDTO;
+import wdmsystem.employee.EmployeeDTO;
+import wdmsystem.employee.Employee;
+import wdmsystem.employee.IEmployeeRepository;
 import wdmsystem.exception.NotFoundException;
-import wdmsystem.merchant.system.IMerchantRepository;
-import wdmsystem.merchant.system.Merchant;
-import com.example.wdmsystem.order.system.*;
-import wdmsystem.order.system.*;
-import wdmsystem.payment.system.Payment;
-import wdmsystem.payment.system.PaymentDTO;
-import com.example.wdmsystem.product.system.*;
-import wdmsystem.product.system.*;
-import wdmsystem.reservation.system.Reservation;
-import wdmsystem.reservation.system.ReservationDTO;
-import wdmsystem.service.system.ServiceDTO;
-import wdmsystem.tax.system.ITaxRepository;
-import wdmsystem.tax.system.Tax;
-import wdmsystem.tax.system.TaxDTO;
+import wdmsystem.merchant.IMerchantRepository;
+import wdmsystem.merchant.Merchant;
+import wdmsystem.order.*;
+import wdmsystem.payment.Payment;
+import wdmsystem.payment.PaymentDTO;
+import wdmsystem.product.*;
+import wdmsystem.reservation.Reservation;
+import wdmsystem.reservation.ReservationDTO;
+import wdmsystem.service.ServiceDTO;
+import wdmsystem.tax.ITaxRepository;
+import wdmsystem.tax.Tax;
+import wdmsystem.tax.TaxDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
-import wdmsystem.service.system.Service;
+import wdmsystem.service.Service;
 
 
 @org.springframework.stereotype.Service

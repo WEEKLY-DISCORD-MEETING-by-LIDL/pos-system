@@ -1,7 +1,7 @@
 package wdmsystem.auth;
 
-import wdmsystem.employee.system.Employee;
-import wdmsystem.employee.system.IEmployeeRepository;
+import wdmsystem.employee.Employee;
+import wdmsystem.employee.IEmployeeRepository;
 import wdmsystem.exception.NotFoundException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
