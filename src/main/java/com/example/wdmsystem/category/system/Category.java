@@ -1,5 +1,7 @@
 package com.example.wdmsystem.category.system;
 
+import com.example.wdmsystem.merchant.system.Merchant;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,13 +15,15 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer id;
 
-    public Integer merchantId;
+    @ManyToOne
+    @JoinColumn(name = "merchant_id", nullable = false)
+    public Merchant merchant;
 
     public String title;
 
-    public Category(Integer id, Integer merchantId, String title) {
+    public Category(Integer id, Merchant merchant, String title) {
         this.id = id;
-        this.merchantId = merchantId;
+        this.merchant = merchant;
         this.title = title;
     }
 

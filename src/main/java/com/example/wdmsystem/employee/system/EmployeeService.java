@@ -30,7 +30,7 @@ public class EmployeeService {
         String hashedPassword = passwordEncoder.encode(request.password());
         Employee employee = new Employee(
                 0,
-                currentUser.getMerchantId(),
+                currentUser.getMerchant(),
                 request.firstName(),
                 request.lastName(),
                 request.employeeType(),
@@ -60,7 +60,7 @@ public class EmployeeService {
         if(isAdmin) {
             return employeeRepository.getEmployeesByEmployeeType(type, Limit.of(limit));
         } else {
-            return employeeRepository.getEmployeesByEmployeeTypeAndMerchantId(type, currentUser.getMerchantId(), Limit.of(limit));
+            return employeeRepository.getEmployeesByEmployeeTypeAndMerchantId(type, currentUser.getMerchant(), Limit.of(limit));
         }
     }
 
@@ -88,7 +88,7 @@ public class EmployeeService {
         boolean isAdmin = currentUser.getAuthorities().stream()
                 .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
         if(isAdmin) {
-            employee.setMerchantId(request.merchantId());
+            employee.setMerchant(request.merchant());
         }
         employeeRepository.save(employee);
     }
@@ -109,6 +109,6 @@ public class EmployeeService {
                 .getPrincipal();
 
         Employee employee = getEmployee(employeeId);
-        return employee.getMerchantId() == currentUser.getMerchantId();
+        return employee.getMerchant() == currentUser.getMerchant();
     }
 }

@@ -11,6 +11,8 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+import com.example.wdmsystem.merchant.system.Merchant;
+
 @Entity
 @Getter
 @Setter
@@ -20,7 +22,9 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer id;
 
-    public Integer merchantId;
+    @ManyToOne
+    @JoinColumn(name = "merchant_id", nullable = false)
+    public Merchant merchant;
 
     //TODO: Add string restrictions of max length 30
     public String firstName;
@@ -30,9 +34,9 @@ public class Customer {
     public LocalDateTime createdAt;
     public LocalDateTime updatedAt;
 
-    public Customer(int id, Integer merchantId, String firstName, String lastName, String phone, LocalDateTime createdAt) {
+    public Customer(int id, Merchant merchant, String firstName, String lastName, String phone, LocalDateTime createdAt) {
         this.id = id;
-        this.merchantId = merchantId;
+        this.merchant = merchant;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phone = phone;

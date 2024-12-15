@@ -7,6 +7,8 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.example.wdmsystem.merchant.system.Merchant;
+
 @Entity
 @Getter
 @Setter
@@ -15,7 +17,9 @@ public final class OrderDiscount {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer id;
 
-    public Integer merchantId;
+    @ManyToOne
+    @JoinColumn(name = "merchant_id", nullable = false)
+    public Merchant merchant;
 
     public String title;
     public double percentage;
@@ -25,9 +29,9 @@ public final class OrderDiscount {
     @OneToMany(mappedBy = "orderDiscount", cascade = CascadeType.REFRESH)
     public List<Order> discountedOrders;
 
-    public OrderDiscount (Integer id, Integer merchantId, String title, double percentage, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public OrderDiscount (Integer id, Merchant merchant, String title, double percentage, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
-        this.merchantId = merchantId;
+        this.merchant = merchant;
         this.title = title;
         this.percentage = percentage;
         this.createdAt = createdAt;

@@ -29,7 +29,7 @@ public class AuthenticationController {
         );
 
         CustomUserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
-        String token = jwtUtil.generateToken(userDetails, userDetails.getMerchantId());
+        String token = jwtUtil.generateToken(userDetails, userDetails.getMerchant());
 
         return ResponseEntity.ok(new LoginResponse(token));
     }

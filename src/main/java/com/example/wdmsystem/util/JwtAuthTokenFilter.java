@@ -2,6 +2,9 @@ package com.example.wdmsystem.util;
 
 import com.example.wdmsystem.employee.system.authentication.CustomUserDetails;
 import com.example.wdmsystem.exception.UnauthorizedException;
+import com.example.wdmsystem.merchant.system.IMerchantRepository;
+import com.example.wdmsystem.merchant.system.Merchant;
+
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -38,13 +41,15 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
                 Claims claims = jwtUtil.validateToken(jwt);
                 String username = claims.getSubject();
                 List<String> roles = parseRoles(claims.get("roles"));
-                Integer merchantId = claims.get("merchantId", Integer.class);
-
+                //Integer merchantId = claims.get("merchantId", Integer.class);
+                Merchant merchant = claims.get("merchantId", Merchant.class); // 
+                
                 List<GrantedAuthority> authorities = roles.stream()
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
-                CustomUserDetails userDetails = new CustomUserDetails(username, null, merchantId, authorities);
+
+                CustomUserDetails userDetails = new CustomUserDetails(username, null, merchant, authorities);
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
                 SecurityContextHolder.getContext().setAuthentication(authentication);

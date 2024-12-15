@@ -32,29 +32,29 @@ public class Merchant {
     public LocalDateTime createdAt;
     public LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Order> orders;
 
-    @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Product> products;
 
-    //@OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL)
-   //List<Customer> customers;
+    @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Customer> customers;
 
-    //@OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL)
-    //List<Employee> employees;
+    @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Employee> employees;
 
-    //@OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL)
-    //List<Service> services;
+    @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Service> services;
 
-    //@OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL)
-    //List<OrderDiscount> orderDiscounts;
+    @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<OrderDiscount> orderDiscounts;
 
-    //@OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL)
-    //List<Tax> taxes;
+    @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Tax> taxes;
 
-    //@OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL)
-    //List<Category> categories;
+    @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Category> categories;
 
     public Merchant(Integer id, String name, Integer vat, Address address, String email, String phone, LocalDateTime createdAt) {
         this.id = id;

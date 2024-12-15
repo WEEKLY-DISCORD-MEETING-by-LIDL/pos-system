@@ -11,6 +11,8 @@ import lombok.Setter;
 
 import java.util.Date;
 
+import com.example.wdmsystem.merchant.system.Merchant;
+
 @Entity
 @Getter
 @Setter
@@ -19,16 +21,18 @@ public class Tax {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer id;
 
-    public Integer merchantId;
+    @ManyToOne
+    @JoinColumn(name = "merchant_id", nullable = false)
+    public Merchant merchant;
 
     public String title;
     public double percentage;
     public Date createdAt;
     public Date updatedAt;
 
-    public Tax(Integer id, Integer merchantId, String title, double percentage, Date createdAt) {
+    public Tax(Integer id, Merchant merchant, String title, double percentage, Date createdAt) {
         this.id = id;
-        this.merchantId = merchantId;
+        this.merchant = merchant;
         this.title = title;
         this.percentage = percentage;
         this.createdAt = createdAt;
