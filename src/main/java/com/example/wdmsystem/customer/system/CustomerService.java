@@ -61,7 +61,6 @@ public class CustomerService {
                 .orElseThrow(() -> new NotFoundException("Customer with id " + id + " not found"));
     }
 
-    @Transactional
     public void updateCustomer(int id, CustomerDTO request) {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Customer with id " + id + " not found"));
