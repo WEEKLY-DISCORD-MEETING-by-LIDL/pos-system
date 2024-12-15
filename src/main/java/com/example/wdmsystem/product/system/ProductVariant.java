@@ -27,7 +27,7 @@ public class ProductVariant {
     public LocalDateTime createdAt;
     public LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "productVariant")
+    @OneToMany(mappedBy = "productVariant", cascade = CascadeType.ALL)
     public List<OrderItem> orderItems;
 
     public ProductVariant(Integer id, Product product, String title, double additionalPrice) {

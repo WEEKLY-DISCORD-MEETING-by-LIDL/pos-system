@@ -1,5 +1,6 @@
 package com.example.wdmsystem.order.system;
 
+import com.example.wdmsystem.payment.system.Payment;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,6 +35,9 @@ public final class Order {
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems;
+
+    @OneToMany(mappedBy = "order")
+    private List<Payment> payments;
 
     public Order(Integer id, Merchant merchant, OrderDiscount orderDiscount, OrderStatus status, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;

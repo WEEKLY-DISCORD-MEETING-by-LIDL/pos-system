@@ -5,6 +5,7 @@ import com.example.wdmsystem.merchant.system.IMerchantRepository;
 import com.example.wdmsystem.merchant.system.Merchant;
 import com.example.wdmsystem.utility.DTOMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -75,6 +76,44 @@ public class OrderService {
         return dtoMapper.Order_ModelToDTO(savedOrder);
     }
 
+    public List<OrderDTO> getOrders(OrderStatus orderStatus, String createdAtMin, String createdAtMax, Integer limit) {
+        if(createdAtMin == null) {
+            createdAtMin = "0000-01-01T00:00:00.000";
+        }
+        if(createdAtMax == null) {
+            createdAtMax = "9999-01-01T00:00:00.000";
+        }
+        if (limit == null || limit <= 0) {
+            limit = 50;
+        }
+
+        List<Order> filteredOrders;
+
+        if(orderStatus == null) {
+            filteredOrders = orderRepository.getOrdersByCreatedAtGreaterThanEqualAndCreatedAtLessThanEqual(
+                    LocalDateTime.parse(createdAtMin),
+                    LocalDateTime.parse(createdAtMax),
+                    Limit.of(limit)
+            );
+        }
+        else {
+            filteredOrders = orderRepository.getOrdersByStatusAndCreatedAtGreaterThanEqualAndCreatedAtLessThanEqual(
+                    orderStatus,
+                    LocalDateTime.parse(createdAtMin),
+                    LocalDateTime.parse(createdAtMax),
+                    Limit.of(limit)
+            );
+        }
+
+        List<OrderDTO> orderDTOs = new ArrayList<>();
+
+        for (Order order : filteredOrders) {
+            orderDTOs.add(dtoMapper.Order_ModelToDTO(order));
+        }
+
+        return orderDTOs;
+    }
+
     public OrderDTO getOrder(int orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(() ->
                 new NotFoundException("Order with id " + orderId + " not found"));
@@ -139,5 +178,22 @@ public class OrderService {
                 .stream()
                 .mapToDouble(OrderItem::getTotalPrice)
                 .sum();
+    }
+
+    public List<OrderItemDTO> getOrderItems(int orderId) {
+
+        if(orderRepository.existsById(orderId)) {
+            List<OrderItem> orderItems = orderItemRepository.getOrderItemsByOrderId(orderId);
+            List<OrderItemDTO> orderItemDTOs = new ArrayList<>();
+
+            for(OrderItem orderItem : orderItems) {
+                orderItemDTOs.add(dtoMapper.OrderItem_ModelToDTO(orderItem));
+            }
+
+            return orderItemDTOs;
+        }
+        else {
+            throw new NotFoundException("Order with id " + orderId + " not found");
+        }
     }
 }

@@ -1,15 +1,13 @@
 package com.example.wdmsystem.tax.system;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import com.example.wdmsystem.product.system.Product;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 import com.example.wdmsystem.merchant.system.Merchant;
 
@@ -26,17 +24,18 @@ public class Tax {
     public Merchant merchant;
 
     public String title;
-    public double percentage;
-    public Date createdAt;
-    public Date updatedAt;
+    public double percentage; //0.0 - 1.0 ~ 0% - 100%
+    public LocalDateTime createdAt;
+    public LocalDateTime updatedAt;
+  
+    @OneToMany(mappedBy = "tax")
+    public List<Product> products;
 
     public Tax(Integer id, Merchant merchant, String title, double percentage, Date createdAt) {
         this.id = id;
         this.merchant = merchant;
         this.title = title;
         this.percentage = percentage;
-        this.createdAt = createdAt;
-        this.updatedAt = null;
     }
 
     //@Entity required constructor

@@ -2,6 +2,8 @@ package com.example.wdmsystem.product.system;
 
 import com.example.wdmsystem.exception.InvalidInputException;
 import com.example.wdmsystem.exception.NotFoundException;
+import com.example.wdmsystem.tax.system.ITaxRepository;
+import com.example.wdmsystem.tax.system.Tax;
 import com.example.wdmsystem.utility.DTOMapper;
 import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Service;
@@ -15,12 +17,14 @@ import java.util.Optional;
 public class ProductService {
     private final IProductRepository productRepository;
     private final IProductVariantRepository productVariantRepository;
+    private final ITaxRepository taxRepository;
 
     private final DTOMapper dtoMapper;
 
-    public ProductService(IProductRepository productRepository, IProductVariantRepository productVariantRepository, DTOMapper dtoMapper) {
+    public ProductService(IProductRepository productRepository, IProductVariantRepository productVariantRepository, ITaxRepository taxRepository, DTOMapper dtoMapper) {
         this.productRepository = productRepository;
         this.productVariantRepository = productVariantRepository;
+        this.taxRepository = taxRepository;
         this.dtoMapper = dtoMapper;
     }
 
@@ -215,6 +219,17 @@ public class ProductService {
         else {
             throw new NotFoundException("Variant with id " + variantId + " not found");
         }
+    }
+
+    public void applyTax(int productId, int taxId) {
+        Product product = productRepository.findById(productId).orElseThrow(() ->
+                new NotFoundException("Product with id " + productId + " not found"));
+
+        Tax tax = taxRepository.findById(taxId).orElseThrow(() ->
+                new NotFoundException("Tax with id " + taxId + " not found"));
+
+        product.setTax(tax);
+        productRepository.save(product);
     }
 
 }
