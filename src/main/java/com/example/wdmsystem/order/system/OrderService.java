@@ -2,6 +2,8 @@ package com.example.wdmsystem.order.system;
 
 import com.example.wdmsystem.auth.CustomUserDetails;
 import com.example.wdmsystem.exception.*;
+import com.example.wdmsystem.merchant.system.IMerchantRepository;
+import com.example.wdmsystem.merchant.system.Merchant;
 import com.example.wdmsystem.utility.DTOMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,16 +18,18 @@ public class OrderService {
     private final IOrderRepository orderRepository;
     private final IOrderItemRepository orderItemRepository;
     private final IOrderDiscountRepository orderDiscountRepository;
+    private final IMerchantRepository merchantRepository;
     private final DTOMapper dtoMapper;
 
-    public OrderService(IOrderRepository orderRepository, IOrderItemRepository orderItemRepository, IOrderDiscountRepository orderDiscountRepository, DTOMapper dtoMapper) {
+    public OrderService(IOrderRepository orderRepository, IMerchantRepository merchantRepository, IOrderItemRepository orderItemRepository, IOrderDiscountRepository orderDiscountRepository, DTOMapper dtoMapper) {
         this.orderRepository = orderRepository;
+        this.merchantRepository = merchantRepository;
         this.orderItemRepository = orderItemRepository;
         this.orderDiscountRepository = orderDiscountRepository;
         this.dtoMapper = dtoMapper;
     }
 
-    public OrderDTO createOrder(Integer orderDiscountId, List<OrderItemDTO> orderItemDTOs) {
+    public OrderDTO createOrder(Integer orderDiscountId, Integer merchantId, List<OrderItemDTO> orderItemDTOs) {
 
         OrderDiscount orderDiscount;
 
@@ -40,9 +44,19 @@ public class OrderService {
                 .getAuthentication()
                 .getPrincipal();
 
+        Merchant merchant;
+
+        if (merchantId != null) {
+            merchant = merchantRepository.findById(merchantId).orElseThrow(() ->
+                    new NotFoundException("Merchant with id " + merchantId + " not found"));
+        }
+        else {
+            merchant = null;
+        }
+
         Order order = new Order(
                 0,
-                currentUser.getMerchantId(),
+                merchant,
                 orderDiscount,
                 OrderStatus.OPENED,
                 LocalDateTime.now(),

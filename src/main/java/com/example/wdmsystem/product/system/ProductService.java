@@ -46,7 +46,9 @@ public class ProductService {
         CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getPrincipal();
-        product.merchantId = currentUser.getMerchantId();
+				
+        // placeholder
+        //product.merchant.id = 10; idk what to do with this
 
         product.createdAt = LocalDateTime.now();
         product.updatedAt = LocalDateTime.now();

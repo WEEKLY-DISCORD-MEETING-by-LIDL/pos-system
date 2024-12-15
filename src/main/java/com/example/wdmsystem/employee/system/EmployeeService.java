@@ -1,11 +1,15 @@
 package com.example.wdmsystem.employee.system;
 
-import com.example.wdmsystem.auth.CustomUserDetails;
+import com.example.wdmsystem.employee.system.authentication.CustomUserDetails;
 import com.example.wdmsystem.exception.NotFoundException;
+import com.example.wdmsystem.merchant.system.IMerchantRepository;
+import com.example.wdmsystem.merchant.system.Merchant;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Limit;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.example.wdmsystem.utility.DTOMapper;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,11 +17,14 @@ import java.util.List;
 @Service
 public class EmployeeService {
     private final IEmployeeRepository employeeRepository;
-    private final DTOMapper dtoMapper;
+    private final IMerchantRepository merchantRepository;
 
-    public EmployeeService(IEmployeeRepository employeeRepository, DTOMapper dtoMapper) {
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    public EmployeeService(IEmployeeRepository employeeRepository, IMerchantRepository merchantRepository) {
         this.employeeRepository = employeeRepository;
-        this.dtoMapper = dtoMapper;
+        this.merchantRepository = merchantRepository;
     }
 
     public Employee createEmployee(CreateEmployeeDTO request) {
@@ -25,9 +32,28 @@ public class EmployeeService {
                 .getAuthentication()
                 .getPrincipal();
 
-        Employee employee = dtoMapper.CreateEmployee_DTOToModel(request);
-        employee.setMerchantId(currentUser.getMerchantId());
-        employee.setUpdatedAt(LocalDateTime.now());
+        String hashedPassword = passwordEncoder.encode(request.password());
+
+        Merchant merchant;
+
+        if (currentUser.getMerchantId() != null) {
+            merchant = merchantRepository.findById(currentUser.getMerchantId()).orElseThrow(() ->
+                    new NotFoundException("Merchant with id " + currentUser.getMerchantId() + " not found"));
+        }
+        else {
+            merchant = null;
+        }
+
+        Employee employee = new Employee(
+                0,
+                merchant, // not sure if this is what you meant
+                request.firstName(),
+                request.lastName(),
+                request.employeeType(),
+                request.username(),
+                hashedPassword,
+                LocalDateTime.now()
+        );
         employee.setUpdatedAt(employee.getCreatedAt());
 
         return employeeRepository.save(employee);
@@ -46,6 +72,7 @@ public class EmployeeService {
         boolean isAdmin = currentUser.getAuthorities().stream()
                 .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
 
+        System.out.println(isAdmin);
         if(isAdmin) {
             return employeeRepository.getEmployeesByEmployeeType(type, Limit.of(limit));
         } else {
@@ -64,8 +91,11 @@ public class EmployeeService {
         Employee employee = employeeRepository.findById(employeeId).orElseThrow(
                 () -> new NotFoundException("Employee with id " + employeeId + " not found"));
 
-
-        employee = dtoMapper.UpdateEmployee_DTOToModel(request, employee);
+        employee.setFirstName(request.firstName());
+        employee.setLastName(request.lastName());
+        employee.setEmployeeType(request.employeeType());
+        employee.setUsername(request.username());
+        employee.setPassword(passwordEncoder.encode(request.password()));
         employee.setUpdatedAt(LocalDateTime.now());
 
         CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder.getContext()
@@ -74,7 +104,8 @@ public class EmployeeService {
         boolean isAdmin = currentUser.getAuthorities().stream()
                 .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
         if(isAdmin) {
-            employee.setMerchantId(request.merchantId());
+            //employee.merchant().set(request.merchantId());
+            employee.merchant.setId(request.merchantId());
         }
         employeeRepository.save(employee);
     }
@@ -95,6 +126,6 @@ public class EmployeeService {
                 .getPrincipal();
 
         Employee employee = getEmployee(employeeId);
-        return employee.getMerchantId() == currentUser.getMerchantId();
+        return employee.getMerchant().id == currentUser.getMerchantId();
     }
 }

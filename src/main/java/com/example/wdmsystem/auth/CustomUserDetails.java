@@ -4,6 +4,8 @@ import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.example.wdmsystem.merchant.system.Merchant;
+
 import java.util.Collection;
 
 @Getter

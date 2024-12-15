@@ -1,6 +1,8 @@
 package com.example.wdmsystem.auth;
 
 import com.example.wdmsystem.exception.UnauthorizedException;
+import com.example.wdmsystem.merchant.system.Merchant;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -19,13 +21,13 @@ public class JwtUtil {
 
     private final Key signingKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
 
-    public String generateToken(CustomUserDetails userDetails, int merchantId) {
+    public String generateToken(CustomUserDetails userDetails, Integer merchantId) {
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
                 .claim("roles", userDetails.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority)
                         .collect(Collectors.toList()))
-                .claim("merchantId", merchantId)
+                .claim("merchantId", merchantId) // i have no clue what to do here
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(signingKey, SignatureAlgorithm.HS256)

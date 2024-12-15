@@ -1,6 +1,9 @@
 package com.example.wdmsystem.auth;
 
 import com.example.wdmsystem.exception.UnauthorizedException;
+import com.example.wdmsystem.merchant.system.IMerchantRepository;
+import com.example.wdmsystem.merchant.system.Merchant;
+
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -38,10 +41,12 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
                 String username = claims.getSubject();
                 List<String> roles = parseRoles(claims.get("roles"));
                 Integer merchantId = claims.get("merchantId", Integer.class);
-
+                //Merchant merchant = claims.get("merchantId", Merchant.class); // 
+                
                 List<GrantedAuthority> authorities = roles.stream()
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
+
 
                 CustomUserDetails userDetails = new CustomUserDetails(username, null, merchantId, authorities);
                 UsernamePasswordAuthenticationToken authentication =
