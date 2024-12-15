@@ -51,7 +51,6 @@ public class ServiceService {
         return serviceRepository.findServicesByCategoryId(categoryId, pageRequest);
     }
 
-    @Transactional
     public void updateService(int serviceId, ServiceDTO request) {
         Service service = serviceRepository.findById(serviceId)
                 .orElseThrow(() -> new NotFoundException("Service not found"));
