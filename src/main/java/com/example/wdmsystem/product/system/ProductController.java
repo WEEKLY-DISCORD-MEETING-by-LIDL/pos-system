@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -94,6 +95,12 @@ public class ProductController {
     @PreAuthorize("hasRole('ADMIN') or (hasRole('OWNER') and @productService.variantIsOwnedByCurrentUser(#variantId))")
     ResponseEntity<ProductVariantDTO> deleteVariant(@PathVariable int variantId) {
         _productService.deleteVariant(variantId);
+        return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+    }
+
+    @PatchMapping("/products/{productId}/tax/{taxId}")
+    ResponseEntity<ProductDTO> updateTax(@PathVariable int productId, @PathVariable int taxId) {
+        _productService.applyTax(productId, taxId);
         return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
     }
 }

@@ -5,6 +5,8 @@ import com.example.wdmsystem.exception.InvalidInputException;
 import com.example.wdmsystem.exception.NotFoundException;
 import com.example.wdmsystem.merchant.system.IMerchantRepository;
 import com.example.wdmsystem.merchant.system.Merchant;
+import com.example.wdmsystem.tax.system.ITaxRepository;
+import com.example.wdmsystem.tax.system.Tax;
 import com.example.wdmsystem.utility.DTOMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Limit;
@@ -21,7 +23,7 @@ import java.util.Optional;
 public class ProductService {
     private final IProductRepository productRepository;
     private final IProductVariantRepository productVariantRepository;
-    private final IMerchantRepository merchantRepository;
+    private final ITaxRepository taxRepository;
     private final DTOMapper dtoMapper;
 
     public ProductDTO createProduct(ProductDTO request) {
@@ -51,7 +53,12 @@ public class ProductService {
         product.createdAt = LocalDateTime.now();
         product.updatedAt = LocalDateTime.now();
 
-        return dtoMapper.Product_ModelToDTO(productRepository.save(product));
+        Product savedProduct = productRepository.save(product);
+
+        ProductVariantDTO defaultVariantRequest = new ProductVariantDTO(null, savedProduct.getId(), "Default", 0);
+        createVariant(savedProduct.getId(), defaultVariantRequest);
+
+        return dtoMapper.Product_ModelToDTO(savedProduct);
     }
 
     public ProductVariantDTO createVariant(int productId, ProductVariantDTO request) {
@@ -245,6 +252,17 @@ public class ProductService {
         }
     }
 
+	public void applyTax(int productId, int taxId) {
+        Product product = productRepository.findById(productId).orElseThrow(() ->
+                new NotFoundException("Product with id " + productId + " not found"));
+
+        Tax tax = taxRepository.findById(taxId).orElseThrow(() ->
+                new NotFoundException("Tax with id " + taxId + " not found"));
+
+        product.setTax(tax);
+        productRepository.save(product);
+    }
+
     public boolean productIsOwnedByCurrentUser(int productId) {
         CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder.getContext()
                 .getAuthentication()
@@ -263,6 +281,6 @@ public class ProductService {
         ProductVariant variant = productVariantRepository.findById(variantId).orElseThrow(() ->
                 new NotFoundException("Variant with id " + variantId + " not found"));
         return variant.getProduct().getMerchant().getId() == currentUser.getMerchantId();
-    }
+	}
 
 }

@@ -23,33 +23,35 @@ public class TaxController {
     } 
 
     @PostMapping("/taxes")
-    ResponseEntity<Tax> createTax(@RequestBody TaxDTO request) {
-        Tax newTax = _taxService.createTax(request);
+    ResponseEntity<TaxDTO> createTax(@RequestBody TaxDTO request) {
+        TaxDTO newTax = _taxService.createTax(request);
         return new ResponseEntity<>(newTax, HttpStatus.CREATED);
     }
 
     @GetMapping("/taxes")
-    ResponseEntity<List<Tax>> getTaxes(@RequestParam(required=false) int limit) {
-        List<Tax> taxList = _taxService.getTaxes(limit);
+    ResponseEntity<List<TaxDTO>> getTaxes(@RequestParam(required=false) Integer limit) {
+        List<TaxDTO> taxList = _taxService.getTaxes(limit);
         return new ResponseEntity<>(taxList, HttpStatus.OK);
     }
 
     @GetMapping("/taxes/{taxId}")
-    ResponseEntity<Tax> getTax(@PathVariable int taxId) {
-        Tax newTax = _taxService.getTax(taxId);
+    ResponseEntity<TaxDTO> getTax(@PathVariable int taxId) {
+        TaxDTO newTax = _taxService.getTax(taxId);
         return new ResponseEntity<>(newTax, HttpStatus.OK);
     }
 
+    //changed to NO_CONTENT
     @PutMapping("/taxes/{taxId}")
-    ResponseEntity<Tax> updateTax(@PathVariable int taxId) {
-        _taxService.updateTax(taxId);
-        return new ResponseEntity<>(null, HttpStatus.OK);
+    ResponseEntity<TaxDTO> updateTax(@PathVariable int taxId, @RequestBody TaxDTO request) {
+        _taxService.updateTax(taxId, request);
+        return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
     }
 
+    //changed to NO_CONTENT
     @DeleteMapping("/taxes/{taxId}")
-    ResponseEntity<Tax> deleteTax(@PathVariable int taxId) {
+    ResponseEntity<TaxDTO> deleteTax(@PathVariable int taxId) {
         _taxService.deleteTax(taxId);
-        return new ResponseEntity<>(null, HttpStatus.OK);
+        return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
     }
 
 

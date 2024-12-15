@@ -1,14 +1,17 @@
 import {useEffect, useState} from "react";
 import {fetchVariants} from "../api/ProductAPI";
 import {ProductCardStyle} from "../styles/ProductCardStyle";
+import {fetchTax} from "../api/TaxAPI";
 
 export const ProductCard = (props) => {
 
     const [selectedVariant, setSelectedVariants] = useState(0);
     const [variants, setVariants] = useState([]);
+    const [tax, setTax] = useState(null)
     
     useEffect(() => {
-        fetchVariants(props.product.id, setVariants)
+        fetchVariants(props.product.id, setVariants);
+        fetchTax(props.product.taxId, setTax);
     }, []);
 
     const currentVariant = variants[selectedVariant];
@@ -26,6 +29,7 @@ export const ProductCard = (props) => {
         const newItem = {
             product: props.product,
             productVariant: variants[selectedVariant],
+            tax: tax,
             quantity: 1
         }
 
