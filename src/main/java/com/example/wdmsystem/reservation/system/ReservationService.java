@@ -56,7 +56,6 @@ public class ReservationService {
                 .orElseThrow(() -> new NotFoundException("Reservation not found"));
     }
 
-    @Transactional
     public void updateReservation(int reservationId, ReservationDTO request) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new NotFoundException("Reservation not found"));
