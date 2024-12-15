@@ -4,7 +4,6 @@ import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.example.wdmsystem.merchant.system.Merchant;
 
 import java.util.Collection;
 
@@ -12,10 +11,10 @@ import java.util.Collection;
 public class CustomUserDetails implements UserDetails {
     private final String username;
     private final String password;
-    private final Integer merchantId;
+    private final int merchantId;
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public CustomUserDetails(String username, String password, Integer merchantId, Collection<? extends GrantedAuthority> authorities) {
+    public CustomUserDetails(String username, String password, int merchantId, Collection<? extends GrantedAuthority> authorities) {
         this.username = username;
         this.password = password;
         this.merchantId = merchantId;

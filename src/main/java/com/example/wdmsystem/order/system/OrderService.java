@@ -29,7 +29,7 @@ public class OrderService {
         this.dtoMapper = dtoMapper;
     }
 
-    public OrderDTO createOrder(Integer orderDiscountId, Integer merchantId, List<OrderItemDTO> orderItemDTOs) {
+    public OrderDTO createOrder(Integer orderDiscountId, List<OrderItemDTO> orderItemDTOs) {
 
         OrderDiscount orderDiscount;
 
@@ -44,15 +44,8 @@ public class OrderService {
                 .getAuthentication()
                 .getPrincipal();
 
-        Merchant merchant;
-
-        if (merchantId != null) {
-            merchant = merchantRepository.findById(merchantId).orElseThrow(() ->
-                    new NotFoundException("Merchant with id " + merchantId + " not found"));
-        }
-        else {
-            merchant = null;
-        }
+        Merchant merchant = merchantRepository.findById(currentUser.getMerchantId()).orElseThrow(() ->
+                    new NotFoundException("Merchant with id " + currentUser.getMerchantId() + " not found"));
 
         Order order = new Order(
                 0,
@@ -154,6 +147,6 @@ public class OrderService {
         Order order = orderRepository.findById(orderId).orElseThrow(() ->
                 new NotFoundException("Order with id " + orderId + " not found"));
 
-        return order.getMerchantId() == currentUser.getMerchantId();
+        return order.getMerchant().getId() == currentUser.getMerchantId();
     }
 }

@@ -42,6 +42,6 @@ public class OrderDiscountService {
         OrderDiscount orderDiscount = orderDiscountRepository.findById(discountId).orElseThrow(() ->
                 new NotFoundException("Discount with id " + discountId + " not found"));
 
-        return orderDiscount.getMerchantId() == currentUser.getMerchantId();
+        return orderDiscount.getMerchant().getId() == currentUser.getMerchantId();
     }
 }

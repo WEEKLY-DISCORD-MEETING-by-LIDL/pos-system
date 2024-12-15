@@ -21,13 +21,13 @@ public class JwtUtil {
 
     private final Key signingKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
 
-    public String generateToken(CustomUserDetails userDetails, Integer merchantId) {
+    public String generateToken(CustomUserDetails userDetails) {
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
                 .claim("roles", userDetails.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority)
                         .collect(Collectors.toList()))
-                .claim("merchantId", merchantId) // i have no clue what to do here
+                .claim("merchantId", userDetails.getMerchantId())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(signingKey, SignatureAlgorithm.HS256)

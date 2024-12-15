@@ -1,11 +1,10 @@
 package com.example.wdmsystem.employee.system;
 
-import com.example.wdmsystem.employee.system.authentication.CustomUserDetails;
+import com.example.wdmsystem.auth.CustomUserDetails;
 import com.example.wdmsystem.exception.NotFoundException;
 import com.example.wdmsystem.merchant.system.IMerchantRepository;
 import com.example.wdmsystem.merchant.system.Merchant;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Limit;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,13 +17,12 @@ import java.util.List;
 public class EmployeeService {
     private final IEmployeeRepository employeeRepository;
     private final IMerchantRepository merchantRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    public EmployeeService(IEmployeeRepository employeeRepository, IMerchantRepository merchantRepository) {
+    public EmployeeService(IEmployeeRepository employeeRepository, IMerchantRepository merchantRepository, PasswordEncoder passwordEncoder) {
         this.employeeRepository = employeeRepository;
         this.merchantRepository = merchantRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Employee createEmployee(CreateEmployeeDTO request) {
@@ -34,19 +32,12 @@ public class EmployeeService {
 
         String hashedPassword = passwordEncoder.encode(request.password());
 
-        Merchant merchant;
-
-        if (currentUser.getMerchantId() != null) {
-            merchant = merchantRepository.findById(currentUser.getMerchantId()).orElseThrow(() ->
+        Merchant merchant = merchantRepository.findById(currentUser.getMerchantId()).orElseThrow(() ->
                     new NotFoundException("Merchant with id " + currentUser.getMerchantId() + " not found"));
-        }
-        else {
-            merchant = null;
-        }
 
         Employee employee = new Employee(
                 0,
-                merchant, // not sure if this is what you meant
+                merchant,
                 request.firstName(),
                 request.lastName(),
                 request.employeeType(),
@@ -104,8 +95,9 @@ public class EmployeeService {
         boolean isAdmin = currentUser.getAuthorities().stream()
                 .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
         if(isAdmin) {
-            //employee.merchant().set(request.merchantId());
-            employee.merchant.setId(request.merchantId());
+            Merchant merchant = merchantRepository.findById(currentUser.getMerchantId()).orElseThrow(() ->
+                    new NotFoundException("Merchant with id " + currentUser.getMerchantId() + " not found"));
+            employee.setMerchant(merchant);
         }
         employeeRepository.save(employee);
     }

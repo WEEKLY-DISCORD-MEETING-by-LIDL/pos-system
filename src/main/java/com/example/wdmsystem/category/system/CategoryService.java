@@ -1,7 +1,9 @@
 package com.example.wdmsystem.category.system;
 
-import com.example.wdmsystem.auth.CustomUserDetails;
+import com.example.wdmsystem.auth.*;
 import com.example.wdmsystem.exception.NotFoundException;
+import com.example.wdmsystem.merchant.system.IMerchantRepository;
+import com.example.wdmsystem.merchant.system.Merchant;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -11,8 +13,11 @@ import java.util.List;
 public class CategoryService {
 
     private final ICategoryRepository categoryRepository;
-    public CategoryService(ICategoryRepository categoryRepository) {
+    private final IMerchantRepository merchantRepository;
+
+    public CategoryService(ICategoryRepository categoryRepository, IMerchantRepository merchantRepository) {
         this.categoryRepository = categoryRepository;
+        this.merchantRepository = merchantRepository;
     }
 
     public Category createCategory(CategoryDTO request) {
@@ -20,9 +25,12 @@ public class CategoryService {
                 .getAuthentication()
                 .getPrincipal();
 
+        Merchant merchant = merchantRepository.findById(currentUser.getMerchantId()).orElseThrow(
+                () -> new NotFoundException("Merchant with ID " + currentUser.getMerchantId() + " not found")
+        );
         Category category = new Category(
                 0,
-                currentUser.getMerchantId(),
+                merchant,
                 request.title()
         );
         return categoryRepository.save(category);
@@ -69,6 +77,6 @@ public class CategoryService {
         Category category = categoryRepository.findById(categoryId).orElseThrow(
                 () -> new NotFoundException("Category with id " + categoryId + " not found"));
 
-        return category.getMerchantId() == currentUser.getMerchantId();
+        return category.getMerchant().getId() == currentUser.getMerchantId();
     }
 }

@@ -1,8 +1,7 @@
 package com.example.wdmsystem.config;
 
-import com.example.wdmsystem.auth.CustomUserDetailsService;
+import com.example.wdmsystem.auth.*;
 import com.example.wdmsystem.exception.CustomAuthenticationEntryPoint;
-import com.example.wdmsystem.auth.JwtAuthTokenFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

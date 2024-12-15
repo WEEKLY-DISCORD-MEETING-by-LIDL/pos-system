@@ -3,7 +3,10 @@ package com.example.wdmsystem.product.system;
 import com.example.wdmsystem.auth.CustomUserDetails;
 import com.example.wdmsystem.exception.InvalidInputException;
 import com.example.wdmsystem.exception.NotFoundException;
+import com.example.wdmsystem.merchant.system.IMerchantRepository;
+import com.example.wdmsystem.merchant.system.Merchant;
 import com.example.wdmsystem.utility.DTOMapper;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Limit;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -14,17 +17,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class ProductService {
     private final IProductRepository productRepository;
     private final IProductVariantRepository productVariantRepository;
-
+    private final IMerchantRepository merchantRepository;
     private final DTOMapper dtoMapper;
-
-    public ProductService(IProductRepository productRepository, IProductVariantRepository productVariantRepository, DTOMapper dtoMapper) {
-        this.productRepository = productRepository;
-        this.productVariantRepository = productVariantRepository;
-        this.dtoMapper = dtoMapper;
-    }
 
     public ProductDTO createProduct(ProductDTO request) {
 
@@ -46,9 +44,9 @@ public class ProductService {
         CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getPrincipal();
-				
-        // placeholder
-        //product.merchant.id = 10; idk what to do with this
+
+        product.merchant = merchantRepository.findById(currentUser.getMerchantId()).orElseThrow(() ->
+                new NotFoundException("Merchant with id " + currentUser.getMerchantId() + " not found"));
 
         product.createdAt = LocalDateTime.now();
         product.updatedAt = LocalDateTime.now();
@@ -254,7 +252,7 @@ public class ProductService {
 
         Product product = productRepository.findById(productId).orElseThrow(() ->
                 new NotFoundException("Product with id " + productId + " not found"));
-        return product.getMerchantId() == currentUser.getMerchantId();
+        return product.getMerchant().getId() == currentUser.getMerchantId();
     }
 
     public boolean variantIsOwnedByCurrentUser(int variantId) {
@@ -264,7 +262,7 @@ public class ProductService {
 
         ProductVariant variant = productVariantRepository.findById(variantId).orElseThrow(() ->
                 new NotFoundException("Variant with id " + variantId + " not found"));
-        return variant.getProduct().getMerchantId() == currentUser.getMerchantId();
+        return variant.getProduct().getMerchant().getId() == currentUser.getMerchantId();
     }
 
 }

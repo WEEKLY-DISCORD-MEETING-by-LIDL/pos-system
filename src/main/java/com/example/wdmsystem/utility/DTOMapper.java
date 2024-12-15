@@ -63,13 +63,13 @@ public class DTOMapper {
 
     /// EMPLOYEE
     public Employee CreateEmployee_DTOToModel(CreateEmployeeDTO createEmployeeDTO) {
-        return new Employee(0, 0, createEmployeeDTO.firstName(), createEmployeeDTO.lastName(),
+        return new Employee(0, null , createEmployeeDTO.firstName(), createEmployeeDTO.lastName(),
                 createEmployeeDTO.employeeType(), createEmployeeDTO.username(),
                 passwordEncoder.encode(createEmployeeDTO.password()),null);
     }
 
     public Employee UpdateEmployee_DTOToModel(UpdateEmployeeDTO updateEmployeeDTO, Employee employee){
-        employee.setMerchantId(updateEmployeeDTO.merchantId());
+        employee.setMerchant(null);
         employee.setFirstName(updateEmployeeDTO.firstName());
         employee.setLastName(updateEmployeeDTO.lastName());
         employee.setEmployeeType(updateEmployeeDTO.employeeType());
