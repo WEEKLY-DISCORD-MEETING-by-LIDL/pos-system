@@ -35,8 +35,8 @@ public class Merchant {
     @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL)
     List<Order> orders;
 
-    //@OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL)
-    //List<Product> products;
+    @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL)
+    List<Product> products;
 
     //@OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL)
    //List<Customer> customers;

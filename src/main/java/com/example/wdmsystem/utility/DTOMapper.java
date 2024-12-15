@@ -26,11 +26,11 @@ public class DTOMapper {
 
     /// PRODUCT
     public ProductDTO Product_ModelToDTO(Product product) {
-        return new ProductDTO(product.id, product.merchantId, product.title, product.categoryId, product.price, product.discountId, product.taxId, product.weight, product.weightUnit);
+        return new ProductDTO(product.id, product.merchant, product.title, product.categoryId, product.price, product.discountId, product.taxId, product.weight, product.weightUnit);
     }
 
     public Product Product_DTOToModel(ProductDTO productDTO) {
-        return new Product(productDTO.id(), productDTO.merchantId(), productDTO.title(), productDTO.categoryId(), productDTO.price(), productDTO.discountId(), productDTO.taxId(), productDTO.weight(), productDTO.weightUnit());
+        return new Product(productDTO.id(), productDTO.merchant(), productDTO.title(), productDTO.categoryId(), productDTO.price(), productDTO.discountId(), productDTO.taxId(), productDTO.weight(), productDTO.weightUnit());
     }
 
     /// PRODUCT VARIANT
