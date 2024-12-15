@@ -47,7 +47,12 @@ public class ProductService {
         product.createdAt = LocalDateTime.now();
         product.updatedAt = LocalDateTime.now();
 
-        return dtoMapper.Product_ModelToDTO(productRepository.save(product));
+        Product savedProduct = productRepository.save(product);
+
+        ProductVariantDTO defaultVariantRequest = new ProductVariantDTO(null, savedProduct.getId(), "Default", 0);
+        createVariant(savedProduct.getId(), defaultVariantRequest);
+
+        return dtoMapper.Product_ModelToDTO(savedProduct);
     }
 
     public ProductVariantDTO createVariant(int productId, ProductVariantDTO request) {
