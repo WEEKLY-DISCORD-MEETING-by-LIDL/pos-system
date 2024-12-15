@@ -20,7 +20,8 @@ const ProductManagementPage = () => {
         price: 0,
         weight: 0,
         weightUnit: 'kg',
-        categoryId: 1
+        categoryId: 1,
+        merchantId: 1
     });
     const [newVariant, setNewVariant] = useState({
         title: '',
@@ -48,7 +49,7 @@ const ProductManagementPage = () => {
         try {
             await createProduct(newProduct);
             setIsAddProductModalOpen(false);
-            setNewProduct({ title: '', price: 0, weight: 0, weightUnit: 'kg', categoryId: 1 });
+            setNewProduct({ title: '', price: 0, weight: 0, weightUnit: 'kg', categoryId: 1, merchantId: 1 });
             await loadProducts();
         } catch (error) {
             console.error('Error adding product:', error);
@@ -176,36 +177,64 @@ const ProductManagementPage = () => {
                 }}>
                     <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '4px' }}>
                         <h3>Add New Product</h3>
-                        <div>
+                        <div style={{ marginBottom: '10px' }}>
+                            <label style={{ display: 'block', marginBottom: '5px' }}>Title:</label>
                             <input
                                 type="text"
-                                placeholder="Product Title"
+                                placeholder="Enter product title"
                                 value={newProduct.title}
                                 onChange={e => setNewProduct({...newProduct, title: e.target.value})}
+                                style={{ width: '100%', padding: '5px' }}
                             />
                         </div>
-                        <div>
+                        <div style={{ marginBottom: '10px' }}>
+                            <label style={{ display: 'block', marginBottom: '5px' }}>Price:</label>
                             <input
                                 type="number"
-                                placeholder="Price"
+                                placeholder="Enter price"
                                 value={newProduct.price}
                                 onChange={e => setNewProduct({...newProduct, price: parseFloat(e.target.value)})}
+                                style={{ width: '100%', padding: '5px' }}
                             />
                         </div>
-                        <div>
+                        <div style={{ marginBottom: '10px' }}>
+                            <label style={{ display: 'block', marginBottom: '5px' }}>Category ID:</label>
                             <input
                                 type="number"
-                                placeholder="Weight"
-                                value={newProduct.weight}
-                                onChange={e => setNewProduct({...newProduct, weight: parseFloat(e.target.value)})}
+                                placeholder="Enter category ID"
+                                value={newProduct.categoryId}
+                                onChange={e => setNewProduct({...newProduct, categoryId: parseInt(e.target.value)})}
+                                style={{ width: '100%', padding: '5px' }}
                             />
                         </div>
-                        <div>
+                        <div style={{ marginBottom: '10px' }}>
+                            <label style={{ display: 'block', marginBottom: '5px' }}>Merchant ID:</label>
+                            <input
+                                type="number"
+                                placeholder="Enter merchant ID"
+                                value={newProduct.merchantId}
+                                onChange={e => setNewProduct({...newProduct, merchantId: parseInt(e.target.value)})}
+                                style={{ width: '100%', padding: '5px' }}
+                            />
+                        </div>
+                        <div style={{ marginBottom: '10px' }}>
+                            <label style={{ display: 'block', marginBottom: '5px' }}>Weight:</label>
+                            <input
+                                type="number"
+                                placeholder="Enter weight"
+                                value={newProduct.weight}
+                                onChange={e => setNewProduct({...newProduct, weight: parseFloat(e.target.value)})}
+                                style={{ width: '100%', padding: '5px' }}
+                            />
+                        </div>
+                        <div style={{ marginBottom: '10px' }}>
+                            <label style={{ display: 'block', marginBottom: '5px' }}>Weight Unit:</label>
                             <input
                                 type="text"
-                                placeholder="Weight Unit"
+                                placeholder="Enter weight unit (e.g., kg)"
                                 value={newProduct.weightUnit}
                                 onChange={e => setNewProduct({...newProduct, weightUnit: e.target.value})}
+                                style={{ width: '100%', padding: '5px' }}
                             />
                         </div>
                         <div style={{ marginTop: '10px' }}>
@@ -231,20 +260,24 @@ const ProductManagementPage = () => {
                 }}>
                     <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '4px' }}>
                         <h3>Add New Variant</h3>
-                        <div>
+                        <div style={{ marginBottom: '10px' }}>
+                            <label style={{ display: 'block', marginBottom: '5px' }}>Title:</label>
                             <input
                                 type="text"
-                                placeholder="Variant Title"
+                                placeholder="Enter variant title"
                                 value={newVariant.title}
                                 onChange={e => setNewVariant({...newVariant, title: e.target.value})}
+                                style={{ width: '100%', padding: '5px' }}
                             />
                         </div>
-                        <div>
+                        <div style={{ marginBottom: '10px' }}>
+                            <label style={{ display: 'block', marginBottom: '5px' }}>Additional Price:</label>
                             <input
                                 type="number"
-                                placeholder="Additional Price"
+                                placeholder="Enter additional price"
                                 value={newVariant.additionalPrice}
                                 onChange={e => setNewVariant({...newVariant, additionalPrice: parseFloat(e.target.value)})}
+                                style={{ width: '100%', padding: '5px' }}
                             />
                         </div>
                         <div style={{ marginTop: '10px' }}>
