@@ -36,7 +36,7 @@ public class Product {
     public LocalDateTime createdAt;
     public LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     public List<ProductVariant> variants;
 
     public Product(Integer id, Merchant merchant, String title, int categoryId, double price, int discountId, int taxId, float weight, String weightUnit) {
