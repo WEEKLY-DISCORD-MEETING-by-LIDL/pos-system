@@ -1,13 +1,14 @@
 package com.example.wdmsystem.customer.system;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.example.wdmsystem.reservation.system.Reservation;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
+import com.example.wdmsystem.merchant.system.Merchant;
 
 @Entity
 @Getter
@@ -17,7 +18,11 @@ public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer id;
-    public int merchantId;
+
+    @ManyToOne
+    @JoinColumn(name = "merchant_id", nullable = false)
+    public Merchant merchant;
+
     //TODO: Add string restrictions of max length 30
     public String firstName;
     public String lastName;
@@ -25,15 +30,16 @@ public class Customer {
     /// Not defined in document, but present in API contract
     public LocalDateTime createdAt;
     public LocalDateTime updatedAt;
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    public List<Reservation> reservations;
 
-    public Customer(int id, int merchantId, String firstName, String lastName, String phone, LocalDateTime createdAt) {
-        this.id = id;
-        this.merchantId = merchantId;
+    public Customer(Merchant merchant, String firstName, String lastName, String phone, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.merchant = merchant;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phone = phone;
         this.createdAt = createdAt;
-        this.updatedAt = null;
+        this.updatedAt = updatedAt;
     }
 
     //@Entity required constructor

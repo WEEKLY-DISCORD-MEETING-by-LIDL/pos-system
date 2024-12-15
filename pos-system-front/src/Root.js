@@ -5,6 +5,7 @@ import Home from "./components/Home"
 import {CreateOrderPage} from "./components/CreateOrderPage";
 import {OrderManagementPage} from "./components/OrderManagementPage";
 import {ViewOrderPage} from "./components/ViewOrderPage";
+import ProductManagementPage from "./pages/ProductManagementPage";
 
 function Root() {
     return (
@@ -14,6 +15,8 @@ function Root() {
                 <Route path="/create-order" element={<CreateOrderPage />} />
                 <Route path="/all-orders" element={<OrderManagementPage />} />
                 <Route path="/view-order" element={<ViewOrderPage />} />
+                <Route path="/home" element={<Home />} />
+                <Route path="/product-management" element={<ProductManagementPage />} />
             </Routes>
         </Router>
     );

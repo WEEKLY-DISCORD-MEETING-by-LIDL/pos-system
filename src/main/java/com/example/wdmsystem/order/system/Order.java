@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
 
+import com.example.wdmsystem.merchant.system.Merchant;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -17,7 +19,10 @@ public final class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer id;
-    public int merchantId;
+
+    @ManyToOne
+    @JoinColumn(name = "merchant_id", nullable = false)
+    public Merchant merchant;
 
     @ManyToOne
     @JoinColumn(name = "order_discount_id")
@@ -34,9 +39,9 @@ public final class Order {
     @OneToMany(mappedBy = "order")
     private List<Payment> payments;
 
-    public Order(Integer id, int merchantId, OrderDiscount orderDiscount, OrderStatus status, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Order(Integer id, Merchant merchant, OrderDiscount orderDiscount, OrderStatus status, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
-        this.merchantId = merchantId;
+        this.merchant = merchant;
         this.orderDiscount = orderDiscount;
         this.status = status;
         this.createdAt = createdAt;

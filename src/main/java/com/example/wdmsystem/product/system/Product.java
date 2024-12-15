@@ -12,14 +12,19 @@ import java.util.List;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import com.example.wdmsystem.merchant.system.Merchant;
+
 @Entity
 @Getter
 @Setter
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Integer id;
-    public Integer merchantId;
+    public Integer id;   
+    @ManyToOne
+    @JoinColumn(name = "merchant_id", nullable = false)
+    public Merchant merchant;  
+  
     public String title;
 
     @ManyToOne
@@ -27,26 +32,24 @@ public class Product {
     @OnDelete(action = OnDeleteAction.SET_NULL)
     public Category category;
 
-
     public double price;
-    public Integer discountId;
+    public Integer discountId; //make this work with discount model
 
     @ManyToOne
     @JoinColumn(name = "tax_id", referencedColumnName = "id")
     @OnDelete(action = OnDeleteAction.SET_NULL)
     public Tax tax;
-
     public float weight;
     public String weightUnit;
     public LocalDateTime createdAt;
     public LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     public List<ProductVariant> variants;
 
-    public Product(Integer id, Integer merchantId, String title, Category category, double price, Integer discountId, Tax tax, float weight, String weightUnit) {
+    public Product(Integer id, Merchant merchant, String title, int categoryId, double price, int discountId, int taxId, float weight, String weightUnit) {
         this.id = id;
-        this.merchantId = merchantId;
+        this.merchant = merchant;
         this.title = title;
         this.category = category;
         this.price = price;
