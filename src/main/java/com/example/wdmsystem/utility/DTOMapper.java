@@ -1,6 +1,6 @@
 package com.example.wdmsystem.utility;
 
-import com.example.wdmsystem.employee.system.CreateEmployeeDTO;
+import com.example.wdmsystem.employee.system.EmployeeDTO;
 import com.example.wdmsystem.employee.system.Employee;
 import com.example.wdmsystem.employee.system.IEmployeeRepository;
 import com.example.wdmsystem.employee.system.UpdateEmployeeDTO;
@@ -8,13 +8,11 @@ import com.example.wdmsystem.exception.NotFoundException;
 import com.example.wdmsystem.order.system.*;
 import com.example.wdmsystem.product.system.*;
 import lombok.AllArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
 public class DTOMapper {
-    private PasswordEncoder passwordEncoder;
     IOrderRepository orderRepository;
     IOrderItemRepository orderItemRepository;
     IProductRepository productRepository;
@@ -62,19 +60,12 @@ public class DTOMapper {
     }
 
     /// EMPLOYEE
-    public Employee CreateEmployee_DTOToModel(CreateEmployeeDTO createEmployeeDTO) {
-        return new Employee(0, null , createEmployeeDTO.firstName(), createEmployeeDTO.lastName(),
-                createEmployeeDTO.employeeType(), createEmployeeDTO.username(),
-                passwordEncoder.encode(createEmployeeDTO.password()),null);
+
+    public EmployeeDTO Employee_ModelToDTO(Employee employee) {
+        return new EmployeeDTO(employee.firstName, employee.lastName, employee.employeeType, employee.username, "<hidden>");
     }
 
-    public Employee UpdateEmployee_DTOToModel(UpdateEmployeeDTO updateEmployeeDTO, Employee employee){
-        employee.setMerchant(null);
-        employee.setFirstName(updateEmployeeDTO.firstName());
-        employee.setLastName(updateEmployeeDTO.lastName());
-        employee.setEmployeeType(updateEmployeeDTO.employeeType());
-        employee.setUsername(updateEmployeeDTO.username());
-        employee.setPassword(passwordEncoder.encode(updateEmployeeDTO.password()));
-        return employee;
+    public UpdateEmployeeDTO UpdateEmployee_ModelToDTO(Employee employee) {
+        return new UpdateEmployeeDTO(employee.merchant.id, employee.firstName, employee.lastName, employee.employeeType, employee.username, "<hidden>");
     }
 }

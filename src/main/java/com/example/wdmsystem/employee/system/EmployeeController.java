@@ -17,24 +17,24 @@ public class EmployeeController {
 
     @PostMapping("/employees")
     @PreAuthorize("hasRole('ADMIN') or hasRole('OWNER')")
-    ResponseEntity<Employee> createEmployee(@RequestBody CreateEmployeeDTO request) {
-        Employee newEmployee = _employeeService.createEmployee(request);
+    ResponseEntity<EmployeeDTO> createEmployee(@RequestBody EmployeeDTO request) {
+        EmployeeDTO newEmployee = _employeeService.createEmployee(request);
         return new ResponseEntity<>(newEmployee, HttpStatus.CREATED);
     }
 
     @GetMapping("/employees")
     @PreAuthorize("hasRole('ADMIN') or hasRole('OWNER')")
-    ResponseEntity<List<Employee>> getEmployees(@RequestParam EmployeeType type,
+    ResponseEntity<List<EmployeeDTO>> getEmployees(@RequestParam EmployeeType type,
                                                 @RequestParam(required = false) Integer limit) {
 
-        List<Employee> employees = _employeeService.getEmployees(type, limit);
+        List<EmployeeDTO> employees = _employeeService.getEmployees(type, limit);
         return new ResponseEntity<>(employees, HttpStatus.OK);
     }
 
     @GetMapping("/employees/{employeeId}")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('OWNER') and @employeeService.isOwnedByCurrentUser(#employeeId))")
-    ResponseEntity<Employee> getEmployee(@PathVariable int employeeId) {
-        Employee employee = _employeeService.getEmployee(employeeId);
+    ResponseEntity<EmployeeDTO> getEmployee(@PathVariable int employeeId) {
+        EmployeeDTO employee = _employeeService.getEmployee(employeeId);
         return new ResponseEntity<>(employee, HttpStatus.OK);
     }
 
