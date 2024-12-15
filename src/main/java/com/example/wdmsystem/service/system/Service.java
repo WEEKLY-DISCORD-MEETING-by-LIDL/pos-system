@@ -4,9 +4,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
+
+import com.example.wdmsystem.merchant.system.Merchant;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -18,17 +22,23 @@ public final class Service {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer id;
+
+    @ManyToOne
+    @JoinColumn(name = "merchant_id", nullable = false)
+    public Merchant merchant;
+
     public String title;
-    @Nullable public int categoryId;
+    public int categoryId; //nullable
     public double price;
-    @Nullable public int discountId;
-    @Nullable public int taxId;
+    public int discountId; //nullable
+    public int taxId; //nullable
     public int durationMins;
     public LocalDateTime createdAt;
     public LocalDateTime updatedAt;
 
-    public Service(Integer id, String title, int categoryId, double price, int discountId, int taxId, int durationMins, LocalDateTime createdAt) {
+    public Service(Integer id, Merchant merchant, String title, int categoryId, double price, int discountId, int taxId, int durationMins, LocalDateTime createdAt) {
         this.id = id;
+        this.merchant = merchant;
         this.title = title;
         this.categoryId = categoryId;
         this.price = price;

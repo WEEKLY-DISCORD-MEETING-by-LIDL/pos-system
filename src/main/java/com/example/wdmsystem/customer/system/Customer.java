@@ -4,10 +4,14 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+
+import com.example.wdmsystem.merchant.system.Merchant;
 
 @Entity
 @Getter
@@ -17,7 +21,11 @@ public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer id;
-    public int merchantId;
+
+    @ManyToOne
+    @JoinColumn(name = "merchant_id", nullable = false)
+    public Merchant merchant;
+
     //TODO: Add string restrictions of max length 30
     public String firstName;
     public String lastName;
@@ -26,9 +34,9 @@ public class Customer {
     public LocalDateTime createdAt;
     public LocalDateTime updatedAt;
 
-    public Customer(int id, int merchantId, String firstName, String lastName, String phone, LocalDateTime createdAt) {
+    public Customer(int id, Merchant merchant, String firstName, String lastName, String phone, LocalDateTime createdAt) {
         this.id = id;
-        this.merchantId = merchantId;
+        this.merchant = merchant;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phone = phone;

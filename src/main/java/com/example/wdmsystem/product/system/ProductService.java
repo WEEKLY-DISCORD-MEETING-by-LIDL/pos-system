@@ -42,7 +42,7 @@ public class ProductService {
         Product product = dtoMapper.Product_DTOToModel(request);
 
         // placeholder
-        product.merchantId = 10;
+        //product.merchant.id = 10; idk what to do with this
 
         product.createdAt = LocalDateTime.now();
         product.updatedAt = LocalDateTime.now();

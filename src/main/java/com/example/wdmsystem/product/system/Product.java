@@ -10,6 +10,8 @@ import java.util.List;
 
 import org.springframework.lang.Nullable;
 
+import com.example.wdmsystem.merchant.system.Merchant;
+
 @Entity
 @Getter
 @Setter
@@ -17,12 +19,18 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer id;
-    public int merchantId;
+
+    @ManyToOne
+    @JoinColumn(name = "merchant_id", nullable = false)
+    public Merchant merchant;
+
+    //public Integer merchantId;
+
     public String title;
-    @Nullable public int categoryId;
+    public int categoryId; //nullable
     public double price;
-    @Nullable public int discountId;
-    @Nullable public int taxId;
+    public int discountId; //nullable
+    public int taxId; //nullable
     public float weight;
     public String weightUnit;
     public LocalDateTime createdAt;
@@ -31,9 +39,9 @@ public class Product {
     @OneToMany(mappedBy = "product")
     public List<ProductVariant> variants;
 
-    public Product(Integer id, int merchantId, String title, int categoryId, double price, int discountId, int taxId, float weight, String weightUnit) {
+    public Product(Integer id, Merchant merchant, String title, int categoryId, double price, int discountId, int taxId, float weight, String weightUnit) {
         this.id = id;
-        this.merchantId = merchantId;
+        this.merchant = merchant;
         this.title = title;
         this.price = price;
         this.discountId = discountId;
