@@ -12,13 +12,13 @@ import java.util.Collection;
 public class CustomUserDetails implements UserDetails {
     private final String username;
     private final String password;
-    private final Merchant merchant;
+    private final Integer merchantId;
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public CustomUserDetails(String username, String password, Merchant merchant, Collection<? extends GrantedAuthority> authorities) {
+    public CustomUserDetails(String username, String password, Integer merchantId, Collection<? extends GrantedAuthority> authorities) {
         this.username = username;
         this.password = password;
-        this.merchant = merchant;
+        this.merchantId = merchantId;
         this.authorities = authorities;
     }
 

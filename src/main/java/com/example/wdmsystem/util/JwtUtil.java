@@ -22,13 +22,13 @@ public class JwtUtil {
 
     private final Key signingKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
 
-    public String generateToken(CustomUserDetails userDetails, Merchant merchant) {
+    public String generateToken(CustomUserDetails userDetails, Integer merchantId) {
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
                 .claim("roles", userDetails.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority)
                         .collect(Collectors.toList()))
-                .claim("merchantId", merchant.id) // i have no clue what to do here
+                .claim("merchantId", merchantId) // i have no clue what to do here
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(signingKey, SignatureAlgorithm.HS256)

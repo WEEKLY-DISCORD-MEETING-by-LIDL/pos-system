@@ -41,15 +41,15 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
                 Claims claims = jwtUtil.validateToken(jwt);
                 String username = claims.getSubject();
                 List<String> roles = parseRoles(claims.get("roles"));
-                //Integer merchantId = claims.get("merchantId", Integer.class);
-                Merchant merchant = claims.get("merchantId", Merchant.class); // 
+                Integer merchantId = claims.get("merchantId", Integer.class);
+                //Merchant merchant = claims.get("merchantId", Merchant.class); // 
                 
                 List<GrantedAuthority> authorities = roles.stream()
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
 
-                CustomUserDetails userDetails = new CustomUserDetails(username, null, merchant, authorities);
+                CustomUserDetails userDetails = new CustomUserDetails(username, null, merchantId, authorities);
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
                 SecurityContextHolder.getContext().setAuthentication(authentication);

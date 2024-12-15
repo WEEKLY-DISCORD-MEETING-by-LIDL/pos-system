@@ -2,6 +2,9 @@ package com.example.wdmsystem.employee.system;
 
 import com.example.wdmsystem.employee.system.authentication.CustomUserDetails;
 import com.example.wdmsystem.exception.NotFoundException;
+import com.example.wdmsystem.merchant.system.IMerchantRepository;
+import com.example.wdmsystem.merchant.system.Merchant;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Limit;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,12 +17,14 @@ import java.util.List;
 @Service
 public class EmployeeService {
     private final IEmployeeRepository employeeRepository;
+    private final IMerchantRepository merchantRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public EmployeeService(IEmployeeRepository employeeRepository) {
+    public EmployeeService(IEmployeeRepository employeeRepository, IMerchantRepository merchantRepository) {
         this.employeeRepository = employeeRepository;
+        this.merchantRepository = merchantRepository;
     }
 
     public Employee createEmployee(CreateEmployeeDTO request) {
@@ -28,9 +33,20 @@ public class EmployeeService {
                 .getPrincipal();
 
         String hashedPassword = passwordEncoder.encode(request.password());
+
+        Merchant merchant;
+
+        if (currentUser.getMerchantId() != null) {
+            merchant = merchantRepository.findById(currentUser.getMerchantId()).orElseThrow(() ->
+                    new NotFoundException("Merchant with id " + currentUser.getMerchantId() + " not found"));
+        }
+        else {
+            merchant = null;
+        }
+
         Employee employee = new Employee(
                 0,
-                currentUser.getMerchant(),
+                merchant, // not sure if this is what you meant
                 request.firstName(),
                 request.lastName(),
                 request.employeeType(),
@@ -60,7 +76,7 @@ public class EmployeeService {
         if(isAdmin) {
             return employeeRepository.getEmployeesByEmployeeType(type, Limit.of(limit));
         } else {
-            return employeeRepository.getEmployeesByEmployeeTypeAndMerchantId(type, currentUser.getMerchant(), Limit.of(limit));
+            return employeeRepository.getEmployeesByEmployeeTypeAndMerchantId(type, currentUser.getMerchantId(), Limit.of(limit));
         }
     }
 
@@ -88,7 +104,8 @@ public class EmployeeService {
         boolean isAdmin = currentUser.getAuthorities().stream()
                 .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
         if(isAdmin) {
-            employee.setMerchant(request.merchant());
+            //employee.merchant().set(request.merchantId());
+            employee.merchant.setId(request.merchantId());
         }
         employeeRepository.save(employee);
     }
@@ -109,6 +126,6 @@ public class EmployeeService {
                 .getPrincipal();
 
         Employee employee = getEmployee(employeeId);
-        return employee.getMerchant() == currentUser.getMerchant();
+        return employee.getMerchant().id == currentUser.getMerchantId();
     }
 }
