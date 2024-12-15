@@ -1,15 +1,12 @@
 package com.example.wdmsystem.customer.system;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import com.example.wdmsystem.reservation.system.Reservation;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.example.wdmsystem.merchant.system.Merchant;
 
@@ -33,15 +30,16 @@ public class Customer {
     /// Not defined in document, but present in API contract
     public LocalDateTime createdAt;
     public LocalDateTime updatedAt;
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    public List<Reservation> reservations;
 
-    public Customer(int id, Merchant merchant, String firstName, String lastName, String phone, LocalDateTime createdAt) {
-        this.id = id;
+    public Customer(Merchant merchant, String firstName, String lastName, String phone, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.merchant = merchant;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phone = phone;
         this.createdAt = createdAt;
-        this.updatedAt = null;
+        this.updatedAt = updatedAt;
     }
 
     //@Entity required constructor

@@ -1,39 +1,84 @@
 package com.example.wdmsystem.reservation.system;
 
+import com.example.wdmsystem.customer.system.Customer;
+import com.example.wdmsystem.customer.system.ICustomerRepository;
+import com.example.wdmsystem.employee.system.IEmployeeRepository;
 import com.example.wdmsystem.exception.NotFoundException;
-import org.springframework.stereotype.Service;
+import com.example.wdmsystem.service.system.IServiceRepository;
+import com.example.wdmsystem.service.system.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 
-@Service
-public final class ReservationService {
+@org.springframework.stereotype.Service
+public class ReservationService {
     private final IReservationRepository reservationRepository;
+    private final ICustomerRepository customerRepository;
+    private final IServiceRepository serviceRepository;
+    private final IEmployeeRepository employeeRepository;
 
-    public ReservationService(IReservationRepository reservationRepository) {
+    public ReservationService(IReservationRepository reservationRepository, ICustomerRepository customerRepository,
+                              IServiceRepository serviceRepository, IEmployeeRepository employeeRepository) {
         this.reservationRepository = reservationRepository;
+        this.customerRepository = customerRepository;
+        this.serviceRepository = serviceRepository;
+        this.employeeRepository = employeeRepository;
     }
 
     public Reservation createReservation(ReservationDTO request) {
-        Reservation reservation = new Reservation();
-        reservation.setCustomerId(request.getCustomerId());
-        reservation.setServiceId(request.getServiceId());
-        reservation.setEmployeeId(request.getEmployeeId());
-        reservation.setStartTime(request.getStartTime());
-        reservation.setSendConfirmation(request.isSendConfirmation());
-        reservation.setReservation(ReservationStatus.PENDING);
-        reservation.setCreatedAt(LocalDateTime.now());
-        reservation.setUpdatedAt(LocalDateTime.now());
+        Customer customer = customerRepository.findById(request.customerId())
+                .orElseThrow(() -> new NotFoundException("Customer not found"));
 
-        // TODO: Save reservation to the repository (currently returns null)
-        return null;
+        Service service = serviceRepository.findById(request.serviceId())
+                .orElseThrow(() -> new NotFoundException("Service not found"));
+
+        if (!employeeRepository.existsById(request.employeeId())) {
+            throw new NotFoundException("Employee not found");
+        }
+
+        Reservation reservation = new Reservation(
+                customer,
+                service,
+                request.employeeId(), //probably change to employee
+                request.startTime(),
+                request.endTime(),
+                request.reservationStatus() != null ? request.reservationStatus() : ReservationStatus.CONFIRMED, // if null, Default set to CONFIRMED
+                request.sendConfirmation(),
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
+
+        return reservationRepository.save(reservation);
     }
 
     public Reservation getReservation(int reservationId) {
-        // TODO: Fetch the reservation from the repository
-        return null;
+        return reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new NotFoundException("Reservation not found"));
     }
 
     public void updateReservation(int reservationId, ReservationDTO request) {
-        // TODO: Fetch the reservation, update fields, and save back to repository
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new NotFoundException("Reservation not found"));
+
+        if (request.employeeId() != null) {
+            if (!employeeRepository.existsById(request.employeeId())) {
+                throw new NotFoundException("Employee not found");
+            }
+            reservation.setEmployeeId(request.employeeId());
+        }
+        if (request.startTime() != null) {
+            reservation.setStartTime(request.startTime());
+        }
+        if (request.endTime() != null) {
+            reservation.setEndTime(request.endTime());
+        }
+        if (request.reservationStatus() != null) {
+            reservation.setReservationStatus(request.reservationStatus());
+        }
+
+        reservation.setUpdatedAt(LocalDateTime.now());
+
+        reservationRepository.save(reservation);
     }
 
     public void cancelReservation(int reservationId) {
@@ -44,6 +89,14 @@ public final class ReservationService {
         reservation.setUpdatedAt(LocalDateTime.now());
 
         reservationRepository.save(reservation);
+    }
+
+    public void deleteReservation(int reservationId) {
+        if (!reservationRepository.existsById(reservationId)) {
+            throw new NotFoundException("Reservation not found");
+        }
+
+        reservationRepository.deleteById(reservationId);
     }
 
 }
