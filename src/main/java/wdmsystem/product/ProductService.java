@@ -251,7 +251,7 @@ public class ProductService {
         }
     }
 
-	public void applyTax(int productId, int taxId) {
+    public void applyTax(int productId, int taxId) {
         Product product = productRepository.findById(productId).orElseThrow(() ->
                 new NotFoundException("Product with id " + productId + " not found"));
 
@@ -281,5 +281,4 @@ public class ProductService {
                 new NotFoundException("Variant with id " + variantId + " not found"));
         return variant.getProduct().getMerchant().getId() == currentUser.getMerchantId();
 	}
-
 }
