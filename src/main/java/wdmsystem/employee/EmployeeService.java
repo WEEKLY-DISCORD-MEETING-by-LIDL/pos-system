@@ -88,11 +88,7 @@ public class EmployeeService {
         Employee employee = employeeRepository.findById(employeeId).orElseThrow(
                 () -> new NotFoundException("Employee with id " + employeeId + " not found"));
 
-        employee.setFirstName(request.firstName());
-        employee.setLastName(request.lastName());
-        employee.setEmployeeType(request.employeeType());
-        employee.setUsername(request.username());
-        employee.setPassword(passwordEncoder.encode(request.password()));
+        setNonNullValues(employee,request);
         employee.setUpdatedAt(LocalDateTime.now());
 
         CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder.getContext()
@@ -100,13 +96,32 @@ public class EmployeeService {
                 .getPrincipal();
         boolean isAdmin = currentUser.getAuthorities().stream()
                 .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
-        if(isAdmin) {
+        if(isAdmin && request.merchantId() != null) {
             Merchant merchant = merchantRepository.findById(request.merchantId()).orElseThrow(() ->
                     new NotFoundException("Merchant with id " + request.merchantId() + " not found"));
             employee.setMerchant(merchant);
         }
         employeeRepository.save(employee);
     }
+
+    private void setNonNullValues(Employee employee, UpdateEmployeeDTO dto) {
+        if (dto.firstName() != null && dto.firstName().length() >= 30) {
+            employee.setFirstName(dto.firstName());
+        }
+        if (dto.lastName() != null && dto.lastName().length() >= 30) {
+            employee.setLastName(dto.lastName());
+        }
+        if (dto.employeeType() != null) {
+            employee.setEmployeeType(dto.employeeType());
+        }
+        if (dto.username() != null && dto.username().length() >= 30) {
+            employee.setUsername(dto.username());
+        }
+        if (dto.password() != null) {
+            employee.setPassword(passwordEncoder.encode(dto.password()));
+        }
+    }
+
 
     public void deleteEmployee(int employeeId) {
         if (employeeRepository.existsById(employeeId)) {

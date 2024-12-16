@@ -156,7 +156,7 @@ public class OrderService {
         Order order = orderRepository.findById(orderId).orElseThrow(() ->
                 new NotFoundException("Order with id " + orderId + " not found"));
 
-        order.status = status;
+        if(status != null) order.status = status;
         order.updatedAt = LocalDateTime.now();
         Order savedOrder = orderRepository.save(order);
 
