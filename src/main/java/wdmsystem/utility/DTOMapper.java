@@ -6,6 +6,9 @@ import wdmsystem.category.CategoryDTO;
 import wdmsystem.category.ICategoryRepository;
 import wdmsystem.customer.Customer;
 import wdmsystem.customer.CustomerDTO;
+import wdmsystem.discount.Discount;
+import wdmsystem.discount.DiscountDTO;
+import wdmsystem.discount.IDiscountRepository;
 import wdmsystem.employee.EmployeeDTO;
 import wdmsystem.employee.Employee;
 import wdmsystem.employee.IEmployeeRepository;
@@ -39,6 +42,7 @@ public class DTOMapper {
     ITaxRepository taxRepository;
     ICategoryRepository categoryRepository;
     IMerchantRepository merchantRepository;
+    IDiscountRepository discountRepository;
 
     /// ORDER
     public OrderDTO Order_ModelToDTO(Order order) {
@@ -47,12 +51,13 @@ public class DTOMapper {
 
     /// PRODUCT
     public ProductDTO Product_ModelToDTO(Product product) {
-        return new ProductDTO(product.id, product.merchant.id, product.title, (product.category == null ? null : product.category.id), product.price, product.discountId, (product.tax == null ? null : product.tax.id), product.weight, product.weightUnit);
+        return new ProductDTO(product.id, product.merchant.id, product.title, (product.category == null ? null : product.category.id), product.price, product.discount.id, (product.tax == null ? null : product.tax.id), product.weight, product.weightUnit);
     }
 
     public Product Product_DTOToModel(ProductDTO productDTO) {
         Tax tax;
         Category category;
+        Discount discount;
 
         if (productDTO.taxId() == null) {
             tax = null;
@@ -66,7 +71,13 @@ public class DTOMapper {
             category = categoryRepository.findById(productDTO.categoryId()).orElse(null);
         }
 
-        return new Product(productDTO.id(), null, productDTO.title(), category, productDTO.price(), productDTO.discountId(), tax, productDTO.weight(), productDTO.weightUnit());
+        if (productDTO.discountId() == null) {
+            discount = null;
+        } else {
+            discount = discountRepository.findById(productDTO.discountId()).orElse(null);
+        }
+
+        return new Product(productDTO.id(), null, productDTO.title(), category, productDTO.price(), discount, tax, productDTO.weight(), productDTO.weightUnit());
     }
 
     /// PRODUCT VARIANT
@@ -161,5 +172,11 @@ public class DTOMapper {
 
     public MerchantDTO Merchant_ModelToDTO(Merchant merchant){
         return new MerchantDTO(merchant.name, merchant.vat, merchant.address, merchant.email, merchant.phone);
+    }
+
+    /// Discount
+
+    public DiscountDTO Discount_ModelToDTO(Discount discount){
+        return new DiscountDTO(discount.title, discount.percentage, discount.expiresOn);
     }
 }

@@ -13,6 +13,7 @@ import wdmsystem.order.Order;
 @Entity
 @Getter
 @Setter
+//Discount for a whole order
 public final class OrderDiscount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

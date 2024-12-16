@@ -9,6 +9,7 @@ import java.util.List;
 
 import wdmsystem.category.Category;
 import wdmsystem.customer.Customer;
+import wdmsystem.discount.Discount;
 import wdmsystem.employee.Employee;
 import wdmsystem.order.Order;
 import wdmsystem.order.discount.OrderDiscount;
@@ -49,6 +50,9 @@ public class Merchant {
 
     @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL, orphanRemoval = true)
     List<OrderDiscount> orderDiscounts;
+
+    @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Discount> discounts;
 
     @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Tax> taxes;
