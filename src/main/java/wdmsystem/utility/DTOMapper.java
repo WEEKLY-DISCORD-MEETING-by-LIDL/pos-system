@@ -12,6 +12,7 @@ import wdmsystem.employee.IEmployeeRepository;
 import wdmsystem.exception.NotFoundException;
 import wdmsystem.merchant.IMerchantRepository;
 import wdmsystem.merchant.Merchant;
+import wdmsystem.merchant.MerchantDTO;
 import wdmsystem.order.*;
 import wdmsystem.payment.Payment;
 import wdmsystem.payment.PaymentDTO;
@@ -156,4 +157,9 @@ public class DTOMapper {
         return new ServiceDTO(service.title, service.category.id, service.price, service.discount.id,service.tax.id, service.durationMins);
     }
 
+    /// Merchant
+
+    public MerchantDTO Merchant_ModelToDTO(Merchant merchant){
+        return new MerchantDTO(merchant.name, merchant.vat, merchant.address, merchant.email, merchant.phone);
+    }
 }

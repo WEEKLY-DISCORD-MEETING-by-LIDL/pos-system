@@ -1,7 +1,10 @@
 package wdmsystem.reservation;
 
+import org.springframework.security.core.context.SecurityContextHolder;
+import wdmsystem.auth.CustomUserDetails;
 import wdmsystem.customer.Customer;
 import wdmsystem.customer.ICustomerRepository;
+import wdmsystem.employee.Employee;
 import wdmsystem.employee.IEmployeeRepository;
 import wdmsystem.exception.NotFoundException;
 import wdmsystem.service.IServiceRepository;
@@ -93,6 +96,20 @@ public class ReservationService {
         }
 
         reservationRepository.deleteById(reservationId);
+    }
+
+    public boolean isOwnedByCurrentUser(int reservationId) {
+        CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() ->
+                new NotFoundException("Reservation with id " + reservationId + " not found"));
+
+        Employee employee = employeeRepository.findById(reservation.getEmployeeId()).orElseThrow(() ->
+                new NotFoundException("Employee with id " + reservation.getEmployeeId() + " not found"));
+
+        return employee.getMerchant().id == currentUser.getMerchantId();
     }
 
 }

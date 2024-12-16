@@ -30,7 +30,7 @@ public class CategoryController {
     }
 
     @GetMapping("/categories")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('OWNER')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('OWNER') or hasRole('REGULAR')")
     ResponseEntity<List<CategoryDTO>> getCategories() {
         List<CategoryDTO> categoryList = _categoryService.getCategories();
         return new ResponseEntity<>(categoryList, HttpStatus.OK);
@@ -38,8 +38,8 @@ public class CategoryController {
 
     @PutMapping("/categories/{categoryId}")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('OWNER') and @categoryService.isOwnedByCurrentUser(#categoryId))")
-    ResponseEntity<Category> updateCategory(@PathVariable int categoryId, @RequestBody CategoryDTO request) {
-        Category updatedCategory = _categoryService.updateCategory(categoryId, request);
+    ResponseEntity<CategoryDTO> updateCategory(@PathVariable int categoryId, @RequestBody CategoryDTO request) {
+        CategoryDTO updatedCategory = _categoryService.updateCategory(categoryId, request);
         return new ResponseEntity<>(updatedCategory, HttpStatus.OK);
     }
 

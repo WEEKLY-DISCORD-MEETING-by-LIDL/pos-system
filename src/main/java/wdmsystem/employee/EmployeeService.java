@@ -101,8 +101,8 @@ public class EmployeeService {
         boolean isAdmin = currentUser.getAuthorities().stream()
                 .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
         if(isAdmin) {
-            Merchant merchant = merchantRepository.findById(currentUser.getMerchantId()).orElseThrow(() ->
-                    new NotFoundException("Merchant with id " + currentUser.getMerchantId() + " not found"));
+            Merchant merchant = merchantRepository.findById(request.merchantId()).orElseThrow(() ->
+                    new NotFoundException("Merchant with id " + request.merchantId() + " not found"));
             employee.setMerchant(merchant);
         }
         employeeRepository.save(employee);

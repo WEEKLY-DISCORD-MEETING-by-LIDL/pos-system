@@ -24,6 +24,7 @@ public class OrderController {
 
     //new method
     @GetMapping("/orders")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('OWNER') or hasRole('REGULAR')")
     ResponseEntity<List<OrderDTO>> getOrders(@RequestParam(required = false) OrderStatus status,
                                              @RequestParam(required = false) String createdAtMin,
                                              @RequestParam(required = false) String createdAtMax,

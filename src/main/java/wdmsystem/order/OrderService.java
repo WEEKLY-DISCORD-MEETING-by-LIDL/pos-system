@@ -1,5 +1,6 @@
 package wdmsystem.order;
 
+import org.springframework.data.domain.PageRequest;
 import wdmsystem.auth.CustomUserDetails;
 import wdmsystem.exception.InsufficientPrivilegesException;
 import wdmsystem.exception.InvalidInputException;
@@ -89,24 +90,7 @@ public class OrderService {
             limit = 50;
         }
 
-        List<Order> filteredOrders;
-
-        if(orderStatus == null) {
-            filteredOrders = orderRepository.getOrdersByCreatedAtGreaterThanEqualAndCreatedAtLessThanEqual(
-                    LocalDateTime.parse(createdAtMin),
-                    LocalDateTime.parse(createdAtMax),
-                    Limit.of(limit)
-            );
-        }
-        else {
-            filteredOrders = orderRepository.getOrdersByStatusAndCreatedAtGreaterThanEqualAndCreatedAtLessThanEqual(
-                    orderStatus,
-                    LocalDateTime.parse(createdAtMin),
-                    LocalDateTime.parse(createdAtMax),
-                    Limit.of(limit)
-            );
-        }
-
+        List<Order> filteredOrders = filterOrders(orderStatus, createdAtMin, createdAtMax, limit);
         List<OrderDTO> orderDTOs = new ArrayList<>();
 
         for (Order order : filteredOrders) {
@@ -114,6 +98,51 @@ public class OrderService {
         }
 
         return orderDTOs;
+    }
+
+    private List<Order> filterOrders(OrderStatus orderStatus, String createdAtMin, String createdAtMax, Integer limit) {
+        List<Order> filteredOrders;
+        CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+        boolean isAdmin = currentUser.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+        if (isAdmin) {
+            if(orderStatus == null) {
+                filteredOrders = orderRepository.getOrdersByCreatedAtGreaterThanEqualAndCreatedAtLessThanEqual(
+                        LocalDateTime.parse(createdAtMin),
+                        LocalDateTime.parse(createdAtMax),
+                        PageRequest.of(0, limit)
+                );
+            }
+            else {
+                filteredOrders = orderRepository.getOrdersByStatusAndCreatedAtGreaterThanEqualAndCreatedAtLessThanEqual(
+                        orderStatus,
+                        LocalDateTime.parse(createdAtMin),
+                        LocalDateTime.parse(createdAtMax),
+                        PageRequest.of(0, limit)
+                );
+            }
+        }else {
+            if(orderStatus == null) {
+                filteredOrders = orderRepository.getOrdersByCreatedAtGreaterThanEqualAndCreatedAtLessThanEqualAndMerchantId(
+                        LocalDateTime.parse(createdAtMin),
+                        LocalDateTime.parse(createdAtMax),
+                        currentUser.getMerchantId(),
+                        PageRequest.of(0, limit)
+                );
+            }
+            else {
+                filteredOrders = orderRepository.getOrdersByStatusAndCreatedAtGreaterThanEqualAndCreatedAtLessThanEqualAndMerchantId(
+                        orderStatus,
+                        LocalDateTime.parse(createdAtMin),
+                        LocalDateTime.parse(createdAtMax),
+                        currentUser.getMerchantId(),
+                        PageRequest.of(0, limit)
+                );
+            }
+        }
+        return filteredOrders;
     }
 
     public OrderDTO getOrder(int orderId) {

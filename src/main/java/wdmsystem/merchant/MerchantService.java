@@ -2,22 +2,27 @@ package wdmsystem.merchant;
 
 import java.time.LocalDateTime;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import wdmsystem.auth.CustomUserDetails;
 import wdmsystem.exception.InvalidInputException;
 import wdmsystem.exception.NotFoundException;
+import wdmsystem.utility.DTOMapper;
 
 
 @Service
 public class MerchantService {
 
     private final IMerchantRepository merchantRepository;
+    private final DTOMapper dtoMapper;
 
-    public MerchantService(IMerchantRepository merchantRepository) {
+    public MerchantService(IMerchantRepository merchantRepository, DTOMapper dtoMapper) {
         this.merchantRepository = merchantRepository;
+        this.dtoMapper = dtoMapper;
     }
 
-    public Merchant createMerchant(MerchantDTO request) {
+    public MerchantDTO createMerchant(MerchantDTO request) {
 
         if(request.address().countryCode.length() != 3) {
             throw new InvalidInputException("Country code must be exactly 3 symbols long.");
@@ -61,13 +66,15 @@ public class MerchantService {
             LocalDateTime.now()
         );
         merchant.setUpdatedAt(LocalDateTime.now());
-        return merchantRepository.save(merchant);
+        merchantRepository.save(merchant);
+        return dtoMapper.Merchant_ModelToDTO(merchant);
     }
 
-    public Merchant getMerchant(int id) {
-        return merchantRepository.findById(id).orElseThrow(
+    public MerchantDTO getMerchant(int id) {
+        Merchant merchant =  merchantRepository.findById(id).orElseThrow(
             () -> new NotFoundException("Merchant with ID " + id + " not found")
         );
+        return dtoMapper.Merchant_ModelToDTO(merchant);
     }
 
     public void updateMerchant(int id, MerchantDTO request) {
@@ -95,4 +102,13 @@ public class MerchantService {
         }
     }
 
+    public boolean isOwnedByCurrentUser(int merchantId) {
+        CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        Merchant merchant = merchantRepository.findById(merchantId).orElseThrow(
+                () -> new NotFoundException("Merchant with id " + merchantId + " not found"));
+        return merchant.id == currentUser.getMerchantId();
+    }
 }

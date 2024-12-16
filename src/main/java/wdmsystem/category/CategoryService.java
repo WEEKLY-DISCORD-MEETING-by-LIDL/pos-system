@@ -58,13 +58,13 @@ public class CategoryService {
         return categoryDTOList;
     }
 
-    public Category updateCategory(int categoryId, CategoryDTO request) {
+    public CategoryDTO updateCategory(int categoryId, CategoryDTO request) {
         Category category = categoryRepository.findById(categoryId).orElseThrow(
                 () -> new NotFoundException("Category with id " + categoryId + " not found"));
 
         category.setTitle(request.title());
-
-        return categoryRepository.save(category);
+        categoryRepository.save(category);
+        return dtoMapper.Category_ModelToDTO(category);
     }
 
     public void deleteCategory(int categoryId) {

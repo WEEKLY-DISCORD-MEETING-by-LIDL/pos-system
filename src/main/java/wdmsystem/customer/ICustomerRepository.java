@@ -15,4 +15,12 @@ public interface ICustomerRepository extends JpaRepository<Customer, Integer> {
             @Param("createdAtMax")LocalDateTime createdAtMax,
             Pageable pageable
             );
+
+    @Query("SELECT c FROM Customer c WHERE c.createdAt >= :createdAtMin AND c.createdAt <= :createdAtMax AND c.merchant.id = :merchantId")
+    List<Customer> findCustomersWithinDateRangeAndByMerchantId(
+            @Param("createdAtMin")LocalDateTime createdAtMin,
+            @Param("createdAtMax")LocalDateTime createdAtMax,
+            Pageable pageable,
+            int merchantId
+    );
 }

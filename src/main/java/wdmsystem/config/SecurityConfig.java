@@ -40,12 +40,18 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login").permitAll()
                         .requestMatchers("/employees/**").hasAnyRole("ADMIN", "OWNER")
-                        .requestMatchers("/categories/**").hasAnyRole("ADMIN", "OWNER")
+                        .requestMatchers("/categories/**").hasAnyRole("ADMIN", "OWNER", "REGULAR")
                         .requestMatchers("/orders/**").hasAnyRole("ADMIN", "OWNER", "REGULAR")
                         .requestMatchers("/orderDiscounts/**").hasAnyRole("ADMIN", "OWNER", "REGULAR")
                         .requestMatchers("/products/**").hasAnyRole("ADMIN", "OWNER", "REGULAR")
                         .requestMatchers("/variants/**").hasAnyRole("ADMIN", "OWNER")
-                        .anyRequest().permitAll() //Temporary, will change as the other modules are updated.
+                        .requestMatchers("/customers/**").hasAnyRole("ADMIN", "OWNER","REGULAR")
+                        .requestMatchers("/merchants/**").hasAnyRole("ADMIN", "OWNER", "REGULAR")
+                        .requestMatchers("/pay/**").hasAnyRole("ADMIN", "OWNER", "REGULAR")
+                        .requestMatchers("/reservations/**").hasAnyRole("ADMIN", "OWNER", "REGULAR")
+                        .requestMatchers("/services/**").hasAnyRole("ADMIN", "OWNER", "REGULAR")
+                        .requestMatchers("/tax/**").hasAnyRole("ADMIN", "OWNER", "REGULAR")
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthTokenFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

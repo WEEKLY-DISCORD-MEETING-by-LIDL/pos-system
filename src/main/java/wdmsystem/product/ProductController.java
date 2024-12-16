@@ -99,6 +99,7 @@ public class ProductController {
     }
 
     @PatchMapping("/products/{productId}/tax/{taxId}")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('OWNER') and @productService.productIsOwnedByCurrentUser(#productId))")
     ResponseEntity<ProductDTO> updateTax(@PathVariable int productId, @PathVariable int taxId) {
         _productService.applyTax(productId, taxId);
         return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);

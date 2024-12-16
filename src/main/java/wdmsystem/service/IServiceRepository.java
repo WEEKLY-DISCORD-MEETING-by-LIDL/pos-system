@@ -13,4 +13,11 @@ public interface IServiceRepository extends JpaRepository<Service, Integer> {
             @Param("categoryId") Integer categoryId,
             Pageable pageable
     );
+
+    @Query("SELECT s FROM Service s WHERE ((:categoryId IS NULL OR s.category.id = :categoryId) AND s.merchant.id = :merchantId)")
+    List<Service> findServicesByCategoryIdAndMerchantId(
+            @Param("categoryId") Integer categoryId,
+            @Param("merchantId") Integer merchantId,
+            Pageable pageable
+    );
 }

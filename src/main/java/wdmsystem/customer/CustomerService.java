@@ -1,6 +1,7 @@
 package wdmsystem.customer;
 
 
+import org.springframework.data.domain.Pageable;
 import wdmsystem.auth.CustomUserDetails;
 import wdmsystem.exception.InvalidInputException;
 import wdmsystem.exception.NotFoundException;
@@ -66,12 +67,25 @@ public class CustomerService {
         }
         PageRequest pageRequest = PageRequest.of(0, limit);
 
-        List<Customer> customerList = customerRepository.findCustomersWithinDateRange(lowerDate, upperDate, pageRequest);
+        List<Customer> customerList = filterCustomers(lowerDate, upperDate, pageRequest);
         List<CustomerDTO> customerDTOList = new ArrayList<>();
         for (Customer customer : customerList) {
             customerDTOList.add(dtoMapper.Customer_ModelToDTO(customer));
         }
         return customerDTOList;
+    }
+
+    private List<Customer> filterCustomers(LocalDateTime lowerDate, LocalDateTime upperDate, Pageable pageRequest) {
+        CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+        boolean isAdmin = currentUser.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+        if(isAdmin){
+            return customerRepository.findCustomersWithinDateRange(lowerDate, upperDate, pageRequest);
+        } else{
+            return customerRepository.findCustomersWithinDateRangeAndByMerchantId(lowerDate, upperDate, pageRequest, currentUser.getMerchantId());
+        }
     }
 
     public CustomerDTO getCustomer(int id) {
@@ -132,5 +146,16 @@ public class CustomerService {
             reservationDTOList.add(dtoMapper.Reservation_ModelToDTO(reservation));
         }
         return reservationDTOList;
+    }
+
+    public boolean isOwnedByCurrentUser(int customerId) {
+        CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        Customer customer = customerRepository.findById(customerId).orElseThrow(() ->
+                new NotFoundException("Customer with id " + customerId + " not found"));
+
+        return customer.getMerchant().getId() == currentUser.getMerchantId();
     }
 }

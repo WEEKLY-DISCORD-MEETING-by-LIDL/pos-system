@@ -3,6 +3,7 @@ package wdmsystem.service;
 
 import wdmsystem.auth.CustomUserDetails;
 import wdmsystem.category.Category;
+import wdmsystem.category.ICategoryRepository;
 import wdmsystem.exception.InvalidInputException;
 import wdmsystem.exception.NotFoundException;
 import wdmsystem.merchant.IMerchantRepository;
@@ -25,10 +26,10 @@ public class ServiceService {
     private final IServiceRepository serviceRepository;
     private final IReservationRepository reservationRepository;
     private final IMerchantRepository merchantRepository;
+    private final ICategoryRepository categoryRepository;
     private final DTOMapper dtoMapper;
 
     public ServiceDTO createService(ServiceDTO request) {
-        //TODO check if category exists
         CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getPrincipal();
@@ -37,10 +38,15 @@ public class ServiceService {
                 () -> new NotFoundException("Merchant with ID " + currentUser.getMerchantId() + " not found")
         );
 
+        Category category = categoryRepository.findById(request.categoryId()).orElseThrow(
+                () -> new NotFoundException("Category with ID " + request.categoryId() + " not found")
+        );
+
+        //TODO: Fulfill non null constraints
         Service service = new Service(
                 merchant,
                 request.title(),
-                null,//placeholder null category
+                category,
                 request.price(),
                 null,//placeholder null discount
                 null,//placeholder null tax
@@ -59,7 +65,19 @@ public class ServiceService {
             limit = 50;
         }
         PageRequest pageRequest = PageRequest.of(0, limit);
-        List<Service> serviceList = serviceRepository.findServicesByCategoryId(categoryId, pageRequest);
+
+        CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+        boolean isAdmin = currentUser.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+        List<Service> serviceList;
+        if(isAdmin){
+            serviceList = serviceRepository.findServicesByCategoryId(categoryId, pageRequest);
+        }else{
+            serviceList = serviceRepository.findServicesByCategoryIdAndMerchantId(categoryId, currentUser.getMerchantId(), pageRequest);
+        }
+
         List<ServiceDTO> dtoList = new ArrayList<>();
         for (Service service : serviceList) {
             dtoList.add(dtoMapper.Service_ModelToDTO(service));
@@ -147,4 +165,14 @@ public class ServiceService {
         return availableTimes;
     }
 
+    public boolean isOwnedByCurrentUser(int serviceId) {
+        CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        Service service = serviceRepository.findById(serviceId).orElseThrow(() ->
+                new NotFoundException("Service with id " + serviceId + " not found"));
+
+        return service.getMerchant().id == currentUser.getMerchantId();
+    }
 }

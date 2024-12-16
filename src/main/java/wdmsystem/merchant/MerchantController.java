@@ -2,10 +2,11 @@ package wdmsystem.merchant;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-public final class MerchantController {
+public class MerchantController {
 
     private final MerchantService _merchantService;
 
@@ -14,25 +15,29 @@ public final class MerchantController {
     }
 
     @PostMapping("/merchants")
-    ResponseEntity<Merchant> createMerchant(@RequestBody MerchantDTO request) {
-        Merchant newMerchant = _merchantService.createMerchant(request);
+    @PreAuthorize("hasRole('ADMIN')")
+    ResponseEntity<MerchantDTO> createMerchant(@RequestBody MerchantDTO request) {
+        MerchantDTO newMerchant = _merchantService.createMerchant(request);
         return new ResponseEntity<>(newMerchant, HttpStatus.CREATED); 
     }
 
     @GetMapping("/merchants/{merchantId}")
-    ResponseEntity<Merchant> getMerchant(@PathVariable int merchantId) {
-        Merchant merchant = _merchantService.getMerchant(merchantId);
+    @PreAuthorize("hasRole('ADMIN') or hasRole('OWNER') or hasRole('REGULAR')")
+    ResponseEntity<MerchantDTO> getMerchant(@PathVariable int merchantId) {
+        MerchantDTO merchant = _merchantService.getMerchant(merchantId);
         return new ResponseEntity<>(merchant, HttpStatus.OK);
     }
 
     @PutMapping("/merchants/{merchantId}")
-    ResponseEntity<Merchant> updateMerchant(@PathVariable int merchantId, @RequestBody MerchantDTO response) {
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('OWNER') and @merchantService.isOwnedByCurrentUser(#merchantId))")
+    ResponseEntity<MerchantDTO> updateMerchant(@PathVariable int merchantId, @RequestBody MerchantDTO response) {
         _merchantService.updateMerchant(merchantId, response);
         return new ResponseEntity<>(null, HttpStatus.OK);
     }
     
     @DeleteMapping("/merchants/{merchantId}") // There is no delete method defined in the api but someone on the team requested it
-    ResponseEntity<Merchant> deleteMerchant(@PathVariable int merchantId) {
+    @PreAuthorize("hasRole('ADMIN')")
+    ResponseEntity<MerchantDTO> deleteMerchant(@PathVariable int merchantId) {
         _merchantService.deleteMerchant(merchantId);
         return new ResponseEntity<>(null, HttpStatus.OK);
     }
