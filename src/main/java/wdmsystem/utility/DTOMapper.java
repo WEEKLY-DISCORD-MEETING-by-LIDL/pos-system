@@ -1,5 +1,6 @@
 package wdmsystem.utility;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import wdmsystem.auth.CustomUserDetails;
 import wdmsystem.category.Category;
 import wdmsystem.category.CategoryDTO;
@@ -12,6 +13,7 @@ import wdmsystem.discount.IDiscountRepository;
 import wdmsystem.employee.EmployeeDTO;
 import wdmsystem.employee.Employee;
 import wdmsystem.employee.IEmployeeRepository;
+import wdmsystem.employee.UpdateEmployeeDTO;
 import wdmsystem.exception.NotFoundException;
 import wdmsystem.merchant.IMerchantRepository;
 import wdmsystem.merchant.Merchant;
@@ -34,6 +36,7 @@ import wdmsystem.service.Service;
 @org.springframework.stereotype.Service
 @AllArgsConstructor
 public class DTOMapper {
+    private final PasswordEncoder passwordEncoder;
     IOrderRepository orderRepository;
     IOrderItemRepository orderItemRepository;
     IProductRepository productRepository;
@@ -51,7 +54,7 @@ public class DTOMapper {
 
     /// PRODUCT
     public ProductDTO Product_ModelToDTO(Product product) {
-        return new ProductDTO(product.id, product.merchant.id, product.title, (product.category == null ? null : product.category.id), product.price, product.discount.id, (product.tax == null ? null : product.tax.id), product.weight, product.weightUnit);
+        return new ProductDTO(product.id, product.merchant.id, product.title, (product.category == null ? null : product.category.id), product.price, (product.discount == null ? null : product.discount.id), (product.tax == null ? null : product.tax.id), product.weight, product.weightUnit);
     }
 
     public Product Product_DTOToModel(ProductDTO productDTO) {
@@ -106,14 +109,32 @@ public class DTOMapper {
         return new OrderItem(orderItemDTO.id(), order, productVariant, orderItemDTO.quantity());
     }
 
+    public OrderItemDTO OrderItem_ModelToDTO(OrderItem orderItem) {
+        return new OrderItemDTO(orderItem.id, orderItem.order.id, orderItem.productVariant.id, orderItem.quantity);
+    }
+
     /// EMPLOYEE
 
     public EmployeeDTO Employee_ModelToDTO(Employee employee) {
         return new EmployeeDTO(employee.firstName, employee.lastName, employee.employeeType, employee.username, "<hidden>");
     }
 
-    public OrderItemDTO OrderItem_ModelToDTO(OrderItem orderItem) {
-        return new OrderItemDTO(orderItem.id, orderItem.order.id, orderItem.productVariant.id, orderItem.quantity);
+    public void UpdateEmployee_DTOToModel(Employee employee, UpdateEmployeeDTO dto) {
+        if (dto.firstName() != null && dto.firstName().length() >= 30) {
+            employee.setFirstName(dto.firstName());
+        }
+        if (dto.lastName() != null && dto.lastName().length() >= 30) {
+            employee.setLastName(dto.lastName());
+        }
+        if (dto.employeeType() != null) {
+            employee.setEmployeeType(dto.employeeType());
+        }
+        if (dto.username() != null && dto.username().length() >= 30) {
+            employee.setUsername(dto.username());
+        }
+        if (dto.password() != null) {
+            employee.setPassword(passwordEncoder.encode(dto.password()));
+        }
     }
 
     /// TAX
