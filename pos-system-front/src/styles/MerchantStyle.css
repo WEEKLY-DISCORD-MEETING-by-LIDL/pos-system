@@ -1,0 +1,40 @@
+.business-details {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: orange;
+    border-radius: 8px;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.detail-item {
+    margin-bottom: 15px;
+}
+
+.detail-item h2 {
+    font-size: 1.2rem;
+    color: #444;
+    margin: 5px 0;
+}
+
+.detail-item p {
+    font-size: 1rem;
+    color: #666;
+    margin: 0;
+}
+
+strong {
+    color: #333;
+}
+
+
+.detail-item p {
+    padding-left: 20px;
+}
+
