@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {ProductSelection} from "./ProductSelection";
+import {ProductSelection} from "../components/ProductSelection";
 import {fetchProducts} from "../api/ProductAPI";
 import {createOrderStyle as CreateOrderStyle} from "../styles/CreateOrderStyle";
 import {createOrder} from "../api/OrderAPI";

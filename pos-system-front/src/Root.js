@@ -1,10 +1,10 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes} from "react-router-dom";
 import App from "./App";
-import Home from "./components/Home"
-import {CreateOrderPage} from "./components/CreateOrderPage";
-import {OrderManagementPage} from "./components/OrderManagementPage";
-import {ViewOrderPage} from "./components/ViewOrderPage";
+import Home from "./pages/Home"
+import {CreateOrderPage} from "./pages/CreateOrderPage";
+import {OrderManagementPage} from "./pages/OrderManagementPage";
+import {ViewOrderPage} from "./pages/ViewOrderPage";
 import ProductManagementPage from "./pages/ProductManagementPage";
 
 function Root() {

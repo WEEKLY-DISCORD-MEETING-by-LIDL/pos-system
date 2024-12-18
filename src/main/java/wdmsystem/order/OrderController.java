@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import wdmsystem.order.summary.OrderSummary;
 
 import java.util.List;
 
@@ -82,5 +83,26 @@ public class OrderController {
     ResponseEntity<List<OrderItemDTO>> getOrderItems(@PathVariable int orderId) {
         List<OrderItemDTO> orderItems = _orderService.getOrderItems(orderId);
         return new ResponseEntity<>(orderItems, HttpStatus.OK);
+    }
+
+    //new method
+    @GetMapping("orders/{orderId}/summary")
+    ResponseEntity<OrderSummary> getOrderSummary(@PathVariable int orderId) {
+        OrderSummary summary = _orderService.getOrderSummary(orderId);
+        return new ResponseEntity<>(summary, HttpStatus.OK);
+    }
+
+    //new method
+    @PostMapping("orders/{orderId}/archive")
+    ResponseEntity<OrderDTO> archiveOrder(@PathVariable int orderId) {
+        _orderService.archiveOrder(orderId);
+        return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+    }
+
+    //new method
+    @GetMapping("orders/archive/{archivedOrderId}")
+    ResponseEntity<OrderSummary> archiveOrders(@PathVariable int archivedOrderId) {
+        OrderSummary summary = _orderService.getArchivedOrder(archivedOrderId);
+        return new ResponseEntity<>(summary, HttpStatus.OK);
     }
 }

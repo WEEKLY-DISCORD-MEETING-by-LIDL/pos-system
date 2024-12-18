@@ -4,7 +4,7 @@ import wdmsystem.order.OrderStatus;
 
 import java.util.List;
 
-public record OrderSummaryDTO(
+public record OrderSummary(
     OrderDiscountSummary discount,
     OrderStatus status,
     List<OrderItemSummary> items

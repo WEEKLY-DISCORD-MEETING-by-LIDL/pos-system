@@ -1,0 +1,32 @@
+table {
+    border-top: black solid 2px;
+    border-bottom: black solid 2px;
+    border-collapse: collapse;
+}
+
+tr {
+    border-top: black solid 2px;
+}
+
+th {
+    padding: 10px;
+    border-left: black solid 1px;
+    border-right: black solid 1px;
+}
+
+td {
+    padding: 10px;
+    border-left: black dashed 1px;
+    border-right: black dashed 1px;
+}
+
+#totalPrice {
+    border-top: black double 3px;
+}
+
+#weightHead {
+    border-left: black double 3px;
+}
+#weightCell {
+    border-left: black double 3px;
+}

@@ -37,34 +37,6 @@ export const fetchVariants = async (productId, setVariants, token) => {
     }
 };
 
-export const fetchVariantsByOrder = async (orderId, setVariants, token) => {
-    try {
-        const response = await axios.get(`http://localhost:8080/variants/order/${orderId}`, {
-            headers:{
-                Authorization: `Bearer ${token}`
-            }
-        });
-
-        setVariants(response.data);
-    } catch (err) {
-        console.log(err.message);
-    }
-};
-
-export const fetchProductsByOrder = async (orderId, setProducts, token) => {
-    try {
-        const response = await axios.get(`http://localhost:8080/products/order/${orderId}`, {
-            headers:{
-                Authorization: `Bearer ${token}`
-            }
-        });
-
-        setProducts(response.data);
-    } catch (err) {
-        console.log(err.message);
-    }
-};
-
 export const createProduct = async (productData) => {
     try {
         const response = await axios.post('http://localhost:8080/products', productData);

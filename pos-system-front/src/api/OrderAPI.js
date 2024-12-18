@@ -66,6 +66,18 @@ export const fetchOrder = async (orderId, setOrder, token) => {
     }
 }
 
+export const archiveOrder = async (orderId, token) => {
+    try {
+        const response = await axios.post(`http://localhost:8080/orders/${orderId}/archive`, null, {
+            headers:{
+                Authorization: `Bearer ${token}`
+            }
+        });
+    } catch (err) {
+        console.log(err.message);
+    }
+}
+
 export const fetchOrderItems = async (orderId, setOrderItems, token) => {
     try {
         const response = await axios.get(`http://localhost:8080/orders/${orderId}/items`, {
@@ -102,6 +114,33 @@ export const cancelOrder = async (orderId, token) => {
             }
         });
         console.log(response.data);
+    } catch (err) {
+        console.log(err.message);
+    }
+}
+
+export const updateOrderStatus = async (orderId, status, token) => {
+    try {
+        const response = await axios.put(`http://localhost:8080/orders/${orderId}?status=${status}`, null,{
+            headers:{
+                Authorization: `Bearer ${token}`
+            }
+        });
+        console.log(response.data);
+    } catch (err) {
+        console.log(err.message);
+    }
+}
+
+export const fetchOrderSummary = async (orderId, setOrder, token) => {
+    try {
+        const response = await axios.get(`http://localhost:8080/orders/${orderId}/summary`, {
+            headers:{
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        setOrder(response.data);
     } catch (err) {
         console.log(err.message);
     }

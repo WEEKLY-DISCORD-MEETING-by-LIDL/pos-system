@@ -11,6 +11,7 @@ import wdmsystem.category.Category;
 import wdmsystem.customer.Customer;
 import wdmsystem.discount.Discount;
 import wdmsystem.employee.Employee;
+import wdmsystem.order.ArchivedOrder;
 import wdmsystem.order.Order;
 import wdmsystem.order.discount.OrderDiscount;
 import wdmsystem.product.Product;
@@ -59,6 +60,9 @@ public class Merchant {
 
     @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Category> categories;
+
+    @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<ArchivedOrder> archivedOrders;
 
     public Merchant(Integer id, String name, Integer vat, Address address, String email, String phone, LocalDateTime createdAt) {
         this.id = id;
