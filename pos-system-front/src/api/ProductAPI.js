@@ -1,6 +1,7 @@
 import axios from "axios";
 
-export const fetchProducts = async (categoryId, createdAtMin, createdAtMax, limit, setProducts) => {
+export const fetchProducts = async (categoryId, createdAtMin, createdAtMax, limit, setProducts, token) => {
+
     try {
         const params = new URLSearchParams();
         
@@ -10,7 +11,11 @@ export const fetchProducts = async (categoryId, createdAtMin, createdAtMax, limi
         if (limit != null) params.append('limit', limit);
 
         const requestString = `http://localhost:8080/products?${params.toString()}`;
-        const response = await axios.get(requestString);
+        const response = await axios.get(requestString, {
+            headers:{
+                Authorization: `Bearer ${token}`
+            }
+        });
         console.log(response.data);
         setProducts(response.data);
     } catch (err) {
@@ -18,11 +23,43 @@ export const fetchProducts = async (categoryId, createdAtMin, createdAtMax, limi
     }
 };
 
-export const fetchVariants = async (productId, setVariants) => {
+export const fetchVariants = async (productId, setVariants, token) => {
     try {
-        const response = await axios.get(`http://localhost:8080/products/${productId}/variants`);
+        const response = await axios.get(`http://localhost:8080/products/${productId}/variants`, {
+            headers:{
+                Authorization: `Bearer ${token}`
+            }
+        });
         console.log(response.data);
         setVariants(response.data);
+    } catch (err) {
+        console.log(err.message);
+    }
+};
+
+export const fetchVariantsByOrder = async (orderId, setVariants, token) => {
+    try {
+        const response = await axios.get(`http://localhost:8080/variants/order/${orderId}`, {
+            headers:{
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        setVariants(response.data);
+    } catch (err) {
+        console.log(err.message);
+    }
+};
+
+export const fetchProductsByOrder = async (orderId, setProducts, token) => {
+    try {
+        const response = await axios.get(`http://localhost:8080/products/order/${orderId}`, {
+            headers:{
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        setProducts(response.data);
     } catch (err) {
         console.log(err.message);
     }

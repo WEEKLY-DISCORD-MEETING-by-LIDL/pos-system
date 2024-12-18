@@ -10,11 +10,15 @@ const Home = () => {
     }
 
     const goToCreateOrder = () => {
-        navigate("/order")
+        navigate("/create-order")
     }
 
     const goToProductManagement = () => {
         navigate("/product-management");
+    }
+
+    const goToOrderManagement = () => {
+        navigate("/all-orders");
     }
 
     return (
@@ -22,7 +26,8 @@ const Home = () => {
             <h1 style={HomeStyle.homeContainer}> Home/Navigation Page</h1>
 
             <div style={HomeStyle.buttonContainer}>
-                <button style={HomeStyle.button} onClick={goToCreateOrder}>Orders</button>
+                <button style={HomeStyle.button} onClick={goToCreateOrder}>Create order</button>
+                <button style={HomeStyle.button} onClick={goToOrderManagement}>Order Management</button>
                 <button style={HomeStyle.button} onClick={returnBack}>Back to Login</button>
                 <button style={HomeStyle.button} onClick={goToProductManagement}>Product Management</button>
             </div>

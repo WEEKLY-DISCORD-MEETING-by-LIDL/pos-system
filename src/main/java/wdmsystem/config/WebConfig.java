@@ -15,7 +15,7 @@ public class WebConfig {
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true); // Allows cookies/auth headers
-        config.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost8080")); // Frontend URL
+        config.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:8080")); // Frontend URL
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Access-Control-Allow-Headers", "Origin, Content-Type, Accept"));
 

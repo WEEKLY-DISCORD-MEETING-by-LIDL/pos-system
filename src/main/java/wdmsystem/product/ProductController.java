@@ -41,6 +41,13 @@ public class ProductController {
         return new ResponseEntity<>(productList, HttpStatus.OK);
     }
 
+    // new method
+    @GetMapping("/products/order/{orderId}")
+    ResponseEntity<List<ProductDTO>> getProductsByOrder(@PathVariable int orderId) {
+        List<ProductDTO> products = _productService.getProductsByOrder(orderId);
+        return new ResponseEntity<>(products, HttpStatus.OK);
+    }
+
     @GetMapping("/products/{productId}/variants")
     @PreAuthorize("hasRole('ADMIN') or ((hasRole('OWNER') or hasRole('REGULAR')) and @productService.productIsOwnedByCurrentUser(#productId))")
     ResponseEntity<List<ProductVariantDTO>> getVariants(@PathVariable int productId) {
@@ -48,11 +55,21 @@ public class ProductController {
         return new ResponseEntity<>(productList, HttpStatus.OK);
     }
 
+
+
     @GetMapping("/products/{productId}")
     @PreAuthorize("hasRole('ADMIN') or ((hasRole('OWNER') or hasRole('REGULAR')) and @productService.productIsOwnedByCurrentUser(#productId))")
     ResponseEntity<ProductDTO> getProduct(@PathVariable int productId) {
         ProductDTO product = _productService.getProduct(productId);
         return new ResponseEntity<>(product, HttpStatus.OK);
+    }
+
+    // new method
+    @GetMapping("/variants/order/{orderId}")
+    @PreAuthorize("hasRole('ADMIN') or ((hasRole('OWNER') or hasRole('REGULAR')) and @productService.variantIsOwnedByCurrentUser(#variantId))")
+    ResponseEntity<List<ProductVariantDTO>> getVariantsByOrder(@PathVariable int orderId) {
+        List<ProductVariantDTO> variants = _productService.getVariantsByOrder(orderId);
+        return new ResponseEntity<>(variants, HttpStatus.OK);
     }
 
     @GetMapping("/variants/{variantId}")
