@@ -1,10 +1,11 @@
 import axios from "axios";
 
-export const createPayment = async (payment) => {
+export const createPayment = async (payment, token) => {
     try {
         let response = await axios.post(`http://localhost:8080/pay`, payment, {
             headers: {
                 'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`
             },
         });
 

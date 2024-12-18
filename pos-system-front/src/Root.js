@@ -17,7 +17,7 @@ function Root() {
                 <Route exact path="/" element={<App />} />
                 <Route path="/create-order" element={<CreateOrderPage />} />
                 <Route path="/all-orders" element={<OrderManagementPage />} />
-                <Route path="/view-order" element={<ViewOrderPage />} />
+                <Route path="/view-order/:id" element={<ViewOrderPage />} />
                 <Route path="/home" element={<Home />} />
                 <Route path="/product-management" element={<ProductManagementPage />} />
                 <Route path="/merchant-management" element={<MerchantManagementPage />} />

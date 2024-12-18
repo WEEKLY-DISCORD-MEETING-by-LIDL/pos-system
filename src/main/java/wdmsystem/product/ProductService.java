@@ -1,5 +1,6 @@
 package wdmsystem.product;
 
+import org.springframework.data.jpa.domain.Specification;
 import wdmsystem.auth.CustomUserDetails;
 import wdmsystem.exception.InvalidInputException;
 import wdmsystem.exception.NotFoundException;

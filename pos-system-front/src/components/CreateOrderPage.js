@@ -6,12 +6,13 @@ import {createOrder} from "../api/OrderAPI";
 
 export const CreateOrderPage = () => {
 
+    const token = localStorage.getItem("token");
     const [items, setItems] = useState([]);
     const [products, setProducts] = useState([]);
     const [discountId, setDiscountId] = useState(null);
 
     useEffect(() => {
-        fetchProducts(null, null, null, null, setProducts);
+        fetchProducts(null, null, null, null, setProducts, token);
     }, []);
 
     const onPlus = (item) => {
@@ -53,7 +54,7 @@ export const CreateOrderPage = () => {
             orderItems.push(orderItem);
         }
 
-        createOrder(discountId, orderItems);
+        createOrder(discountId, orderItems, token);
     }
 
     const getTotalAmount = () => {

@@ -26,11 +26,12 @@ public class MerchantController {
     }
 
     @GetMapping("/merchants/{merchantId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('OWNER') or hasRole('REGULAR')")
-    ResponseEntity<MerchantDTO> getMerchant(@PathVariable int merchantId) {
+    @PreAuthorize("hasRole('ADMIN')")
+    ResponseEntity<MerchantDTO> getMerchantById(@PathVariable int merchantId) {
         log.info("Fetching merchant with ID: {}", merchantId);
-        MerchantDTO merchant = _merchantService.getMerchant(merchantId);
+        MerchantDTO merchant = _merchantService.getMerchantById(merchantId);
         log.info("Fetched merchant details: {}", merchant);
+        return new ResponseEntity<>(merchant, HttpStatus.OK);
     }
   
     @GetMapping("/merchants")

@@ -58,6 +58,8 @@ public class ProductController {
         return new ResponseEntity<>(productList, HttpStatus.OK);
     }
 
+
+
     @GetMapping("/products/{productId}")
     @PreAuthorize("hasRole('ADMIN') or ((hasRole('OWNER') or hasRole('REGULAR')) and @productService.productIsOwnedByCurrentUser(#productId))")
     ResponseEntity<ProductDTO> getProduct(@PathVariable int productId) {

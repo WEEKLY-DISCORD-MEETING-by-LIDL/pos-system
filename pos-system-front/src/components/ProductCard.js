@@ -5,13 +5,14 @@ import {fetchTax} from "../api/TaxAPI";
 
 export const ProductCard = (props) => {
 
+    const token = localStorage.getItem("token");
     const [selectedVariant, setSelectedVariants] = useState(0);
     const [variants, setVariants] = useState([]);
     const [tax, setTax] = useState(null)
     
     useEffect(() => {
-        fetchVariants(props.product.id, setVariants);
-        fetchTax(props.product.taxId, setTax);
+        fetchVariants(props.product.id, setVariants, token);
+        fetchTax(props.product.taxId, setTax, token);
     }, []);
 
     const currentVariant = variants[selectedVariant];

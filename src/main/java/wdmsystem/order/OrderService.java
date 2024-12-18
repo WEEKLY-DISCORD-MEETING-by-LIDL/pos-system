@@ -1,5 +1,7 @@
 package wdmsystem.order;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.data.domain.PageRequest;
 import wdmsystem.auth.CustomUserDetails;
 import wdmsystem.exception.InsufficientPrivilegesException;
@@ -9,10 +11,11 @@ import wdmsystem.merchant.IMerchantRepository;
 import wdmsystem.merchant.Merchant;
 import wdmsystem.order.discount.IOrderDiscountRepository;
 import wdmsystem.order.discount.OrderDiscount;
+import wdmsystem.order.summary.*;
+import wdmsystem.payment.Payment;
 import wdmsystem.utility.DTOMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -24,14 +27,18 @@ public class OrderService {
     private final IOrderRepository orderRepository;
     private final IOrderItemRepository orderItemRepository;
     private final IOrderDiscountRepository orderDiscountRepository;
+    private final IArchivedOrderRepository archivedOrderRepository;
     private final IMerchantRepository merchantRepository;
     private final DTOMapper dtoMapper;
 
-    public OrderService(IOrderRepository orderRepository, IMerchantRepository merchantRepository, IOrderItemRepository orderItemRepository, IOrderDiscountRepository orderDiscountRepository, DTOMapper dtoMapper) {
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    public OrderService(IOrderRepository orderRepository, IMerchantRepository merchantRepository, IOrderItemRepository orderItemRepository, IOrderDiscountRepository orderDiscountRepository, IArchivedOrderRepository archivedOrderRepository, DTOMapper dtoMapper) {
         this.orderRepository = orderRepository;
         this.merchantRepository = merchantRepository;
         this.orderItemRepository = orderItemRepository;
         this.orderDiscountRepository = orderDiscountRepository;
+        this.archivedOrderRepository = archivedOrderRepository;
         this.dtoMapper = dtoMapper;
     }
 
@@ -214,7 +221,26 @@ public class OrderService {
                 .mapToDouble(OrderItem::getTotalPrice)
                 .sum();
     }
-	
+
+    public double getUnpaidPrice(int orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new NotFoundException("Order with id " + orderId + " not found"));
+
+        double price = order.getOrderItems()
+                .stream()
+                .mapToDouble(OrderItem::getTotalPrice)
+                .sum();
+
+        double totalAmountPaid = 0;
+
+        for(Payment payment : order.getPayments()) {
+            totalAmountPaid += payment.totalAmount;
+        }
+
+        return price - totalAmountPaid;
+    }
+
+    //new
     public List<OrderItemDTO> getOrderItems(int orderId) {
 
         if(orderRepository.existsById(orderId)) {
@@ -231,7 +257,102 @@ public class OrderService {
             throw new NotFoundException("Order with id " + orderId + " not found");
         }
     }
-	
+
+    //new
+    public OrderSummary getOrderSummary(int orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(() ->
+                new NotFoundException("Order with id " + orderId + " not found."));
+
+        return fillOutOrderSummary(order);
+    }
+
+    //new
+    public void archiveOrder(int orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(() ->
+                new NotFoundException("Order with id " + orderId + " not found."));
+
+        OrderSummary summary = fillOutOrderSummary(order);
+        String json;
+        try {
+            json = objectMapper.writeValueAsString(summary);
+        } catch (JsonProcessingException e) {
+            throw new InvalidInputException("Failed to archive order: " + e.getMessage());
+        }
+
+        CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        Merchant merchant = merchantRepository.findById(currentUser.getMerchantId()).orElseThrow(() ->
+                new NotFoundException("Merchant with id " + currentUser.getMerchantId() + " not found"));
+
+        archivedOrderRepository.save(new ArchivedOrder(0, merchant, json, LocalDateTime.now()));
+    }
+
+    //new
+    public OrderSummary getArchivedOrder(int archivedOrderId) {
+        ArchivedOrder archivedOrder = archivedOrderRepository.findById(archivedOrderId).orElseThrow(() ->
+                new NotFoundException("Archived order with id " + archivedOrderId + " not found"));
+
+        OrderSummary summary;
+        try {
+            summary = objectMapper.readValue(archivedOrder.orderSummaryJson, OrderSummary.class);
+        } catch (JsonProcessingException e) {
+            throw new InvalidInputException("Failed to get archived order: " + e.getMessage());
+        }
+
+        return summary;
+    }
+
+    //new
+    public OrderDTO validatePaymentsAndUpdateOrderStatus(int orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(() ->
+                new NotFoundException("Order with id " + orderId + " not found"));
+
+        double price = order.getOrderItems()
+                .stream()
+                .mapToDouble(OrderItem::getTotalPrice)
+                .sum();
+
+        double totalAmountPaid = 0;
+
+        for(Payment payment : order.getPayments()) {
+            totalAmountPaid += payment.totalAmount;
+        }
+
+        if(totalAmountPaid < price && totalAmountPaid > 0) {
+            order.status = OrderStatus.PARTIALLY_PAID;
+            return dtoMapper.Order_ModelToDTO(orderRepository.save(order));
+        }
+        else if(totalAmountPaid >= price) {
+            order.status = OrderStatus.PAID;
+            return dtoMapper.Order_ModelToDTO(orderRepository.save(order));
+        }
+
+        return null;
+    }
+
+    private OrderSummary fillOutOrderSummary(Order order) {
+        OrderDiscountSummary orderDiscountSummary = (order.orderDiscount == null ? null : new OrderDiscountSummary(order.orderDiscount.title, order.orderDiscount.percentage));
+
+        List<OrderItemSummary> itemSummaries = new ArrayList<>();
+
+        for(OrderItem item : order.getOrderItems()) {
+
+            TaxSummary taxSummary = (item.productVariant.product.tax == null ? null : new TaxSummary(item.productVariant.product.tax.title, item.productVariant.product.tax.percentage));
+            ProductDiscountSummary productDiscountSummary = (item.productVariant.product.discount == null ? null : new ProductDiscountSummary(item.productVariant.product.discount.title, item.productVariant.product.discount.percentage));
+
+            ProductSummary productSummary = new ProductSummary(item.productVariant.product.title, item.productVariant.product.price, taxSummary, item.productVariant.product.weight, item.productVariant.product.weightUnit, productDiscountSummary);
+            ProductVariantSummary variantSummary = new ProductVariantSummary(item.productVariant.title, item.productVariant.additionalPrice);
+
+            OrderItemSummary itemSummary = new OrderItemSummary(item.quantity, item.getTotalPrice(), productSummary, variantSummary);
+
+            itemSummaries.add(itemSummary);
+        }
+
+        return new OrderSummary(orderDiscountSummary, order.status, itemSummaries);
+    }
+
 	public boolean isOwnedByCurrentUser(int orderId) {
         CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder.getContext()
                 .getAuthentication()

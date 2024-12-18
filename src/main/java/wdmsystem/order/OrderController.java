@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import wdmsystem.order.summary.OrderSummary;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -86,6 +87,7 @@ public class OrderController {
         return new ResponseEntity<>(order, HttpStatus.OK);
     }
 
+    //new
     @GetMapping("/orders/{orderId}/price")
     @PreAuthorize("hasRole('ADMIN') or ((hasRole('OWNER') or hasRole('REGULAR')) and @orderService.isOwnedByCurrentUser(#orderId))")
     public ResponseEntity<Double> getPrice(@PathVariable int orderId) {
@@ -95,12 +97,58 @@ public class OrderController {
         return new ResponseEntity<>(price, HttpStatus.OK);
     }
 
+    //new
+    @GetMapping("/orders/{orderId}/unpaid-price")
+    @PreAuthorize("hasRole('ADMIN') or ((hasRole('OWNER') or hasRole('REGULAR')) and @orderService.isOwnedByCurrentUser(#orderId))")
+    public ResponseEntity<Double> getUnpaidPrice(@PathVariable int orderId) {
+        double price = _orderService.getUnpaidPrice(orderId);
+        return new ResponseEntity<>(price, HttpStatus.OK);
+    }
+
     //new method
     @GetMapping("/orders/{orderId}/items")
+    @PreAuthorize("hasRole('ADMIN') or ((hasRole('OWNER') or hasRole('REGULAR')) and @orderService.isOwnedByCurrentUser(#orderId))")
     ResponseEntity<List<OrderItemDTO>> getOrderItems(@PathVariable int orderId) {
         log.info("Fetching items for order with ID: {}", orderId);
         List<OrderItemDTO> orderItems = _orderService.getOrderItems(orderId);
         log.info("Fetched {} items for order with ID: {}", orderItems.size(), orderId);
         return new ResponseEntity<>(orderItems, HttpStatus.OK);
+    }
+
+    //new method
+    @GetMapping("/orders/{orderId}/summary")
+    @PreAuthorize("hasRole('ADMIN') or ((hasRole('OWNER') or hasRole('REGULAR')) and @orderService.isOwnedByCurrentUser(#orderId))")
+    ResponseEntity<OrderSummary> getOrderSummary(@PathVariable int orderId) {
+        OrderSummary summary = _orderService.getOrderSummary(orderId);
+        return new ResponseEntity<>(summary, HttpStatus.OK);
+    }
+
+    //new method
+    @PostMapping("/orders/{orderId}/archive")
+    @PreAuthorize("hasRole('ADMIN') or ((hasRole('OWNER') or hasRole('REGULAR')) and @orderService.isOwnedByCurrentUser(#orderId))")
+    ResponseEntity<OrderDTO> archiveOrder(@PathVariable int orderId) {
+        _orderService.archiveOrder(orderId);
+        return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+    }
+
+    //new method
+    @GetMapping("/orders/archive/{archivedOrderId}")
+    //pre authorize archivedOrderId
+    ResponseEntity<OrderSummary> archiveOrders(@PathVariable int archivedOrderId) {
+        OrderSummary summary = _orderService.getArchivedOrder(archivedOrderId);
+        return new ResponseEntity<>(summary, HttpStatus.OK);
+    }
+
+    //new
+    @PatchMapping("/orders/{orderId}/validate-payments")
+    @PreAuthorize("hasRole('ADMIN') or ((hasRole('OWNER') or hasRole('REGULAR')) and @orderService.isOwnedByCurrentUser(#orderId))")
+    ResponseEntity<OrderDTO> validatePaymentsAndUpdateOrderStatus(@PathVariable int orderId) {
+        OrderDTO order = _orderService.validatePaymentsAndUpdateOrderStatus(orderId);
+        if(order != null) {
+            return new ResponseEntity<>(order, HttpStatus.OK);
+        }
+        else {
+            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        }
     }
 }
