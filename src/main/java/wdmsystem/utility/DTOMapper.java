@@ -19,6 +19,9 @@ import wdmsystem.merchant.IMerchantRepository;
 import wdmsystem.merchant.Merchant;
 import wdmsystem.merchant.MerchantDTO;
 import wdmsystem.order.*;
+import wdmsystem.order.discount.IOrderDiscountRepository;
+import wdmsystem.order.discount.OrderDiscount;
+import wdmsystem.order.discount.OrderDiscountDTO;
 import wdmsystem.payment.Payment;
 import wdmsystem.payment.PaymentDTO;
 import wdmsystem.product.*;
@@ -46,6 +49,7 @@ public class DTOMapper {
     ICategoryRepository categoryRepository;
     IMerchantRepository merchantRepository;
     IDiscountRepository discountRepository;
+    IOrderDiscountRepository orderDiscountRepository;
 
     /// ORDER
     public OrderDTO Order_ModelToDTO(Order order) {
@@ -198,6 +202,20 @@ public class DTOMapper {
     /// Discount
 
     public DiscountDTO Discount_ModelToDTO(Discount discount){
-        return new DiscountDTO(discount.title, discount.percentage, discount.expiresOn);
+        return new DiscountDTO(discount.id, discount.title, discount.percentage, discount.expiresOn);
+    }
+
+    public Discount Discount_DTOToModel(DiscountDTO dto){
+        return new Discount(0, null, dto.title(), dto.expiresOn(), dto.percentage());
+    }
+
+    /// Order discount
+
+    public OrderDiscountDTO OrderDiscount_ModelToDTO(OrderDiscount discount){
+        return new OrderDiscountDTO(discount.id, discount.title, discount.percentage, discount.expiresOn);
+    }
+
+    public OrderDiscount OrderDiscount_DTOToModel(OrderDiscountDTO discountDTO) {
+        return new OrderDiscount(0, null, discountDTO.title(), discountDTO.percentage(), discountDTO.expiresOn());
     }
 }

@@ -31,6 +31,12 @@ public class MerchantController {
         log.info("Fetching merchant with ID: {}", merchantId);
         MerchantDTO merchant = _merchantService.getMerchant(merchantId);
         log.info("Fetched merchant details: {}", merchant);
+    }
+  
+    @GetMapping("/merchants")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('OWNER') or hasRole('REGULAR')")
+    ResponseEntity<MerchantDTO> getMerchant() {
+        MerchantDTO merchant = _merchantService.getMerchant();
         return new ResponseEntity<>(merchant, HttpStatus.OK);
     }
 
