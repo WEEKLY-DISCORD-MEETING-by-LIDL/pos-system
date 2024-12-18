@@ -7,6 +7,8 @@ import {CreateOrderPage} from "./components/CreateOrderPage";
 import {OrderManagementPage} from "./components/OrderManagementPage";
 import {ViewOrderPage} from "./components/ViewOrderPage";
 import ProductManagementPage from "./pages/ProductManagementPage";
+import {MerchantManagementPage} from "./components/MerchantManagementPage";
+import {TaxManagementPage} from "./components/TaxManagementPage";
 
 function Root() {
     return (
@@ -18,6 +20,8 @@ function Root() {
                 <Route path="/view-order" element={<ViewOrderPage />} />
                 <Route path="/home" element={<Home />} />
                 <Route path="/product-management" element={<ProductManagementPage />} />
+                <Route path="/merchant-management" element={<MerchantManagementPage />} />
+                <Route path="/tax-management" element={<TaxManagementPage />} />
                 <Route path="/discount" element={<Discount />} />
             </Routes>
         </Router>
