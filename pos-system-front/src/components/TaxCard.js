@@ -2,32 +2,43 @@ import { useState } from 'react';
 import '../styles/TaxCardStyle.css';
 import { deleteTax, updateTax } from "../api/TaxAPI";
 
-export const TaxCard = (props) => {
-    const [newTitle, setNewTitle] = useState(props.tax.title);
-    const [newPercentage, setNewPercentage] = useState(props.tax.percentage);
-    const [isEditing, setIsEditing] = useState(false); 
+export const TaxCard = ({ tax, onTaxDelete, onTaxUpdate }) => {
+    const [newTitle, setNewTitle] = useState(tax.title);
+    const [newPercentage, setNewPercentage] = useState(tax.percentage);
+    const [isEditing, setIsEditing] = useState(false);
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
         const updatedTaxData = {
-            ...props.tax,
+            ...tax,
             title: newTitle,
             percentage: newPercentage,
         };
-        updateTax(props.tax.id, updatedTaxData);
-        setIsEditing(false); 
+
+        try {
+            await updateTax(tax.id, updatedTaxData);
+            onTaxUpdate(tax.id, updatedTaxData);
+            setIsEditing(false);
+        } catch (error) {
+            console.error("Error updating tax:", error.message);
+        }
     };
 
-    const removeTax = () => {
-        deleteTax(props.tax.id);
+    const removeTax = async () => {
+        try {
+            await deleteTax(tax.id);
+            onTaxDelete(tax.id);
+        } catch (error) {
+            console.error("Error deleting tax:", error.message);
+        }
     };
 
     return (
         <div className="tax-card">
-            <h4>Tax: #{props.tax.id}</h4>
-            <p>Title: {props.tax.title}</p>
-            <p>Percentage: {props.tax.percentage * 100}%</p>
-            <p>Merchant ID: {props.tax.merchantId}</p>
+            <h4>Tax: #{tax.id}</h4>
+            <p>Title: {tax.title}</p>
+            <p>Percentage: {tax.percentage * 100}%</p>
+            <p>Merchant ID: {tax.merchantId}</p>
             <button onClick={removeTax}>DELETE ME</button>
 
             {isEditing ? (

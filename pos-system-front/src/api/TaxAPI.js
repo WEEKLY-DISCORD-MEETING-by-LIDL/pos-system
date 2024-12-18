@@ -57,3 +57,18 @@ export const updateTax = async (taxId, taxData) => {
         throw error;
     }
 };
+
+export const createTax = async (taxData) => {
+    try {
+        const token = localStorage.getItem("token");
+        const response = await axios.post(`http://localhost:8080/taxes`, taxData, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error(error.message);
+        throw error;
+    }
+};

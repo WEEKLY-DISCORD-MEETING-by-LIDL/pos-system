@@ -1,14 +1,21 @@
 import { useEffect, useState } from 'react';
 import { fetchMerchant } from '../api/MerchantAPI';
 import '../styles/MerchantStyle.css';
+import { useNavigate } from "react-router-dom";
 
 export const MerchantManagementPage = () => {
 
+    const navigate = useNavigate();
     const [merchants, setMerchant] = useState(0);
 
     useEffect(() => {
         fetchMerchant(setMerchant);
     }, [])
+
+    const returnHome = () => {
+        navigate("/home")
+    }
+
 
     return (
         <div className="business-details">
@@ -37,6 +44,9 @@ export const MerchantManagementPage = () => {
             <div className="detail-item">
                 <h2><strong>Email:</strong> {merchants.email}</h2>
                 <h2><strong>Phone:</strong> +{merchants.phone}</h2>
+            </div>
+            <div>
+                <button onClick={returnHome}>Back To Home</button>
             </div>
         </div>
     );
