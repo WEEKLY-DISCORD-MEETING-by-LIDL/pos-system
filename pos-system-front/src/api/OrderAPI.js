@@ -106,6 +106,20 @@ export const fetchOrderPrice = async (orderId, setPrice, token) => {
     }
 }
 
+export const fetchOrderUnpaidPrice = async (orderId, setUnpaidPrice, token) => {
+    try {
+        const response = await axios.get(`http://localhost:8080/orders/${orderId}/unpaid-price`, {
+            headers:{
+                Authorization: `Bearer ${token}`
+            }
+        });
+        console.log(response.data);
+        setUnpaidPrice(response.data);
+    } catch (err) {
+        console.log(err.message);
+    }
+}
+
 export const cancelOrder = async (orderId, token) => {
     try {
         const response = await axios.patch(`http://localhost:8080/orders/${orderId}/cancel`, null,{
@@ -122,6 +136,19 @@ export const cancelOrder = async (orderId, token) => {
 export const updateOrderStatus = async (orderId, status, token) => {
     try {
         const response = await axios.put(`http://localhost:8080/orders/${orderId}?status=${status}`, null,{
+            headers:{
+                Authorization: `Bearer ${token}`
+            }
+        });
+        console.log(response.data);
+    } catch (err) {
+        console.log(err.message);
+    }
+}
+
+export const validatePaymentsAndUpdateOrderStatus = async (orderId, token) => {
+    try {
+        const response = await axios.patch(`http://localhost:8080/orders/${orderId}/validate-payments`, null, {
             headers:{
                 Authorization: `Bearer ${token}`
             }

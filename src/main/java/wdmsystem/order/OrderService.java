@@ -12,6 +12,7 @@ import wdmsystem.merchant.Merchant;
 import wdmsystem.order.discount.IOrderDiscountRepository;
 import wdmsystem.order.discount.OrderDiscount;
 import wdmsystem.order.summary.*;
+import wdmsystem.payment.Payment;
 import wdmsystem.utility.DTOMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -217,6 +218,24 @@ public class OrderService {
                 .sum();
     }
 
+    public double getUnpaidPrice(int orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new NotFoundException("Order with id " + orderId + " not found"));
+
+        double price = order.getOrderItems()
+                .stream()
+                .mapToDouble(OrderItem::getTotalPrice)
+                .sum();
+
+        double totalAmountPaid = 0;
+
+        for(Payment payment : order.getPayments()) {
+            totalAmountPaid += payment.totalAmount;
+        }
+
+        return price - totalAmountPaid;
+    }
+
     //new
     public List<OrderItemDTO> getOrderItems(int orderId) {
 
@@ -279,6 +298,34 @@ public class OrderService {
         }
 
         return summary;
+    }
+
+    //new
+    public OrderDTO validatePaymentsAndUpdateOrderStatus(int orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(() ->
+                new NotFoundException("Order with id " + orderId + " not found"));
+
+        double price = order.getOrderItems()
+                .stream()
+                .mapToDouble(OrderItem::getTotalPrice)
+                .sum();
+
+        double totalAmountPaid = 0;
+
+        for(Payment payment : order.getPayments()) {
+            totalAmountPaid += payment.totalAmount;
+        }
+
+        if(totalAmountPaid < price && totalAmountPaid > 0) {
+            order.status = OrderStatus.PARTIALLY_PAID;
+            return dtoMapper.Order_ModelToDTO(orderRepository.save(order));
+        }
+        else if(totalAmountPaid >= price) {
+            order.status = OrderStatus.PAID;
+            return dtoMapper.Order_ModelToDTO(orderRepository.save(order));
+        }
+
+        return null;
     }
 
     private OrderSummary fillOutOrderSummary(Order order) {

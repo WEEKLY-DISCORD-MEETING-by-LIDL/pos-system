@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import {OrderManagementStyle} from "../styles/OrderManagementStyle";
-import {OrderCard} from "../components/OrderCard";
+import {OrderCard} from "./OrderCard";
 import {fetchOrders} from "../api/OrderAPI";
 
 export const OrderManagementPage = () => {

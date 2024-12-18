@@ -6,6 +6,8 @@ import wdmsystem.utility.DTOMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 @AllArgsConstructor
 public class PaymentService {
@@ -19,9 +21,11 @@ public class PaymentService {
         if(paymentDTO.tipAmount() < 0) throw new InvalidInputException("Tip amount must be greater than or equal to 0");
         if(paymentDTO.totalAmount() <= 0) throw new InvalidInputException("Total amount must be greater than 0");
 
-        // well change when reservations work
 
+
+        // will change when reservations work
         Payment payment = dtoMapper.Payment_DTOToModel(paymentDTO);
+        payment.createdAt = LocalDateTime.now();
         paymentRepository.save(payment);
     }
 }

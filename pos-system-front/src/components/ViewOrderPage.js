@@ -8,8 +8,8 @@ import {
     fetchOrder,
     fetchOrderItems,
     fetchOrderPrice,
-    fetchOrderSummary,
-    updateOrderStatus
+    fetchOrderSummary, fetchOrderUnpaidPrice,
+    updateOrderStatus, validatePaymentsAndUpdateOrderStatus
 } from "../api/OrderAPI";
 
 export const ViewOrderPage = (props) => {
@@ -17,12 +17,34 @@ export const ViewOrderPage = (props) => {
     const token = localStorage.getItem("token");
     const [order, setOrder] = useState([]);
     const [price, setPrice] = useState(0);
+    const [unpaidPrice, setUnpaidPrice] = useState(0);
+    const [splitPayments, setSplitPayments] = useState([]);
 
     const { id } = useParams();
+
+    const setupSplitPayments = (event) => {
+        event.preventDefault();
+        let numberOfSplitPayments = Number(event.target.splitInput.value);
+
+        let payments = []
+        let sum = 0;
+
+        for(let i = 0 ; i<numberOfSplitPayments-1;++i) {
+            const amount = Number((unpaidPrice/numberOfSplitPayments).toFixed(2));
+            sum += amount;
+            payments.push(amount);
+        }
+
+        console.log(sum);
+        payments.push(unpaidPrice - sum);
+
+        setSplitPayments(payments);
+    }
 
     const fetchDetails = () => {
         fetchOrderSummary(id, setOrder, token);
         fetchOrderPrice(id, setPrice, token);
+        fetchOrderUnpaidPrice(id, setUnpaidPrice, token);
     }
 
     useEffect(() => {
@@ -33,13 +55,13 @@ export const ViewOrderPage = (props) => {
         event.preventDefault();
         const payment = {
             tipAmount: Number(event.target.tipInput.value),
-            totalAmount: price,
+            totalAmount: unpaidPrice,
             method: "CASH",
             orderId: id
         }
 
         createPayment(payment, token).then(r => {
-            updateOrderStatus(id, "PAID", token).then(r => {
+            validatePaymentsAndUpdateOrderStatus(id, token).then(r => {
                 archiveOrder(id, token);
                 fetchDetails();
             });
@@ -47,7 +69,9 @@ export const ViewOrderPage = (props) => {
     }
 
     const onCancel = () => {
-        cancelOrder(id, token);
+        cancelOrder(id, token).then(r => {
+            fetchDetails();
+        });
     }
 
     return (
@@ -89,6 +113,13 @@ export const ViewOrderPage = (props) => {
                 </tbody>
             </table>
             <p id={"totalPrice"}>Total price: {price}</p>
+            {unpaidPrice < price && (
+                <p>Unpaid: {unpaidPrice}</p>
+            )}
+
+            {(order.status === "OPENED")  && (
+                <button onClick={onCancel}>Cancel order</button>
+            )}
 
             {(order.status === "OPENED" || order.status === "PARTIALLY_PAID") && (
                 <>
@@ -97,13 +128,24 @@ export const ViewOrderPage = (props) => {
                         <input type={"number"} name={"tipInput"} step={"any"} min={0}></input>
                         <input type={"submit"} value={"Pay"}></input>
                     </form>
-                    <button>Split payment</button>
+
+
+                    <form onSubmit={setupSplitPayments}>
+                        <label>Number of splits: </label>
+                        <input type={"number"} name={"splitInput"} min={2} max={5}></input>
+                        <input type={"submit"} value={"Split"}></input>
+                    </form>
+                    <ul>
+                        {splitPayments.map((amount) => (
+                            <li>
+                                {amount}
+                            </li>
+                        ))}
+                    </ul>
                 </>
             )}
 
-            {order.status === "OPENED" && (
-                <button onClick={onCancel}>Cancel order</button>
-            )}
+
 
         </div>
     );
