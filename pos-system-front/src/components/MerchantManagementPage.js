@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { fetchMerchant } from '../api/MerchantAPI';
+import { fetchEmployees } from '../api/EmployeeAPI';
 import '../styles/MerchantStyle.css';
 import { useNavigate } from "react-router-dom";
 
@@ -7,10 +8,15 @@ export const MerchantManagementPage = () => {
 
     const navigate = useNavigate();
     const [merchants, setMerchant] = useState(0);
+    const [employees, setEmployees] = useState([]);
 
     useEffect(() => {
         fetchMerchant(setMerchant);
+        fetchEmployees("OWNER", null, setEmployees);
     }, [])
+
+    console.log(employees);
+
 
     const returnHome = () => {
         navigate("/home")
@@ -20,6 +26,12 @@ export const MerchantManagementPage = () => {
     return (
         <div className="business-details">
             <h1>Business Details</h1>
+            {employees.map((employee) => (
+                <div className="detail-item" key={employee.username}>
+                    <h2><strong>Owner:</strong> {employee.username}</h2>
+                </div>
+            ))}
+
             <div className="detail-item">
                 <h2><strong>Business Name:</strong> {merchants.name}</h2>
             </div>
