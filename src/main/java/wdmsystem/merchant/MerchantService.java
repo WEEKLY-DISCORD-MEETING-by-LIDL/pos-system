@@ -70,9 +70,12 @@ public class MerchantService {
         return dtoMapper.Merchant_ModelToDTO(merchant);
     }
 
-    public MerchantDTO getMerchant(int id) {
-        Merchant merchant =  merchantRepository.findById(id).orElseThrow(
-            () -> new NotFoundException("Merchant with ID " + id + " not found")
+    public MerchantDTO getMerchant() {
+        CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder.getContext()
+        .getAuthentication()
+        .getPrincipal();
+        Merchant merchant =  merchantRepository.findById(currentUser.getMerchantId()).orElseThrow(
+            () -> new NotFoundException("Merchant with ID " + currentUser.getMerchantId() + " not found")
         );
         return dtoMapper.Merchant_ModelToDTO(merchant);
     }
