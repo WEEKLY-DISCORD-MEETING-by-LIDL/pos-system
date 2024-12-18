@@ -63,7 +63,7 @@ export const TaxCard = ({ tax, onTaxDelete, onTaxUpdate }) => {
                                 onChange={(e) => setNewPercentage(parseFloat(e.target.value))}
                                 min="0"
                                 max="1"
-                                step="0.01"
+                                step="0.1"
                                 required
                             />
                         </label>
