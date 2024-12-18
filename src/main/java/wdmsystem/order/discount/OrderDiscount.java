@@ -31,13 +31,11 @@ public final class OrderDiscount {
     @OneToMany(mappedBy = "orderDiscount", cascade = CascadeType.REFRESH)
     public List<Order> discountedOrders;
 
-    public OrderDiscount (Integer id, Merchant merchant, String title, double percentage, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public OrderDiscount (Integer id, Merchant merchant, String title, double percentage) {
         this.id = id;
         this.merchant = merchant;
         this.title = title;
         this.percentage = percentage;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 
     //@Entity required constructor
