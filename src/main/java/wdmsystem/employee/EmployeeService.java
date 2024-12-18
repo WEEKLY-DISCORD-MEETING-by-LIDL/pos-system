@@ -46,8 +46,8 @@ public class EmployeeService {
                 LocalDateTime.now()
         );
         employee.setUpdatedAt(employee.getCreatedAt());
-        employeeRepository.save(employee);
-        return dtoMapper.Employee_ModelToDTO(employee);
+        Employee savedEmployee = employeeRepository.save(employee);
+        return dtoMapper.Employee_ModelToDTO(savedEmployee);
     }
 
     public List<EmployeeDTO> getEmployees(EmployeeType type, Integer limit) {
@@ -83,12 +83,12 @@ public class EmployeeService {
         return dtoMapper.Employee_ModelToDTO(employee);
     }
 
-    public void updateEmployee(int employeeId, UpdateEmployeeDTO request) {
+    public void updateEmployee(int employeeId, EmployeeDTO request) {
 
         Employee employee = employeeRepository.findById(employeeId).orElseThrow(
                 () -> new NotFoundException("Employee with id " + employeeId + " not found"));
 
-        dtoMapper.UpdateEmployee_DTOToModel(employee, request);
+        dtoMapper.Employee_DTOToModel(employee, request);
         employee.setUpdatedAt(LocalDateTime.now());
 
         CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder.getContext()

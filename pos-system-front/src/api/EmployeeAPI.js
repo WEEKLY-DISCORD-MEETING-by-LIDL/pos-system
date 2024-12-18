@@ -19,3 +19,15 @@ export const fetchEmployees = async(employeeType, limit, setEmployees) => {
         console.log(error.message);
     }
 }
+
+export const createEmployee = async() => {
+
+}
+
+export const updateEmployee = async() => {
+    
+}
+
+export const deleteEmployee = async() => {
+    
+}
