@@ -1,14 +1,19 @@
 package wdmsystem.utility;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import wdmsystem.auth.CustomUserDetails;
 import wdmsystem.category.Category;
 import wdmsystem.category.CategoryDTO;
 import wdmsystem.category.ICategoryRepository;
 import wdmsystem.customer.Customer;
 import wdmsystem.customer.CustomerDTO;
+import wdmsystem.discount.Discount;
+import wdmsystem.discount.DiscountDTO;
+import wdmsystem.discount.IDiscountRepository;
 import wdmsystem.employee.EmployeeDTO;
 import wdmsystem.employee.Employee;
 import wdmsystem.employee.IEmployeeRepository;
+import wdmsystem.employee.UpdateEmployeeDTO;
 import wdmsystem.exception.NotFoundException;
 import wdmsystem.merchant.IMerchantRepository;
 import wdmsystem.merchant.Merchant;
@@ -31,6 +36,7 @@ import wdmsystem.service.Service;
 @org.springframework.stereotype.Service
 @AllArgsConstructor
 public class DTOMapper {
+    private final PasswordEncoder passwordEncoder;
     IOrderRepository orderRepository;
     IOrderItemRepository orderItemRepository;
     IProductRepository productRepository;
@@ -39,6 +45,7 @@ public class DTOMapper {
     ITaxRepository taxRepository;
     ICategoryRepository categoryRepository;
     IMerchantRepository merchantRepository;
+    IDiscountRepository discountRepository;
 
     /// ORDER
     public OrderDTO Order_ModelToDTO(Order order) {
@@ -47,12 +54,13 @@ public class DTOMapper {
 
     /// PRODUCT
     public ProductDTO Product_ModelToDTO(Product product) {
-        return new ProductDTO(product.id, product.merchant.id, product.title, (product.category == null ? null : product.category.id), product.price, product.discountId, (product.tax == null ? null : product.tax.id), product.weight, product.weightUnit);
+        return new ProductDTO(product.id, product.merchant.id, product.title, (product.category == null ? null : product.category.id), product.price, (product.discount == null ? null : product.discount.id), (product.tax == null ? null : product.tax.id), product.weight, product.weightUnit);
     }
 
     public Product Product_DTOToModel(ProductDTO productDTO) {
         Tax tax;
         Category category;
+        Discount discount;
 
         if (productDTO.taxId() == null) {
             tax = null;
@@ -66,7 +74,13 @@ public class DTOMapper {
             category = categoryRepository.findById(productDTO.categoryId()).orElse(null);
         }
 
-        return new Product(productDTO.id(), null, productDTO.title(), category, productDTO.price(), productDTO.discountId(), tax, productDTO.weight(), productDTO.weightUnit());
+        if (productDTO.discountId() == null) {
+            discount = null;
+        } else {
+            discount = discountRepository.findById(productDTO.discountId()).orElse(null);
+        }
+
+        return new Product(productDTO.id(), null, productDTO.title(), category, productDTO.price(), discount, tax, productDTO.weight(), productDTO.weightUnit());
     }
 
     /// PRODUCT VARIANT
@@ -95,14 +109,32 @@ public class DTOMapper {
         return new OrderItem(orderItemDTO.id(), order, productVariant, orderItemDTO.quantity());
     }
 
+    public OrderItemDTO OrderItem_ModelToDTO(OrderItem orderItem) {
+        return new OrderItemDTO(orderItem.id, orderItem.order.id, orderItem.productVariant.id, orderItem.quantity);
+    }
+
     /// EMPLOYEE
 
     public EmployeeDTO Employee_ModelToDTO(Employee employee) {
         return new EmployeeDTO(employee.firstName, employee.lastName, employee.employeeType, employee.username, "<hidden>");
     }
 
-    public OrderItemDTO OrderItem_ModelToDTO(OrderItem orderItem) {
-        return new OrderItemDTO(orderItem.id, orderItem.order.id, orderItem.productVariant.id, orderItem.quantity);
+    public void UpdateEmployee_DTOToModel(Employee employee, UpdateEmployeeDTO dto) {
+        if (dto.firstName() != null && dto.firstName().length() >= 30) {
+            employee.setFirstName(dto.firstName());
+        }
+        if (dto.lastName() != null && dto.lastName().length() >= 30) {
+            employee.setLastName(dto.lastName());
+        }
+        if (dto.employeeType() != null) {
+            employee.setEmployeeType(dto.employeeType());
+        }
+        if (dto.username() != null && dto.username().length() >= 30) {
+            employee.setUsername(dto.username());
+        }
+        if (dto.password() != null) {
+            employee.setPassword(passwordEncoder.encode(dto.password()));
+        }
     }
 
     /// TAX
@@ -161,5 +193,11 @@ public class DTOMapper {
 
     public MerchantDTO Merchant_ModelToDTO(Merchant merchant){
         return new MerchantDTO(merchant.name, merchant.vat, merchant.address, merchant.email, merchant.phone);
+    }
+
+    /// Discount
+
+    public DiscountDTO Discount_ModelToDTO(Discount discount){
+        return new DiscountDTO(discount.title, discount.percentage, discount.expiresOn);
     }
 }

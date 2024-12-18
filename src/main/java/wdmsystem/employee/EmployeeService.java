@@ -88,11 +88,7 @@ public class EmployeeService {
         Employee employee = employeeRepository.findById(employeeId).orElseThrow(
                 () -> new NotFoundException("Employee with id " + employeeId + " not found"));
 
-        employee.setFirstName(request.firstName());
-        employee.setLastName(request.lastName());
-        employee.setEmployeeType(request.employeeType());
-        employee.setUsername(request.username());
-        employee.setPassword(passwordEncoder.encode(request.password()));
+        dtoMapper.UpdateEmployee_DTOToModel(employee, request);
         employee.setUpdatedAt(LocalDateTime.now());
 
         CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder.getContext()
@@ -100,7 +96,7 @@ public class EmployeeService {
                 .getPrincipal();
         boolean isAdmin = currentUser.getAuthorities().stream()
                 .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
-        if(isAdmin) {
+        if(isAdmin && request.merchantId() != null) {
             Merchant merchant = merchantRepository.findById(request.merchantId()).orElseThrow(() ->
                     new NotFoundException("Merchant with id " + request.merchantId() + " not found"));
             employee.setMerchant(merchant);
