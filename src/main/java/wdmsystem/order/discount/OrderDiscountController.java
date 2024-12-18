@@ -18,36 +18,36 @@ public class OrderDiscountController {
 
     @PostMapping("/orderDiscounts")
     @PreAuthorize("hasRole('ADMIN') or hasRole('OWNER') or hasRole('REGULAR')")
-    ResponseEntity<OrderDiscount> createOrderDiscount(@RequestBody OrderDiscount discount) {
-        OrderDiscount newDiscount = _orderDiscountService.createOrderDiscount(discount);
+    ResponseEntity<OrderDiscountDTO> createOrderDiscount(@RequestBody OrderDiscountDTO discount) {
+        OrderDiscountDTO newDiscount = _orderDiscountService.createOrderDiscount(discount);
         return new ResponseEntity<>(newDiscount, HttpStatus.CREATED);
     }
 
     @GetMapping("/orderDiscounts")
     @PreAuthorize("hasRole('ADMIN') or hasRole('OWNER') or hasRole('REGULAR')")
-    ResponseEntity<List<OrderDiscount>> getFilteredDiscounts(@RequestParam boolean expired, @RequestParam int limit) {
-        List<OrderDiscount> discounts = _orderDiscountService.getFilteredDiscounts(expired, limit);
+    ResponseEntity<List<OrderDiscountDTO>> getOrderDiscounts( @RequestParam(required = false) Integer limit) {
+        List<OrderDiscountDTO> discounts = _orderDiscountService.getOrderDiscounts(limit);
         return new ResponseEntity<>(discounts, HttpStatus.OK);
     }
 
     @GetMapping("/orderDiscounts/{orderDiscountId}")
     @PreAuthorize("hasRole('ADMIN') or ((hasRole('OWNER') or hasRole('REGULAR')) and @orderDiscountService.isOwnedByCurrentUser(#orderDiscountId))")
-    ResponseEntity<OrderDiscount> getOrderDiscount(@PathVariable int orderDiscountId) {
-        OrderDiscount discount = _orderDiscountService.getOrderDiscount(orderDiscountId);
+    ResponseEntity<OrderDiscountDTO> getOrderDiscount(@PathVariable int orderDiscountId) {
+        OrderDiscountDTO discount = _orderDiscountService.getOrderDiscount(orderDiscountId);
         return new ResponseEntity<>(discount, HttpStatus.OK);
     }
 
     @PutMapping("/orderDiscounts/{orderDiscountId}")
     @PreAuthorize("hasRole('ADMIN') or ((hasRole('OWNER') or hasRole('REGULAR')) and @orderDiscountService.isOwnedByCurrentUser(#orderDiscountId))")
-    ResponseEntity<OrderDiscount> updateOrderDiscount(@PathVariable int orderDiscountId, @RequestBody OrderDiscount discount) {
-        OrderDiscount updatedDiscount = _orderDiscountService.updateOrderDiscount(orderDiscountId, discount);
+    ResponseEntity<OrderDiscountDTO> updateOrderDiscount(@PathVariable int orderDiscountId, @RequestBody OrderDiscountDTO discount) {
+        OrderDiscountDTO updatedDiscount = _orderDiscountService.updateOrderDiscount(orderDiscountId, discount);
         return new ResponseEntity<>(updatedDiscount, HttpStatus.OK);
     }
 
     @DeleteMapping("/orderDiscounts/{orderDiscountId}")
     @PreAuthorize("hasRole('ADMIN') or ((hasRole('OWNER') or hasRole('REGULAR')) and @orderDiscountService.isOwnedByCurrentUser(#orderDiscountId))")
-    ResponseEntity<OrderDiscount> deleteOrderDiscount(@PathVariable int orderDiscountId) {
-        HttpStatus status = _orderDiscountService.deleteOrderDiscount(orderDiscountId);
-        return new ResponseEntity<>(null, status);
+    ResponseEntity<OrderDiscountDTO> deleteOrderDiscount(@PathVariable int orderDiscountId) {
+        _orderDiscountService.deleteOrderDiscount(orderDiscountId);
+        return new ResponseEntity<>(null,HttpStatus.OK);
     }
 }

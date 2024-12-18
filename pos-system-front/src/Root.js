@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Route, Routes} from "react-router-dom";
 import App from "./App";
 import Home from "./components/Home"
+import Discount from "./components/Discount"
 import {CreateOrderPage} from "./components/CreateOrderPage";
 import {OrderManagementPage} from "./components/OrderManagementPage";
 import {ViewOrderPage} from "./components/ViewOrderPage";
@@ -21,6 +22,7 @@ function Root() {
                 <Route path="/product-management" element={<ProductManagementPage />} />
                 <Route path="/merchant-management" element={<MerchantManagementPage />} />
                 <Route path="/tax-management" element={<TaxManagementPage />} />
+                <Route path="/discount" element={<Discount />} />
             </Routes>
         </Router>
     );

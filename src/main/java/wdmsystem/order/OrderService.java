@@ -156,7 +156,7 @@ public class OrderService {
         Order order = orderRepository.findById(orderId).orElseThrow(() ->
                 new NotFoundException("Order with id " + orderId + " not found"));
 
-        order.status = status;
+        if(status != null) order.status = status;
         order.updatedAt = LocalDateTime.now();
         Order savedOrder = orderRepository.save(order);
 
@@ -193,12 +193,16 @@ public class OrderService {
         Order orderToUpdate = orderRepository.findById(orderId).orElseThrow(() ->
                 new NotFoundException("Order with id " + orderId + " not found"));
 
-        orderToUpdate.orderDiscount = orderDiscountRepository.findById(discountId).orElseThrow(() ->
-                new NotFoundException("Order discount with id " + discountId + " not found"));
+        if(orderToUpdate.orderDiscount.expiresOn.isAfter(LocalDateTime.now())){
+            orderToUpdate.orderDiscount = orderDiscountRepository.findById(discountId).orElseThrow(() ->
+                    new NotFoundException("Order discount with id " + discountId + " not found"));
 
-        orderToUpdate.updatedAt = LocalDateTime.now();
-        Order savedOrder = orderRepository.save(orderToUpdate);
-        return dtoMapper.Order_ModelToDTO(savedOrder);
+            orderToUpdate.updatedAt = LocalDateTime.now();
+            Order savedOrder = orderRepository.save(orderToUpdate);
+            return dtoMapper.Order_ModelToDTO(savedOrder);
+        } else {
+            throw new InvalidInputException("Order discount " + discountId + " has expired.");
+        }
     }
 
     public double getPrice(int orderId) {

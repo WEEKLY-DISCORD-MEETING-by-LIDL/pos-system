@@ -84,12 +84,21 @@ public class MerchantService {
         Merchant merchantToUpdate = merchantRepository.findById(id).orElseThrow(
             () -> new NotFoundException("Merchant with ID " + id + " not found")
         );
-
-        merchantToUpdate.setName(request.name());
-        merchantToUpdate.setVat(request.vat());
-        merchantToUpdate.setAddress(request.address());
-        merchantToUpdate.setEmail(request.email());
-        merchantToUpdate.setPhone(request.phone());
+        if (request.name() != null && request.name().length() >= 30) {
+            merchantToUpdate.setName(request.name());
+        }
+        if (request.vat() != null) {
+            merchantToUpdate.setVat(request.vat());
+        }
+        if (request.address() != null) {
+            merchantToUpdate.setAddress(request.address());
+        }
+        if (request.email() != null) {
+            merchantToUpdate.setEmail(request.email());
+        }
+        if (request.phone() != null) {
+            merchantToUpdate.setPhone(request.phone());
+        }
         merchantToUpdate.setUpdatedAt(LocalDateTime.now());
 
         merchantRepository.save(merchantToUpdate);

@@ -24,6 +24,9 @@ const Home = () => {
     const goToTaxManagement = () => {
         navigate("/tax-management");
     }
+    const goToDiscounts = () => {
+        navigate("/discount");
+    }
 
     return (
         <div style={HomeStyle.homeContainer}>
@@ -35,6 +38,7 @@ const Home = () => {
                 <button style={HomeStyle.button} onClick={goToProductManagement}>Product Management</button>
                 <button style={HomeStyle.button} onClick={goToMerchantManagement}>Merchant Management</button>
                 <button style={HomeStyle.button} onClick={goToTaxManagement}>Tax Management</button>
+                <button style={HomeStyle.button} onClick={goToDiscounts}>Discount Management</button>
             </div>
         </div>
     )

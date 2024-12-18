@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Setter
@@ -36,15 +38,16 @@ public class OrderItem {
     }
 
     public double getTotalPrice() {
-
+        double totalPrice;
         if (productVariant != null && productVariant.getProduct() != null) {
+            totalPrice = (productVariant.getProduct().getPrice() + productVariant.getAdditionalPrice()) * quantity;
+            if(productVariant.getProduct().getDiscount() != null && productVariant.getProduct().getDiscount().getExpiresOn().isAfter(LocalDateTime.now())) {
+                totalPrice = totalPrice * (1 - productVariant.getProduct().getDiscount().percentage);
+            }
             if(productVariant.getProduct().getTax() != null) {
-                return (productVariant.getProduct().getPrice() + productVariant.getAdditionalPrice()) * (productVariant.getProduct().getTax().percentage + 1) * quantity;
+                totalPrice = totalPrice * (productVariant.getProduct().getTax().percentage + 1);
             }
-            else {
-                return (productVariant.getProduct().getPrice() + productVariant.getAdditionalPrice()) * quantity;
-            }
-
+            return totalPrice;
         }
         throw new NotFoundException("Product or ProductVariant was not found.");
     }
