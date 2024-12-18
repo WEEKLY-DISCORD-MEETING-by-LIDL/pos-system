@@ -21,10 +21,10 @@ import wdmsystem.merchant.Merchant;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Integer id;   
+    public Integer id;
     @ManyToOne
     @JoinColumn(name = "merchant_id", nullable = false)
-    public Merchant merchant;  
+    public Merchant merchant;
   
     public String title;
 

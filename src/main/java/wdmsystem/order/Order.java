@@ -34,10 +34,10 @@ public final class Order {
     public LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    private List<OrderItem> orderItems;
+    public List<OrderItem> orderItems;
 
     @OneToMany(mappedBy = "order")
-    private List<Payment> payments;
+    public List<Payment> payments;
 
     public Order(Integer id, Merchant merchant, OrderDiscount orderDiscount, OrderStatus status, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;

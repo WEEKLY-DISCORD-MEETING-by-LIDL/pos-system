@@ -97,6 +97,7 @@ public class OrderController {
         return new ResponseEntity<>(price, HttpStatus.OK);
     }
 
+    //new
     @GetMapping("/orders/{orderId}/unpaid-price")
     @PreAuthorize("hasRole('ADMIN') or ((hasRole('OWNER') or hasRole('REGULAR')) and @orderService.isOwnedByCurrentUser(#orderId))")
     public ResponseEntity<Double> getUnpaidPrice(@PathVariable int orderId) {
@@ -132,6 +133,7 @@ public class OrderController {
 
     //new method
     @GetMapping("/orders/archive/{archivedOrderId}")
+    //pre authorize archivedOrderId
     ResponseEntity<OrderSummary> archiveOrders(@PathVariable int archivedOrderId) {
         OrderSummary summary = _orderService.getArchivedOrder(archivedOrderId);
         return new ResponseEntity<>(summary, HttpStatus.OK);

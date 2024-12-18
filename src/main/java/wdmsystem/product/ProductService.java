@@ -107,17 +107,6 @@ public class ProductService {
         return productDTOs;
     }
 
-    public List<ProductDTO> getProductsByOrder(int orderId) {
-        List<Product> products = productRepository.findProductsByOrderId(orderId);
-
-        List<ProductDTO> productDTOs = new ArrayList<>();
-        for(Product product : products) {
-            productDTOs.add(dtoMapper.Product_ModelToDTO(product));
-        }
-
-        return productDTOs;
-    }
-
     private List<Product> filterProducts(Integer categoryId, String createdAtMin, String createdAtMax, Integer limit){
         List<Product> filteredProducts;
         CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder.getContext()
@@ -179,18 +168,6 @@ public class ProductService {
         else {
             throw new NotFoundException("Product with id " + productId + " not found");
         }
-    }
-
-    public List<ProductVariantDTO> getVariantsByOrder(int orderId) {
-
-        List<ProductVariant> variants = productVariantRepository.findByOrderId(orderId);
-
-        List<ProductVariantDTO> variantDTOs = new ArrayList<>();
-        for(ProductVariant variant : variants) {
-            variantDTOs.add(dtoMapper.ProductVariant_ModelToDTO(variant));
-        }
-
-        return variantDTOs;
     }
 
     public ProductDTO getProduct(int productId) {
