@@ -1,3 +1,5 @@
 package wdmsystem.order.discount;
 
-public record OrderDiscountDTO (String title, Double percentage){}
+import java.time.LocalDateTime;
+
+public record OrderDiscountDTO (int id, String title, Double percentage, LocalDateTime expiresOn){}

@@ -202,12 +202,20 @@ public class DTOMapper {
     /// Discount
 
     public DiscountDTO Discount_ModelToDTO(Discount discount){
-        return new DiscountDTO(discount.title, discount.percentage, discount.expiresOn);
+        return new DiscountDTO(discount.id, discount.title, discount.percentage, discount.expiresOn);
+    }
+
+    public Discount Discount_DTOToModel(DiscountDTO dto){
+        return new Discount(0, null, dto.title(), dto.expiresOn(), dto.percentage());
     }
 
     /// Order discount
 
     public OrderDiscountDTO OrderDiscount_ModelToDTO(OrderDiscount discount){
-        return new OrderDiscountDTO(discount.title, discount.percentage);
+        return new OrderDiscountDTO(discount.id, discount.title, discount.percentage, discount.expiresOn);
+    }
+
+    public OrderDiscount OrderDiscount_DTOToModel(OrderDiscountDTO discountDTO) {
+        return new OrderDiscount(0, null, discountDTO.title(), discountDTO.percentage(), discountDTO.expiresOn());
     }
 }

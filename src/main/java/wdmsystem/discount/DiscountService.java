@@ -29,17 +29,12 @@ public class DiscountService {
                 () -> new NotFoundException("Merchant with ID " + currentUser.getMerchantId() + " not found")
         );
 
-        Discount discount = new Discount(
-                0,
-                merchant,
-                discountDTO.title(),
-                discountDTO.expiresOn(),
-                discountDTO.percentage()
-        );
+        Discount discount = dtoMapper.Discount_DTOToModel(discountDTO);
+        discount.setMerchant(merchant);
         discount.setCreatedAt(LocalDateTime.now());
         discount.setUpdatedAt(LocalDateTime.now());
-        discountRepository.save(discount);
-        return dtoMapper.Discount_ModelToDTO(discount);
+        Discount savedDiscount = discountRepository.save(discount);
+        return dtoMapper.Discount_ModelToDTO(savedDiscount);
     }
 
     public List<DiscountDTO> getDiscounts(){
@@ -78,8 +73,8 @@ public class DiscountService {
         }
 
         discount.setUpdatedAt(LocalDateTime.now());
-        discountRepository.save(discount);
-        return dtoMapper.Discount_ModelToDTO(discount);
+        Discount savedDiscount = discountRepository.save(discount);
+        return dtoMapper.Discount_ModelToDTO(savedDiscount);
     }
 
     public void deleteDiscount(int discountId) {
