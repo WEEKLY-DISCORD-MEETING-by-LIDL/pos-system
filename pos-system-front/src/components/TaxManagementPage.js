@@ -89,7 +89,7 @@ export const TaxManagementPage = () => {
                                 onChange={(e) => setNewPercentage(e.target.value)}
                                 min="0"
                                 max="1"
-                                step="0.1"
+                                step="0.01"
                                 required
                             />
                         </label>
