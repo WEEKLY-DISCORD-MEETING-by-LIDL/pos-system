@@ -16,7 +16,8 @@ import {
   Col,
 } from 'reactstrap';
 import DatePicker from "react-datepicker";
-import { fetchService } from "../api/ServiceAPI";
+import { fetchService, fetchServices } from "../api/ServiceAPI";
+import { FetchCustomers } from "../api/CustomerAPI";
 import { fetchAvailableTimes } from "../api/ReservationAPI";
 import { useNavigate } from "react-router-dom";
 
@@ -30,13 +31,23 @@ export const ReservationsPage = () => {
     const [timePairs, setTimePairs] = useState([])
     const [selectedService, setSelectedService] = useState(null)
     const [selectedTime, setSelectedTime] = useState("")
-    const [isValid, setIsValid] = useState(false)
+    const [isValid, setIsValid] = useState(false);
+    const [services, setServices] = useState([]);
+    const [customers, setCustomers] = useState([]);
     const navigate = useNavigate();
 
     
-    useEffect(() => {
-        fetchReservations(setReservations);
-      }, []);
+      useEffect(() => {
+        const fetchData = async () => {
+            fetchReservations(setReservations);
+            fetchServices(null, null, setServices)
+            const customerList = await FetchCustomers();
+            console.log(customerList)
+            setCustomers(customerList)
+        };
+    
+        fetchData(); 
+      },[]);
 
       const handleEdit = (reservation) => {
         setSelectedReservation(reservation);
@@ -168,12 +179,26 @@ export const ReservationsPage = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {reservations.map((reservation) => (
-                      <tr key={reservation.id}>
-                        <td>{reservation.serviceId}</td>
+                    {reservations.map((reservation) => {
+                    // Find the matching service
+                    const service = services?.find((s) => s.id === reservation.serviceId);
+                    const customer = customers?.find((c) => c.id === reservation.customerId);
+
+                    return (
+                    <tr key={reservation.id}>
+                        {/* Service Title */}
+                        <td>{service ? service.title : "Unknown Service"}</td>
+
+                        {/* Start Time */}
                         <td>{reservation.startTime}</td>
-                        <td>{reservation.customerId}</td>
-                        <td>{reservation.employeeId}</td>
+
+                        {/* Customer Full Name */}
+                        <td>
+                        {customer
+                            ? `${customer.firstName} ${customer.lastName}`
+                            : "Unknown Customer"}
+                        </td>
+                        <td>{reservation.employeeId || "N/A"}</td>
                         <td>{reservation.reservationStatus}</td>
                         <td>
                             <Button color="primary" size="sm" onClick={() => handlePayment(reservation)}>
@@ -187,7 +212,8 @@ export const ReservationsPage = () => {
                           </Button>
                         </td>
                       </tr>
-                    ))}
+                    );
+                  })}
                   </tbody>
                 </Table>
               )}
