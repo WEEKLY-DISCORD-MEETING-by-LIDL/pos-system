@@ -2,6 +2,8 @@ package wdmsystem.product;
 
 import org.springframework.data.jpa.domain.Specification;
 import wdmsystem.auth.CustomUserDetails;
+import wdmsystem.category.ICategoryRepository;
+import wdmsystem.discount.IDiscountRepository;
 import wdmsystem.exception.InvalidInputException;
 import wdmsystem.exception.NotFoundException;
 import wdmsystem.merchant.IMerchantRepository;
@@ -23,6 +25,8 @@ public class ProductService {
     private final IProductRepository productRepository;
     private final IProductVariantRepository productVariantRepository;
     private final ITaxRepository taxRepository;
+    private final ICategoryRepository categoryRepository;
+    private final IDiscountRepository discountRepository;
     private final DTOMapper dtoMapper;
     private final IMerchantRepository merchantRepository;
 
@@ -186,10 +190,25 @@ public class ProductService {
         return dtoMapper.ProductVariant_ModelToDTO(variant);
     }
 
-    public void updateProduct(int productId, ProductDTO request) {
-
+    public ProductDTO updateProduct(int productId, ProductDTO request) {
         Product product = productRepository.findById(productId).orElseThrow(() ->
                 new NotFoundException("Product with id " + productId + " not found"));
+
+        // Update category if provided
+        if (request.categoryId() != null) {
+            product.setCategory(categoryRepository.findById(request.categoryId())
+                .orElseThrow(() -> new NotFoundException("Category not found")));
+        }
+
+        // Update tax and discount if provided
+        if (request.taxId() != null) {
+            product.setTax(taxRepository.findById(request.taxId())
+                .orElseThrow(() -> new NotFoundException("Tax not found")));
+        }
+        if (request.discountId() != null) {
+            product.setDiscount(discountRepository.findById(request.discountId())
+                .orElseThrow(() -> new NotFoundException("Discount not found")));
+        }
 
         if(request.title().length() > 30) {
             throw new InvalidInputException("Product title is longer than 30 characters");
@@ -210,7 +229,8 @@ public class ProductService {
         product.price = request.price();
         product.updatedAt = LocalDateTime.now();
 
-        productRepository.save(product);
+        Product updatedProduct = productRepository.save(product);
+        return dtoMapper.Product_ModelToDTO(updatedProduct);
     }
 
     public void updateVariant(int variantId, ProductVariantDTO request) {
