@@ -1,4 +1,6 @@
 package wdmsystem.product;
 
-public record ProductVariantDTO(Integer id, Integer productId, String title, double additionalPrice) {
+import java.math.BigDecimal;
+
+public record ProductVariantDTO(Integer id, Integer productId, String title, BigDecimal additionalPrice) {
 }

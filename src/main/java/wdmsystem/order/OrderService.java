@@ -17,6 +17,9 @@ import wdmsystem.utility.DTOMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -212,32 +215,40 @@ public class OrderService {
         }
     }
 
-    public double getPrice(int orderId) {
+    public BigDecimal getPrice(int orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new NotFoundException("Order with id " + orderId + " not found"));
 
-        return order.getOrderItems()
-                .stream()
-                .mapToDouble(OrderItem::getTotalPrice)
-                .sum();
-    }
+        BigDecimal sum = BigDecimal.valueOf(0, 2);
 
-    public double getUnpaidPrice(int orderId) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new NotFoundException("Order with id " + orderId + " not found"));
-
-        double price = order.getOrderItems()
-                .stream()
-                .mapToDouble(OrderItem::getTotalPrice)
-                .sum();
-
-        double totalAmountPaid = 0;
-
-        for(Payment payment : order.getPayments()) {
-            totalAmountPaid += payment.totalAmount;
+        for(OrderItem item : order.orderItems) {
+            sum = sum.add(item.getTotalPrice());
         }
 
-        return price - totalAmountPaid;
+        sum = sum.multiply(BigDecimal.valueOf((order.orderDiscount != null ? 1 - order.orderDiscount.percentage : 1)));
+
+        return sum.setScale(2, RoundingMode.HALF_UP);
+    }
+
+    public BigDecimal getUnpaidPrice(int orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new NotFoundException("Order with id " + orderId + " not found"));
+
+        BigDecimal sum = BigDecimal.valueOf(0);
+
+        for(OrderItem item : order.orderItems) {
+            sum = sum.add(item.getTotalPrice());
+        }
+
+        sum = sum.multiply(BigDecimal.valueOf((order.orderDiscount != null ? 1 - order.orderDiscount.percentage : 1)));
+
+        BigDecimal totalAmountPaid = BigDecimal.valueOf(0);
+
+        for(Payment payment : order.getPayments()) {
+            totalAmountPaid = totalAmountPaid.add(payment.totalAmount);
+        }
+
+        return sum.subtract(totalAmountPaid).setScale(2, RoundingMode.HALF_UP);
     }
 
     //new
@@ -309,22 +320,28 @@ public class OrderService {
         Order order = orderRepository.findById(orderId).orElseThrow(() ->
                 new NotFoundException("Order with id " + orderId + " not found"));
 
-        double price = order.getOrderItems()
-                .stream()
-                .mapToDouble(OrderItem::getTotalPrice)
-                .sum();
+        BigDecimal price = BigDecimal.valueOf(0);
 
-        double totalAmountPaid = 0;
-
-        for(Payment payment : order.getPayments()) {
-            totalAmountPaid += payment.totalAmount;
+        for(OrderItem item : order.orderItems) {
+            price = price.add(item.getTotalPrice());
         }
 
-        if(totalAmountPaid < price && totalAmountPaid > 0) {
+        price = price.multiply(BigDecimal.valueOf((order.orderDiscount != null ? 1 - order.orderDiscount.percentage : 1))).setScale(2, RoundingMode.HALF_UP);
+
+        BigDecimal totalAmountPaid = BigDecimal.valueOf(0);
+
+        for(Payment payment : order.getPayments()) {
+            totalAmountPaid = totalAmountPaid.add(payment.totalAmount);
+        }
+
+
+        totalAmountPaid = totalAmountPaid.setScale(2, RoundingMode.HALF_UP);
+
+        if(totalAmountPaid.compareTo(price) < 0 && totalAmountPaid.compareTo(BigDecimal.valueOf(0)) > 0) {
             order.status = OrderStatus.PARTIALLY_PAID;
             return dtoMapper.Order_ModelToDTO(orderRepository.save(order));
         }
-        else if(totalAmountPaid >= price) {
+        else if(totalAmountPaid.compareTo(price) >= 0) {
             order.status = OrderStatus.PAID;
             return dtoMapper.Order_ModelToDTO(orderRepository.save(order));
         }

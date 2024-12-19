@@ -3,17 +3,24 @@ import {ProductSelection} from "./ProductSelection";
 import {fetchProducts} from "../api/ProductAPI";
 import {createOrderStyle as CreateOrderStyle} from "../styles/CreateOrderStyle";
 import {createOrder} from "../api/OrderAPI";
+import {fetchOrderDiscounts} from "../api/DiscountAPI";
 
 export const CreateOrderPage = () => {
 
     const token = localStorage.getItem("token");
     const [items, setItems] = useState([]);
     const [products, setProducts] = useState([]);
-    const [discountId, setDiscountId] = useState(null);
+    const [discounts, setDiscounts] = useState([]);
+    const [discountId, setDiscountId] = useState(0);
 
     useEffect(() => {
         fetchProducts(null, null, null, null, setProducts, token);
+        fetchOrderDiscounts(setDiscounts);
     }, []);
+
+    const getItemPrice = (item) => {
+        return (item.quantity * (((item.product.price + item.productVariant.additionalPrice) * (item.discount != null ? 1 - item.discount.percentage : 1)) * (item.tax != null ? item.tax.percentage + 1 : 1))).toFixed(2)
+    }
 
     const onPlus = (item) => {
         item.quantity++;
@@ -54,14 +61,23 @@ export const CreateOrderPage = () => {
             orderItems.push(orderItem);
         }
 
-        createOrder(discountId, orderItems, token);
+        createOrder((discountId === 0 ? null : discountId), orderItems, token);
     }
 
     const getTotalAmount = () => {
         let sum = 0;
         items.forEach((item) => {
-            sum += item.quantity * (item.product.price + item.productVariant.additionalPrice) * (item.tax != null ? item.tax.percentage + 1 : 1);
+            sum += Number(getItemPrice(item));
         });
+
+        if(discountId != null) {
+            for(let i = 0 ;i<discounts.length;++i) {
+                if(discounts[i].id === discountId) {
+                    sum *= (1 - discounts[i].percentage/100);
+                    break;
+                }
+            }
+        }
 
         return sum;
     }
@@ -76,7 +92,7 @@ export const CreateOrderPage = () => {
                         <li>
                             <div>
                                 <p>{item.product.title} {item.productVariant.title} x{item.quantity}</p>
-                                <p>Price: {item.quantity * (item.product.price + item.productVariant.additionalPrice) * (item.tax != null ? item.tax.percentage + 1 : 1)}</p>
+                                <p>Price: {getItemPrice(item)}</p>
                                 <button onClick={() => {
                                     onMinus(item)
                                 }}>-
@@ -94,7 +110,15 @@ export const CreateOrderPage = () => {
                     ))}
                 </ul>
 
-                <h2>Total amount: {getTotalAmount()}</h2>
+                <h3>Discount:</h3>
+                <select onChange={e => setDiscountId(Number(e.target.value))}>
+                    <option value={0}>None</option>
+                    {discounts && discounts.map((discount) => (
+                        <option value={discount.id}>{discount.title}</option>
+                    ))}
+                </select>
+
+                <h2>Total amount: {getTotalAmount()} €</h2>
                 <button style={CreateOrderStyle.createOrderButton} onClick={onCreate}>Create</button>
             </div>
 

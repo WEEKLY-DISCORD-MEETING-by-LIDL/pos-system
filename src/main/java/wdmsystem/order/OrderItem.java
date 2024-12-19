@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -37,17 +38,17 @@ public class OrderItem {
 
     }
 
-    public double getTotalPrice() {
-        double totalPrice;
+    public BigDecimal getTotalPrice() {
+        BigDecimal totalPrice;
         if (productVariant != null && productVariant.getProduct() != null) {
-            totalPrice = (productVariant.getProduct().getPrice() + productVariant.getAdditionalPrice());
+            totalPrice = (productVariant.getProduct().getPrice().add(productVariant.getAdditionalPrice()));
             if(productVariant.getProduct().getDiscount() != null && productVariant.getProduct().getDiscount().getExpiresOn().isAfter(LocalDateTime.now())) {
-                totalPrice = totalPrice * (1 - productVariant.getProduct().getDiscount().percentage);
+                totalPrice = totalPrice.multiply((BigDecimal.valueOf(1).subtract(BigDecimal.valueOf(productVariant.getProduct().getDiscount().percentage))));
             }
             if(productVariant.getProduct().getTax() != null) {
-                totalPrice = totalPrice * (productVariant.getProduct().getTax().percentage + 1);
+                totalPrice = totalPrice.multiply(BigDecimal.valueOf(productVariant.getProduct().getTax().percentage).add(BigDecimal.valueOf(1)));
             }
-            return totalPrice * quantity;
+            return totalPrice.multiply(BigDecimal.valueOf(quantity));
         }
         throw new NotFoundException("Product or ProductVariant was not found.");
     }

@@ -15,7 +15,7 @@ export const OrderManagementPage = () => {
     return (
         <div>
             <ul style={OrderManagementStyle.list}>
-                {orders.map((order) => (
+                {orders.map((order) => ( order.status !== "PAID" &&
                     <li key={order.id} style={OrderManagementStyle.listItem}>
                         <OrderCard order={order}/>
                     </li>

@@ -1,8 +1,10 @@
 package wdmsystem.order.summary;
 
+import java.math.BigDecimal;
+
 public record OrderItemSummary(
         int quantity,
-        double price,
+        BigDecimal price,
         ProductSummary product,
         ProductVariantSummary variant
 ) {

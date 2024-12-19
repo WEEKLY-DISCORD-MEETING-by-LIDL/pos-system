@@ -34,6 +34,13 @@ public class DiscountController {
         return new ResponseEntity<>(discountList, HttpStatus.OK);
     }
 
+    @GetMapping("/discounts/{discountId}")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('OWNER') and @discountService.isOwnedByCurrentUser(#discountId))")
+    ResponseEntity<DiscountDTO> getDiscount(@PathVariable Integer discountId) {
+        DiscountDTO discount = _discountService.getDiscount(discountId);
+        return new ResponseEntity<>(discount, HttpStatus.OK);
+    }
+
     @PutMapping("/discounts/{discountId}")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('OWNER') and @discountService.isOwnedByCurrentUser(#discountId))")
     ResponseEntity<DiscountDTO> updateDiscount(@PathVariable int discountId, @RequestBody DiscountDTO request) {

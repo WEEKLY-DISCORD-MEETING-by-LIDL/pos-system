@@ -35,8 +35,7 @@ export const ViewOrderPage = (props) => {
             payments.push(amount);
         }
 
-        console.log(sum);
-        payments.push(unpaidPrice - sum);
+        payments.push((unpaidPrice - sum).toFixed(2));
 
         setSplitPayments(payments);
     }
@@ -50,6 +49,30 @@ export const ViewOrderPage = (props) => {
     useEffect(() => {
         fetchDetails();
     }, []);
+
+    const onPaySplits = () => {
+        if(splitPayments.length >= 2 && splitPayments.length <= 5) {
+            for(let i = 0; i<splitPayments.length; ++i) {
+                const payment = {
+                    tipAmount: 0,
+                    totalAmount: splitPayments[i],
+                    method: "CASH",
+                    orderId: id
+                }
+
+                createPayment(payment, token);
+            }
+
+            validatePaymentsAndUpdateOrderStatus(id, token).then(response => {
+                if (response.status === 200) {
+                   if(response.data.status === "PAID") {
+                       archiveOrder(id, token);
+                   }
+                }
+                fetchDetails();
+            });
+        }
+    }
 
     const onPay = (event) => {
         event.preventDefault();
@@ -117,7 +140,12 @@ export const ViewOrderPage = (props) => {
                 <p>Unpaid: {unpaidPrice}</p>
             )}
 
-            {(order.status === "OPENED")  && (
+            {order.discount != null && (
+                <p>Discount: {order.discount.title} {order.discount.percentage * 100}%</p>
+            )}
+
+
+            {(order.status === "OPENED") && (
                 <button onClick={onCancel}>Cancel order</button>
             )}
 
@@ -135,6 +163,7 @@ export const ViewOrderPage = (props) => {
                         <input type={"number"} name={"splitInput"} min={2} max={5}></input>
                         <input type={"submit"} value={"Split"}></input>
                     </form>
+                    <button onClick={onPaySplits}>Pay all splits</button>
                     <ul>
                         {splitPayments.map((amount) => (
                             <li>

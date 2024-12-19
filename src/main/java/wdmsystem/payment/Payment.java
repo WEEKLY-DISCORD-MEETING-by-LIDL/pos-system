@@ -8,6 +8,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import wdmsystem.reservation.Reservation;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -19,8 +20,8 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer id;
 
-    public double tipAmount;
-    public double totalAmount;
+    public BigDecimal tipAmount;
+    public BigDecimal totalAmount;
     @Enumerated(EnumType.STRING)
     public PaymentMethod method;
 
@@ -35,7 +36,7 @@ public class Payment {
 
     public LocalDateTime createdAt;
 
-    public Payment(Integer id, double tipAmount, double totalAmount, PaymentMethod method, Order order) {
+    public Payment(Integer id, BigDecimal tipAmount, BigDecimal totalAmount, PaymentMethod method, Order order) {
         this.id = id;
         this.tipAmount = tipAmount;
         this.totalAmount = totalAmount;
