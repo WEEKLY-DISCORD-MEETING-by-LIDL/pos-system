@@ -16,10 +16,16 @@ public interface IReservationRepository extends JpaRepository<Reservation, Integ
             Pageable pageable
     );
 
-    @Query("SELECT r FROM Reservation r WHERE r.service.id = :serviceId AND r.startTime >= :dayStart AND r.startTime < :dayEnd")
+    @Query("SELECT r FROM Reservation r WHERE r.service.id = :serviceId AND r.startTime >= :dayStart AND r.startTime <= :dayEnd")
     List<Reservation> findReservationsByServiceIdAndDate(
             @Param("serviceId") int serviceId,
             @Param("dayStart") LocalDateTime dayStart,
             @Param("dayEnd") LocalDateTime dayEnd
+    );
+
+    @Query("SELECT r FROM Reservation r WHERE r.startTime > :upcomingDate")
+    List<Reservation> findUpcomingReservations(
+            @Param("upcomingDate") LocalDateTime upcomingDate,
+            Pageable pageable
     );
 }

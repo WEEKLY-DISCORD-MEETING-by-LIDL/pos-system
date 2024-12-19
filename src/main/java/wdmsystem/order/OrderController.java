@@ -102,7 +102,9 @@ public class OrderController {
     @GetMapping("/orders/{orderId}/unpaid-price")
     @PreAuthorize("hasRole('ADMIN') or ((hasRole('OWNER') or hasRole('REGULAR')) and @orderService.isOwnedByCurrentUser(#orderId))")
     public ResponseEntity<BigDecimal> getUnpaidPrice(@PathVariable int orderId) {
+        log.info("Fetching unpaid price of order with ID: {}", orderId);
         BigDecimal price = _orderService.getUnpaidPrice(orderId);
+        log.info("Fetched {} unpaid price for order with ID: {}", price, orderId);
         return new ResponseEntity<>(price, HttpStatus.OK);
     }
 
@@ -120,7 +122,9 @@ public class OrderController {
     @GetMapping("/orders/{orderId}/summary")
     @PreAuthorize("hasRole('ADMIN') or ((hasRole('OWNER') or hasRole('REGULAR')) and @orderService.isOwnedByCurrentUser(#orderId))")
     ResponseEntity<OrderSummary> getOrderSummary(@PathVariable int orderId) {
+        log.info("Fetching summary for order with ID: {}", orderId);
         OrderSummary summary = _orderService.getOrderSummary(orderId);
+        log.info("Fetched summary {} of order with ID: {}", summary, orderId);
         return new ResponseEntity<>(summary, HttpStatus.OK);
     }
 
@@ -128,15 +132,19 @@ public class OrderController {
     @PostMapping("/orders/{orderId}/archive")
     @PreAuthorize("hasRole('ADMIN') or ((hasRole('OWNER') or hasRole('REGULAR')) and @orderService.isOwnedByCurrentUser(#orderId))")
     ResponseEntity<OrderDTO> archiveOrder(@PathVariable int orderId) {
+        log.info("Archiving order with ID: {}", orderId);
         _orderService.archiveOrder(orderId);
+        log.info("Order with {} id archived successfully! ", orderId);
         return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
     }
 
     //new method
     @GetMapping("/orders/archive/{archivedOrderId}")
-    //pre authorize archivedOrderId
-    ResponseEntity<OrderSummary> archiveOrders(@PathVariable int archivedOrderId) {
+    @PreAuthorize("hasRole('ADMIN') or ((hasRole('OWNER') or hasRole('REGULAR')) and @orderService.archiveIsOwnedByCurrentUser(#archivedOrderId))") // not sure if this is correct
+    ResponseEntity<OrderSummary> getArchiveOrder(@PathVariable int archivedOrderId) {
+        log.info("Getting archive of order with ID: {}", archivedOrderId);
         OrderSummary summary = _orderService.getArchivedOrder(archivedOrderId);
+        log.info("Fetched archived order with summary: {}", summary);
         return new ResponseEntity<>(summary, HttpStatus.OK);
     }
 
@@ -144,11 +152,14 @@ public class OrderController {
     @PatchMapping("/orders/{orderId}/validate-payments")
     @PreAuthorize("hasRole('ADMIN') or ((hasRole('OWNER') or hasRole('REGULAR')) and @orderService.isOwnedByCurrentUser(#orderId))")
     ResponseEntity<OrderDTO> validatePaymentsAndUpdateOrderStatus(@PathVariable int orderId) {
+        log.info("Checking if any payments have been made for order with ID: {}", orderId);
         OrderDTO order = _orderService.validatePaymentsAndUpdateOrderStatus(orderId);
         if(order != null) {
+            log.info("Updated status of order: {}", order);
             return new ResponseEntity<>(order, HttpStatus.OK);
         }
         else {
+            log.info("No new payments have been made!");
             return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
         }
     }

@@ -1,19 +1,47 @@
 import React, { useState, useEffect } from 'react';
-import { 
+import {
+    PageContainer,
+    SectionTitle,
+    ContentLayout,
+    SectionContainer,
+    SectionHeader,
+    ListContainer,
+    ItemCard,
+    CardContent,
+    CardInfo,
+    CardTitle,
+    CardDetails,
+    DetailText,
+    ButtonGroup,
+    Button,
+    Modal,
+    ModalContent,
+    FormGroup,
+    Label,
+    Input,
+    Select
+} from '../styles/ProductManagementStyle';
+import {
     fetchProducts,
-    createProduct, 
-    updateProduct, 
+    createProduct,
+    updateProduct,
     deleteProduct,
     fetchVariants,
     createVariant,
     deleteVariant,
     updateVariant
 } from '../api/ProductAPI';
+import { fetchCategories } from '../api/CategoryAPI';
+import { fetchTaxes } from '../api/TaxAPI';
+import { fetchDiscounts } from '../api/DiscountAPI';
 
 const ProductManagementPage = () => {
 
     const token = localStorage.getItem("token");
     const [products, setProducts] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [taxes, setTaxes] = useState([]);
+    const [discounts, setDiscounts] = useState([]);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [variants, setVariants] = useState([]);
     const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
@@ -26,7 +54,8 @@ const ProductManagementPage = () => {
         weight: 0,
         weightUnit: 'kg',
         categoryId: 1,
-        merchantId: 1
+        taxId: null,
+        discountId: null
     });
     const [newVariant, setNewVariant] = useState({
         title: '',
@@ -37,10 +66,25 @@ const ProductManagementPage = () => {
 
     useEffect(() => {
         loadProducts();
+        loadCategories();
+        loadTaxes();
+        loadDiscounts();
     }, []);
 
     const loadProducts = async () => {
         await fetchProducts(null, null, null, null, setProducts, token);
+    };
+
+    const loadCategories = async () => {
+        await fetchCategories(setCategories, token);
+    };
+
+    const loadTaxes = async () => {
+        await fetchTaxes(null, setTaxes, token);
+    };
+
+    const loadDiscounts = async () => {
+        await fetchDiscounts(setDiscounts);
     };
 
     const loadVariants = async (productId) => {
@@ -56,7 +100,7 @@ const ProductManagementPage = () => {
         try {
             await createProduct(newProduct, token);
             setIsAddProductModalOpen(false);
-            setNewProduct({ title: '', price: 0, weight: 0, weightUnit: 'kg', categoryId: 1, merchantId: 1 });
+            setNewProduct({ title: '', price: 0, weight: 0, weightUnit: 'kg', categoryId: 1, taxId: null, discountId: null });
             await loadProducts();
         } catch (error) {
             console.error('Error adding product:', error);
@@ -126,19 +170,19 @@ const ProductManagementPage = () => {
     };
 
     return (
-        <div style={{ padding: '20px' }}>
-            <h2>Product Management</h2>
-            
+        <PageContainer>
+            <SectionTitle>Product Management</SectionTitle>
+
             {/* Product List Section */}
-            <div style={{ display: 'flex', gap: '20px' }}>
-                <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+            <ContentLayout>
+                <SectionContainer>
+                    <SectionHeader>
                         <h3>Products</h3>
-                        <button onClick={() => setIsAddProductModalOpen(true)}>Add Product</button>
-                    </div>
-                    <div style={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px' }}>
+                        <Button primary onClick={() => setIsAddProductModalOpen(true)}>Add Product</Button>
+                    </SectionHeader>
+                    <ListContainer>
                         {products.map(product => (
-                            <div 
+                            <div
                                 key={product.id}
                                 style={{
                                     padding: '10px',
@@ -149,198 +193,208 @@ const ProductManagementPage = () => {
                                 }}
                                 onClick={() => handleProductSelect(product)}
                             >
-                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                    <span>{product.title}</span>
-                                    <div>
-                                        <button onClick={() => {
+                                <CardContent>
+                                    <CardInfo>
+                                        <CardTitle>{product.title}</CardTitle>
+                                        <CardDetails>
+                                            <DetailText>Price: €{product.price.toFixed(2)}</DetailText>
+                                            {product.categoryId && categories.find(c => c.id === product.categoryId) && (
+                                                <DetailText>Category: {categories.find(c => c.id === product.categoryId).title}</DetailText>
+                                            )}
+                                            {product.taxId && taxes.find(t => t.id === product.taxId) && (
+                                                <DetailText>Tax: {taxes.find(t => t.id === product.taxId).title} 
+                                                ({(taxes.find(t => t.id === product.taxId).percentage * 100).toFixed(1)}%)</DetailText>
+                                            )}
+                                            {product.discountId && discounts.find(d => d.id === product.discountId) && (
+                                                <DetailText>Discount: {discounts.find(d => d.id === product.discountId).title} 
+                                                ({discounts.find(d => d.id === product.discountId).percentage}%)</DetailText>
+                                            )}
+                                            {product.weight && (
+                                                <DetailText>Weight: {product.weight} {product.weightUnit}</DetailText>
+                                            )}
+                                        </CardDetails>
+                                    </CardInfo>
+                                    <ButtonGroup>
+                                        <Button onClick={() => {
                                             setEditingProduct(product);
                                             setIsEditProductModalOpen(true);
-                                        }}>Edit</button>
-                                        <button onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleDeleteProduct(product.id);
-                                        }}>Delete</button>
-                                    </div>
-                                </div>
-                                <div>Price: €{product.price}</div>
+                                        }}>Edit</Button>
+                                        <Button 
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleDeleteProduct(product.id);
+                                            }}>Delete</Button>
+                                    </ButtonGroup>
+                                </CardContent>
                             </div>
                         ))}
-                    </div>
-                </div>
+                    </ListContainer>
+                </SectionContainer>
 
                 {/* Variants Section */}
-                <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                <SectionContainer>
+                    <SectionHeader>
                         <h3>Variants</h3>
                         {selectedProduct && (
-                            <button onClick={() => setIsAddVariantModalOpen(true)}>Add Variant</button>
+                            <Button primary onClick={() => setIsAddVariantModalOpen(true)}>Add Variant</Button>
                         )}
-                    </div>
-                    <div style={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px' }}>
+                    </SectionHeader>
+                    <ListContainer>
                         {selectedProduct ? (
                             variants.map(variant => (
-                                <div 
+                                <ItemCard
                                     key={variant.id}
-                                    style={{
-                                        padding: '10px',
-                                        border: '1px solid #eee',
-                                        marginBottom: '5px'
-                                    }}
                                 >
-                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <CardContent>
                                         <span>{variant.title}</span>
-                                        <div>
-                                            <button onClick={() => {
+                                        <ButtonGroup>
+                                            <Button onClick={() => {
                                                 setEditingVariant(variant);
                                                 setIsEditVariantModalOpen(true);
-                                            }}>Edit</button>
-                                            <button onClick={() => handleDeleteVariant(variant.id)}>Delete</button>
-                                        </div>
-                                    </div>
+                                            }}>Edit</Button>
+                                            <Button onClick={() => handleDeleteVariant(variant.id)}>Delete</Button>
+                                        </ButtonGroup>
+                                    </CardContent>
                                     <div>Additional Price: €{variant.additionalPrice}</div>
-                                </div>
+                                </ItemCard>
                             ))
                         ) : (
                             <p>Select a product to view variants</p>
                         )}
-                    </div>
-                </div>
-            </div>
+                    </ListContainer>
+                </SectionContainer>
+            </ContentLayout>
 
             {/* Add Product Modal */}
             {isAddProductModalOpen && (
-                <div style={{ 
-                    position: 'fixed', 
-                    top: 0, 
-                    left: 0, 
-                    right: 0, 
-                    bottom: 0, 
-                    backgroundColor: 'rgba(0,0,0,0.5)',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                }}>
-                    <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '4px' }}>
+                <Modal>
+                    <ModalContent>
                         <h3>Add New Product</h3>
-                        <div style={{ marginBottom: '10px' }}>
-                            <label style={{ display: 'block', marginBottom: '5px' }}>Title:</label>
-                            <input
+                        <FormGroup>
+                            <Label>Title:</Label>
+                            <Input
                                 type="text"
                                 placeholder="Enter product title"
                                 value={newProduct.title}
                                 onChange={e => setNewProduct({...newProduct, title: e.target.value})}
-                                style={{ width: '100%', padding: '5px' }}
                             />
-                        </div>
-                        <div style={{ marginBottom: '10px' }}>
-                            <label style={{ display: 'block', marginBottom: '5px' }}>Price:</label>
-                            <input
+                        </FormGroup>
+                        <FormGroup>
+                            <Label>Price:</Label>
+                            <Input
                                 type="number"
                                 placeholder="Enter price"
                                 value={newProduct.price}
                                 onChange={e => setNewProduct({...newProduct, price: parseFloat(e.target.value)})}
-                                style={{ width: '100%', padding: '5px' }}
                             />
-                        </div>
-                        <div style={{ marginBottom: '10px' }}>
-                            <label style={{ display: 'block', marginBottom: '5px' }}>Category ID:</label>
-                            <input
-                                type="number"
-                                placeholder="Enter category ID"
-                                value={newProduct.categoryId}
+                        </FormGroup>
+                        <FormGroup>
+                            <Label>Category:</Label>
+                            <Select
+                                value={newProduct.categoryId || ''}
                                 onChange={e => setNewProduct({...newProduct, categoryId: parseInt(e.target.value)})}
-                                style={{ width: '100%', padding: '5px' }}
-                            />
-                        </div>
-                        <div style={{ marginBottom: '10px' }}>
-                            <label style={{ display: 'block', marginBottom: '5px' }}>Weight:</label>
-                            <input
+                            >
+                                <option value="">Select Category</option>
+                                {categories.map(category => (
+                                    <option key={category.id} value={category.id}>
+                                        {category.title}
+                                    </option>
+                                ))}
+                            </Select>
+                        </FormGroup>
+                        <FormGroup>
+                            <Label>Tax:</Label>
+                            <Select
+                                value={newProduct.taxId || ''}
+                                onChange={e => setNewProduct({...newProduct, taxId: parseInt(e.target.value)})}
+                            >
+                                <option value="">Select Tax</option>
+                                {taxes.map(tax => (
+                                    <option key={tax.id} value={tax.id}>
+                                        {tax.title} ({tax.percentage*100}%)
+                                    </option>
+                                ))}
+                            </Select>
+                        </FormGroup>
+                        <FormGroup>
+                            <Label>Discount:</Label>
+                            <Select
+                                value={newProduct.discountId || ''}
+                                onChange={e => setNewProduct({...newProduct, discountId: parseInt(e.target.value)})}
+                            >
+                                <option value="">Select Discount</option>
+                                {discounts.map(discount => (
+                                    <option key={discount.id} value={discount.id}>
+                                        {discount.title} ({discount.percentage}%)
+                                    </option>
+                                ))}
+                            </Select>
+                        </FormGroup>
+                        <FormGroup>
+                            <Label>Weight:</Label>
+                            <Input
                                 type="number"
                                 placeholder="Enter weight"
                                 value={newProduct.weight}
                                 onChange={e => setNewProduct({...newProduct, weight: parseFloat(e.target.value)})}
-                                style={{ width: '100%', padding: '5px' }}
                             />
-                        </div>
-                        <div style={{ marginBottom: '10px' }}>
-                            <label style={{ display: 'block', marginBottom: '5px' }}>Weight Unit:</label>
-                            <input
+                        </FormGroup>
+                        <FormGroup>
+                            <Label>Weight Unit:</Label>
+                            <Input
                                 type="text"
                                 placeholder="Enter weight unit (e.g., kg)"
                                 value={newProduct.weightUnit}
                                 onChange={e => setNewProduct({...newProduct, weightUnit: e.target.value})}
-                                style={{ width: '100%', padding: '5px' }}
                             />
+                        </FormGroup>
+                        <div>
+                            <Button onClick={handleAddProduct}>Add</Button>
+                            <Button onClick={() => setIsAddProductModalOpen(false)}>Cancel</Button>
                         </div>
-                        <div style={{ marginTop: '10px' }}>
-                            <button onClick={handleAddProduct}>Add</button>
-                            <button onClick={() => setIsAddProductModalOpen(false)}>Cancel</button>
-                        </div>
-                    </div>
-                </div>
+                    </ModalContent>
+                </Modal>
             )}
 
             {/* Add Variant Modal */}
             {isAddVariantModalOpen && (
-                <div style={{ 
-                    position: 'fixed', 
-                    top: 0, 
-                    left: 0, 
-                    right: 0, 
-                    bottom: 0, 
-                    backgroundColor: 'rgba(0,0,0,0.5)',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                }}>
-                    <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '4px' }}>
+                <Modal>
+                    <ModalContent>
                         <h3>Add New Variant</h3>
-                        <div style={{ marginBottom: '10px' }}>
-                            <label style={{ display: 'block', marginBottom: '5px' }}>Title:</label>
-                            <input
+                        <FormGroup>
+                            <Label>Title:</Label>
+                            <Input
                                 type="text"
                                 placeholder="Enter variant title"
                                 value={newVariant.title}
                                 onChange={e => setNewVariant({...newVariant, title: e.target.value})}
-                                style={{ width: '100%', padding: '5px' }}
                             />
-                        </div>
-                        <div style={{ marginBottom: '10px' }}>
-                            <label style={{ display: 'block', marginBottom: '5px' }}>Additional Price:</label>
-                            <input
+                        </FormGroup>
+                        <FormGroup>
+                            <Label>Additional Price:</Label>
+                            <Input
                                 type="number"
                                 placeholder="Enter additional price"
                                 value={newVariant.additionalPrice}
                                 onChange={e => setNewVariant({...newVariant, additionalPrice: parseFloat(e.target.value)})}
-                                style={{ width: '100%', padding: '5px' }}
                             />
+                        </FormGroup>
+                        <div>
+                            <Button onClick={handleAddVariant}>Add</Button>
+                            <Button onClick={() => setIsAddVariantModalOpen(false)}>Cancel</Button>
                         </div>
-                        <div style={{ marginTop: '10px' }}>
-                            <button onClick={handleAddVariant}>Add</button>
-                            <button onClick={() => setIsAddVariantModalOpen(false)}>Cancel</button>
-                        </div>
-                    </div>
-                </div>
+                    </ModalContent>
+                </Modal>
             )}
 
             {/* Edit Product Modal */}
             {isEditProductModalOpen && (
-                <div style={{ 
-                    position: 'fixed', 
-                    top: 0, 
-                    left: 0, 
-                    right: 0, 
-                    bottom: 0, 
-                    backgroundColor: 'rgba(0,0,0,0.5)',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                }}>
-                    <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '4px' }}>
+                <Modal>
+                    <ModalContent>
                         <h3>Edit Product</h3>
-                        <div style={{ marginBottom: '10px' }}>
-                            <label>Title:</label>
-                            <input
+                        <FormGroup>
+                            <Label>Title:</Label>
+                            <Input
                                 type="text"
                                 value={editingProduct?.title || ''}
                                 onChange={e => setEditingProduct({
@@ -348,10 +402,10 @@ const ProductManagementPage = () => {
                                     title: e.target.value
                                 })}
                             />
-                        </div>
-                        <div style={{ marginBottom: '10px' }}>
-                            <label>Price:</label>
-                            <input
+                        </FormGroup>
+                        <FormGroup>
+                            <Label>Price:</Label>
+                            <Input
                                 type="number"
                                 value={editingProduct?.price || 0}
                                 onChange={e => setEditingProduct({
@@ -359,10 +413,52 @@ const ProductManagementPage = () => {
                                     price: parseFloat(e.target.value)
                                 })}
                             />
-                        </div>
-                        <div style={{ marginBottom: '10px' }}>
-                            <label>Weight:</label>
-                            <input
+                        </FormGroup>
+                        <FormGroup>
+                            <Label>Category:</Label>
+                            <Select
+                                value={editingProduct?.categoryId || ''}
+                                onChange={e => setEditingProduct({...editingProduct, categoryId: parseInt(e.target.value)})}
+                            >
+                                <option value="">Select Category</option>
+                                {categories.map(category => (
+                                    <option key={category.id} value={category.id}>
+                                        {category.title}
+                                    </option>
+                                ))}
+                            </Select>
+                        </FormGroup>
+                        <FormGroup>
+                            <Label>Tax:</Label>
+                            <Select
+                                value={editingProduct?.taxId || ''}
+                                onChange={e => setEditingProduct({...editingProduct, taxId: parseInt(e.target.value)})}
+                            >
+                                <option value="">Select Tax</option>
+                                {taxes.map(tax => (
+                                    <option key={tax.id} value={tax.id}>
+                                        {tax.title} ({tax.percentage*100}%)
+                                    </option>
+                                ))}
+                            </Select>
+                        </FormGroup>
+                        <FormGroup>
+                            <Label>Discount:</Label>
+                            <Select
+                                value={editingProduct?.discountId || ''}
+                                onChange={e => setEditingProduct({...editingProduct, discountId: parseInt(e.target.value)})}
+                            >
+                                <option value="">Select Discount</option>
+                                {discounts.map(discount => (
+                                    <option key={discount.id} value={discount.id}>
+                                        {discount.title} ({discount.percentage}%)
+                                    </option>
+                                ))}
+                            </Select>
+                        </FormGroup>
+                        <FormGroup>
+                            <Label>Weight:</Label>
+                            <Input
                                 type="number"
                                 value={editingProduct?.weight || 0}
                                 onChange={e => setEditingProduct({
@@ -370,10 +466,10 @@ const ProductManagementPage = () => {
                                     weight: parseFloat(e.target.value)
                                 })}
                             />
-                        </div>
-                        <div style={{ marginBottom: '10px' }}>
-                            <label>Weight Unit:</label>
-                            <input
+                        </FormGroup>
+                        <FormGroup>
+                            <Label>Weight Unit:</Label>
+                            <Input
                                 type="text"
                                 value={editingProduct?.weightUnit || ''}
                                 onChange={e => setEditingProduct({
@@ -381,36 +477,26 @@ const ProductManagementPage = () => {
                                     weightUnit: e.target.value
                                 })}
                             />
-                        </div>
+                        </FormGroup>
                         <div>
-                            <button onClick={handleEditProduct}>Save</button>
-                            <button onClick={() => {
+                            <Button onClick={handleEditProduct}>Save</Button>
+                            <Button onClick={() => {
                                 setIsEditProductModalOpen(false);
                                 setEditingProduct(null);
-                            }}>Cancel</button>
+                            }}>Cancel</Button>
                         </div>
-                    </div>
-                </div>
+                    </ModalContent>
+                </Modal>
             )}
 
             {/* Edit Variant Modal */}
             {isEditVariantModalOpen && (
-                <div style={{ 
-                    position: 'fixed', 
-                    top: 0, 
-                    left: 0, 
-                    right: 0, 
-                    bottom: 0, 
-                    backgroundColor: 'rgba(0,0,0,0.5)',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                }}>
-                    <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '4px' }}>
+                <Modal>
+                    <ModalContent>
                         <h3>Edit Variant</h3>
-                        <div style={{ marginBottom: '10px' }}>
-                            <label>Title:</label>
-                            <input
+                        <FormGroup>
+                            <Label>Title:</Label>
+                            <Input
                                 type="text"
                                 value={editingVariant?.title || ''}
                                 onChange={e => setEditingVariant({
@@ -418,10 +504,10 @@ const ProductManagementPage = () => {
                                     title: e.target.value
                                 })}
                             />
-                        </div>
-                        <div style={{ marginBottom: '10px' }}>
-                            <label>Additional Price:</label>
-                            <input
+                        </FormGroup>
+                        <FormGroup>
+                            <Label>Additional Price:</Label>
+                            <Input
                                 type="number"
                                 value={editingVariant?.additionalPrice || 0}
                                 onChange={e => setEditingVariant({
@@ -429,18 +515,18 @@ const ProductManagementPage = () => {
                                     additionalPrice: parseFloat(e.target.value)
                                 })}
                             />
-                        </div>
+                        </FormGroup>
                         <div>
-                            <button onClick={handleEditVariant}>Save</button>
-                            <button onClick={() => {
+                            <Button onClick={handleEditVariant}>Save</Button>
+                            <Button onClick={() => {
                                 setIsEditVariantModalOpen(false);
                                 setEditingVariant(null);
-                            }}>Cancel</button>
+                            }}>Cancel</Button>
                         </div>
-                    </div>
-                </div>
+                    </ModalContent>
+                </Modal>
             )}
-        </div>
+        </PageContainer>
     );
 };
 

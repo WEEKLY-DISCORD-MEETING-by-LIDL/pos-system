@@ -66,8 +66,8 @@ public class MerchantService {
             LocalDateTime.now()
         );
         merchant.setUpdatedAt(LocalDateTime.now());
-        merchantRepository.save(merchant);
-        return dtoMapper.Merchant_ModelToDTO(merchant);
+        Merchant savedMerchant = merchantRepository.save(merchant);
+        return dtoMapper.Merchant_ModelToDTO(savedMerchant);
     }
 
     public MerchantDTO getMerchantById(int merchantId) {
@@ -87,11 +87,11 @@ public class MerchantService {
         return dtoMapper.Merchant_ModelToDTO(merchant);
     }
 
-    public void updateMerchant(int id, MerchantDTO request) {
+    public MerchantDTO updateMerchant(Integer id, MerchantDTO request) {
         Merchant merchantToUpdate = merchantRepository.findById(id).orElseThrow(
             () -> new NotFoundException("Merchant with ID " + id + " not found")
         );
-        if (request.name() != null && request.name().length() >= 30) {
+        if (request.name() != null && request.name().length() <= 30) {
             merchantToUpdate.setName(request.name());
         }
         if (request.vat() != null) {
@@ -107,9 +107,8 @@ public class MerchantService {
             merchantToUpdate.setPhone(request.phone());
         }
         merchantToUpdate.setUpdatedAt(LocalDateTime.now());
-
-        merchantRepository.save(merchantToUpdate);
-
+        Merchant savedMerchant = merchantRepository.save(merchantToUpdate);
+        return dtoMapper.Merchant_ModelToDTO(savedMerchant);
     }
 
     public void deleteMerchant(int merchantId) { // There is no delete method defined in the api but someone on the team requested it

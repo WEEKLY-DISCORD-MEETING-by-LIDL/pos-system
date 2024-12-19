@@ -42,13 +42,19 @@ public class ServiceService {
                 () -> new NotFoundException("Merchant with ID " + currentUser.getMerchantId() + " not found")
         );
 
+//        Category category = categoryRepository.findById(request.categoryId()).orElseThrow(
+//                () -> new NotFoundException("Category with ID " + request.categoryId() + " not found")
+//        );
+
+        //TODO: Fulfill non null constraints
         Service service = new Service(
                 merchant,
                 request.title(),
+//                category,
                 null,
                 request.price(),
-                null,
-                null,
+                null,//placeholder null discount
+                null,//placeholder null tax
                 request.durationMins(),
                 LocalDateTime.now(),
                 LocalDateTime.now()
@@ -73,8 +79,8 @@ public class ServiceService {
         }
     }
 
-    public List<ServiceDTO> getServices(Category category, Integer limit) {
-        Integer categoryId = (category != null) ? category.getId() : null;
+    public List<ServiceDTO> getServices(Integer categoryId, Integer limit) {
+//        Integer categoryId = (category != null) ? category.getId() : null;
 
         if (limit == null || limit < 0 || limit > 250) {
             limit = 50;
@@ -148,16 +154,14 @@ public class ServiceService {
     }
 
     public List<LocalDateTime> getAvailableTimes(int serviceId, LocalDate date) {
-        LocalDateTime dayStart = LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), 0, 0, 0);
-        LocalDateTime dayEnd = LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), 23, 59, 59);
-        List<Reservation> reservations = reservationRepository.findReservationsByServiceIdAndDate(serviceId, dayStart, dayEnd);
+        LocalDateTime dayStart = date.atStartOfDay();
+        LocalDateTime dayEnd = date.atTime(23, 59, 59);
 
+        List<Reservation> reservations = reservationRepository.findReservationsByServiceIdAndDate(serviceId, dayStart, dayEnd);
         reservations.sort(Comparator.comparing(Reservation::getStartTime));
 
         List<LocalDateTime> availableTimes = new ArrayList<>();
-        LocalDateTime currentAvailableStart = LocalDateTime.of(date, LocalTime.of(0, 0));
-        LocalDateTime endTime = LocalDateTime.of(date, LocalTime.of(23, 59, 59));
-
+        LocalDateTime currentAvailableStart = dayStart;
         for (Reservation reservation : reservations) {
             LocalDateTime reservationStart = reservation.getStartTime();
             LocalDateTime reservationEnd = reservation.getEndTime();
@@ -172,9 +176,9 @@ public class ServiceService {
             }
         }
 
-        if (currentAvailableStart.isBefore(endTime)) {
+        if (currentAvailableStart.isBefore(dayEnd)) {
             availableTimes.add(currentAvailableStart);
-            availableTimes.add(endTime);
+            availableTimes.add(dayEnd);
         }
 
         return availableTimes;

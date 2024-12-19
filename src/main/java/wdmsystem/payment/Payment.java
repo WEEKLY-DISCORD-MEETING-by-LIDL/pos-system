@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import wdmsystem.reservation.Reservation;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -24,8 +25,9 @@ public class Payment {
     @Enumerated(EnumType.STRING)
     public PaymentMethod method;
 
-    //payment type reservation/order
-
+    @ManyToOne@JoinColumn(name = "reservation_id")
+    @OnDelete(action = OnDeleteAction.SET_NULL)
+    public Reservation reservation;
     //reservation
     @ManyToOne
     @JoinColumn(name = "order_id")

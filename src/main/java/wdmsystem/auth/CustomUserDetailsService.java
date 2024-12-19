@@ -27,6 +27,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 employee.getUsername(),
                 employee.getPassword(),
                 employee.getMerchant().getId(),
+                employee.getId(),
                 List.of(new SimpleGrantedAuthority("ROLE_" + employee.getEmployeeType().name()))
         );
     }

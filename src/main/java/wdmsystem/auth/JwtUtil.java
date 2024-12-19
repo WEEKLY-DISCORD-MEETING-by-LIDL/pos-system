@@ -27,6 +27,7 @@ public class JwtUtil {
                         .map(GrantedAuthority::getAuthority)
                         .collect(Collectors.toList()))
                 .claim("merchantId", userDetails.getMerchantId())
+                .claim("employeeId", userDetails.getEmployeeId())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(signingKey, SignatureAlgorithm.HS256)
