@@ -70,9 +70,19 @@ public class MerchantService {
         return dtoMapper.Merchant_ModelToDTO(merchant);
     }
 
-    public MerchantDTO getMerchant(int id) {
-        Merchant merchant =  merchantRepository.findById(id).orElseThrow(
-            () -> new NotFoundException("Merchant with ID " + id + " not found")
+    public MerchantDTO getMerchantById(int merchantId) {
+        Merchant merchant = merchantRepository.findById(merchantId).orElseThrow(() ->
+                new NotFoundException("Merchant with id " + merchantId + " not found."));
+
+        return dtoMapper.Merchant_ModelToDTO(merchant);
+    }
+
+    public MerchantDTO getMerchant() {
+        CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder.getContext()
+        .getAuthentication()
+        .getPrincipal();
+        Merchant merchant =  merchantRepository.findById(currentUser.getMerchantId()).orElseThrow(
+            () -> new NotFoundException("Merchant with ID " + currentUser.getMerchantId() + " not found")
         );
         return dtoMapper.Merchant_ModelToDTO(merchant);
     }
@@ -81,12 +91,21 @@ public class MerchantService {
         Merchant merchantToUpdate = merchantRepository.findById(id).orElseThrow(
             () -> new NotFoundException("Merchant with ID " + id + " not found")
         );
-
-        merchantToUpdate.setName(request.name());
-        merchantToUpdate.setVat(request.vat());
-        merchantToUpdate.setAddress(request.address());
-        merchantToUpdate.setEmail(request.email());
-        merchantToUpdate.setPhone(request.phone());
+        if (request.name() != null && request.name().length() >= 30) {
+            merchantToUpdate.setName(request.name());
+        }
+        if (request.vat() != null) {
+            merchantToUpdate.setVat(request.vat());
+        }
+        if (request.address() != null) {
+            merchantToUpdate.setAddress(request.address());
+        }
+        if (request.email() != null) {
+            merchantToUpdate.setEmail(request.email());
+        }
+        if (request.phone() != null) {
+            merchantToUpdate.setPhone(request.phone());
+        }
         merchantToUpdate.setUpdatedAt(LocalDateTime.now());
 
         merchantRepository.save(merchantToUpdate);

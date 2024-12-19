@@ -11,6 +11,8 @@ import {
 } from '../api/ProductAPI';
 
 const ProductManagementPage = () => {
+
+    const token = localStorage.getItem("token");
     const [products, setProducts] = useState([]);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [variants, setVariants] = useState([]);
@@ -38,11 +40,11 @@ const ProductManagementPage = () => {
     }, []);
 
     const loadProducts = async () => {
-        await fetchProducts(null, null, null, null, setProducts);
+        await fetchProducts(null, null, null, null, setProducts, token);
     };
 
     const loadVariants = async (productId) => {
-        await fetchVariants(productId, setVariants);
+        await fetchVariants(productId, setVariants, token);
     };
 
     const handleProductSelect = async (product) => {
@@ -52,7 +54,7 @@ const ProductManagementPage = () => {
 
     const handleAddProduct = async () => {
         try {
-            await createProduct(newProduct);
+            await createProduct(newProduct, token);
             setIsAddProductModalOpen(false);
             setNewProduct({ title: '', price: 0, weight: 0, weightUnit: 'kg', categoryId: 1, merchantId: 1 });
             await loadProducts();
@@ -64,7 +66,7 @@ const ProductManagementPage = () => {
     const handleAddVariant = async () => {
         if (!selectedProduct) return;
         try {
-            await createVariant(selectedProduct.id, newVariant);
+            await createVariant(selectedProduct.id, newVariant, token);
             setIsAddVariantModalOpen(false);
             setNewVariant({ title: '', additionalPrice: 0 });
             await loadVariants(selectedProduct.id);
@@ -75,7 +77,7 @@ const ProductManagementPage = () => {
 
     const handleDeleteProduct = async (productId) => {
         try {
-            await deleteProduct(productId);
+            await deleteProduct(productId, token);
             await loadProducts();
             if (selectedProduct?.id === productId) {
                 setSelectedProduct(null);
@@ -88,7 +90,7 @@ const ProductManagementPage = () => {
 
     const handleDeleteVariant = async (variantId) => {
         try {
-            await deleteVariant(variantId);
+            await deleteVariant(variantId, token);
             if (selectedProduct) {
                 await loadVariants(selectedProduct.id);
             }
@@ -100,7 +102,7 @@ const ProductManagementPage = () => {
     const handleEditProduct = async () => {
         if (!editingProduct) return;
         try {
-            await updateProduct(editingProduct.id, editingProduct);
+            await updateProduct(editingProduct.id, editingProduct, token);
             setIsEditProductModalOpen(false);
             setEditingProduct(null);
             await loadProducts();
@@ -112,7 +114,7 @@ const ProductManagementPage = () => {
     const handleEditVariant = async () => {
         if (!editingVariant) return;
         try {
-            await updateVariant(editingVariant.id, editingVariant);
+            await updateVariant(editingVariant.id, editingVariant, token);
             setIsEditVariantModalOpen(false);
             setEditingVariant(null);
             if (selectedProduct) {
@@ -247,16 +249,6 @@ const ProductManagementPage = () => {
                                 placeholder="Enter category ID"
                                 value={newProduct.categoryId}
                                 onChange={e => setNewProduct({...newProduct, categoryId: parseInt(e.target.value)})}
-                                style={{ width: '100%', padding: '5px' }}
-                            />
-                        </div>
-                        <div style={{ marginBottom: '10px' }}>
-                            <label style={{ display: 'block', marginBottom: '5px' }}>Merchant ID:</label>
-                            <input
-                                type="number"
-                                placeholder="Enter merchant ID"
-                                value={newProduct.merchantId}
-                                onChange={e => setNewProduct({...newProduct, merchantId: parseInt(e.target.value)})}
                                 style={{ width: '100%', padding: '5px' }}
                             />
                         </div>

@@ -3,10 +3,12 @@ package wdmsystem.config;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 import wdmsystem.auth.CustomUserDetailsService;
 import wdmsystem.auth.JwtAuthTokenFilter;
 import wdmsystem.exception.CustomAuthenticationEntryPoint;
+
+import java.util.Arrays;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,6 +20,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 import java.util.Arrays;
 
@@ -46,10 +53,12 @@ public class SecurityConfig {
                         exceptionHandling.authenticationEntryPoint(customAuthenticationEntryPoint))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login").permitAll()
+                        .requestMatchers("/error").permitAll() //Spring boot path
                         .requestMatchers("/employees/**").hasAnyRole("ADMIN", "OWNER")
                         .requestMatchers("/categories/**").hasAnyRole("ADMIN", "OWNER", "REGULAR")
                         .requestMatchers("/orders/**").hasAnyRole("ADMIN", "OWNER", "REGULAR")
                         .requestMatchers("/orderDiscounts/**").hasAnyRole("ADMIN", "OWNER", "REGULAR")
+                        .requestMatchers("/discounts/**").hasAnyRole("ADMIN", "OWNER", "REGULAR")
                         .requestMatchers("/products/**").hasAnyRole("ADMIN", "OWNER", "REGULAR")
                         .requestMatchers("/variants/**").hasAnyRole("ADMIN", "OWNER")
                         .requestMatchers("/customers/**").hasAnyRole("ADMIN", "OWNER","REGULAR")
@@ -69,7 +78,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:8080"));
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Origin", "Accept"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

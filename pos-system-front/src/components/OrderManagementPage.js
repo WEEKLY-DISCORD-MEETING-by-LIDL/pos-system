@@ -5,10 +5,11 @@ import {fetchOrders} from "../api/OrderAPI";
 
 export const OrderManagementPage = () => {
 
+    const token = localStorage.getItem("token");
     const [orders, setOrders] = useState([]);
 
     useEffect(() => {
-        fetchOrders(null, null, null, null, setOrders);
+        fetchOrders(null, null, null, null, setOrders, token);
     }, []);
 
     return (
