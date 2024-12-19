@@ -363,4 +363,15 @@ public class OrderService {
 
         return order.getMerchant().getId() == currentUser.getMerchantId();
 	}
+
+    public boolean archiveIsOwnedByCurrentUser(int archivedOrderId) {
+        CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        ArchivedOrder archivedOrder = archivedOrderRepository.findById(archivedOrderId).orElseThrow(() ->
+                new NotFoundException("Archived order with id " + archivedOrderId + " not found"));
+
+        return archivedOrder.getMerchant().getId() == currentUser.getMerchantId();
+	}
 }

@@ -5,8 +5,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import wdmsystem.merchant.Merchant;
+import wdmsystem.reservation.Reservation;
 
 @Entity
 @Getter
@@ -31,6 +33,9 @@ public final class Employee {
     /// Type in docs is timestamp, could be changed later
     public LocalDateTime createdAt;
     public LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    public List<Reservation> reservations;
 
     public Employee(Integer id, Merchant merchant, String firstName, String lastName, EmployeeType employeeType, String username, String password, LocalDateTime createdAt) {
         this.id = id;

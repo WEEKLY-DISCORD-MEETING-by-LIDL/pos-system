@@ -37,7 +37,9 @@ public class MerchantController {
     @GetMapping("/merchants")
     @PreAuthorize("hasRole('ADMIN') or hasRole('OWNER') or hasRole('REGULAR')")
     ResponseEntity<MerchantDTO> getMerchant() {
+        log.info("Fetching current merchant from token!"); // not sure if this should include something more
         MerchantDTO merchant = _merchantService.getMerchant();
+        log.info("Fetched merchant details: {}", merchant);
         return new ResponseEntity<>(merchant, HttpStatus.OK);
     }
 
@@ -45,9 +47,9 @@ public class MerchantController {
     @PreAuthorize("hasRole('ADMIN') or (hasRole('OWNER') and @merchantService.isOwnedByCurrentUser(#merchantId))")
     ResponseEntity<MerchantDTO> updateMerchant(@PathVariable int merchantId, @RequestBody MerchantDTO response) {
         log.info("Updating merchant with ID: {}", merchantId);
-        _merchantService.updateMerchant(merchantId, response);
+        MerchantDTO merchant = _merchantService.updateMerchant(merchantId, response);
         log.info("Merchant with ID: {} updated successfully", merchantId);
-        return new ResponseEntity<>(null, HttpStatus.OK);
+        return new ResponseEntity<>(merchant, HttpStatus.OK);
     }
     
     @DeleteMapping("/merchants/{merchantId}") // There is no delete method defined in the api but someone on the team requested it

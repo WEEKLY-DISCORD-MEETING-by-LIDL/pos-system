@@ -12,12 +12,14 @@ public class CustomUserDetails implements UserDetails {
     private final String username;
     private final String password;
     private final int merchantId;
+    private final int employeeId;
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public CustomUserDetails(String username, String password, int merchantId, Collection<? extends GrantedAuthority> authorities) {
+    public CustomUserDetails(String username, String password, int merchantId, int employeeId, Collection<? extends GrantedAuthority> authorities) {
         this.username = username;
         this.password = password;
         this.merchantId = merchantId;
+        this.employeeId = employeeId;
         this.authorities = authorities;
     }
 
