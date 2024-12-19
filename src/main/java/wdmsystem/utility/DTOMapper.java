@@ -13,7 +13,6 @@ import wdmsystem.discount.IDiscountRepository;
 import wdmsystem.employee.EmployeeDTO;
 import wdmsystem.employee.Employee;
 import wdmsystem.employee.IEmployeeRepository;
-import wdmsystem.employee.UpdateEmployeeDTO;
 import wdmsystem.exception.NotFoundException;
 import wdmsystem.merchant.IMerchantRepository;
 import wdmsystem.merchant.Merchant;
@@ -120,20 +119,20 @@ public class DTOMapper {
     /// EMPLOYEE
 
     public EmployeeDTO Employee_ModelToDTO(Employee employee) {
-        return new EmployeeDTO(employee.firstName, employee.lastName, employee.employeeType, employee.username, "<hidden>");
+        return new EmployeeDTO(employee.id, employee.getMerchant().id, employee.firstName, employee.lastName, employee.employeeType, employee.username, "<not visible for security reasons>");
     }
 
-    public void UpdateEmployee_DTOToModel(Employee employee, UpdateEmployeeDTO dto) {
-        if (dto.firstName() != null && dto.firstName().length() >= 30) {
+    public void Employee_DTOToModel(Employee employee, EmployeeDTO dto) {
+        if (dto.firstName() != null && dto.firstName().length() <= 30) {
             employee.setFirstName(dto.firstName());
         }
-        if (dto.lastName() != null && dto.lastName().length() >= 30) {
+        if (dto.lastName() != null && dto.lastName().length() <= 30) {
             employee.setLastName(dto.lastName());
         }
         if (dto.employeeType() != null) {
             employee.setEmployeeType(dto.employeeType());
         }
-        if (dto.username() != null && dto.username().length() >= 30) {
+        if (dto.username() != null && dto.username().length() <= 30) {
             employee.setUsername(dto.username());
         }
         if (dto.password() != null) {
@@ -199,7 +198,7 @@ public class DTOMapper {
     /// Merchant
 
     public MerchantDTO Merchant_ModelToDTO(Merchant merchant){
-        return new MerchantDTO(merchant.name, merchant.vat, merchant.address, merchant.email, merchant.phone);
+        return new MerchantDTO(merchant.id, merchant.name, merchant.vat, merchant.address, merchant.email, merchant.phone);
     }
 
     /// Discount

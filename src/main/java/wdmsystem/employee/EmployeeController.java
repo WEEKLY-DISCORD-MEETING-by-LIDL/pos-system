@@ -47,7 +47,7 @@ public class EmployeeController {
 
     @PutMapping("/employees/{employeeId}")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('OWNER') and @employeeService.isOwnedByCurrentUser(#employeeId))")
-    ResponseEntity<Employee> updateEmployee(@PathVariable int employeeId, @RequestBody UpdateEmployeeDTO request) {
+    ResponseEntity<Employee> updateEmployee(@PathVariable int employeeId, @RequestBody EmployeeDTO request) {
         log.info("Updating employee with ID: {}", employeeId);
         log.debug("Update request details: {}", request);
         _employeeService.updateEmployee(employeeId, request);

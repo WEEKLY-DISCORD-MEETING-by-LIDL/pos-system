@@ -16,4 +16,18 @@ export const fetchMerchant = async(setMerchant) => {
 
 }
 
+export const updateMerchant = async(editableMerchant) => {
+    try {
+        const token = localStorage.getItem("token");
+        const response = await axios.put(`http://localhost:8080/merchants/${editableMerchant.id}`, editableMerchant, {
+            headers: {
+                Authorization: `Bearer ${token}`, 
+            },
+        });
+        console.log(response.data);
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
 
