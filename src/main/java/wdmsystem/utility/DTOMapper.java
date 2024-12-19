@@ -175,22 +175,25 @@ public class DTOMapper {
 
     /// Customer
     public CustomerDTO Customer_ModelToDTO(Customer customer) {
-        return new CustomerDTO(customer.firstName, customer.lastName, customer.phone);
+        return new CustomerDTO(customer.id, customer.firstName, customer.lastName, customer.phone);
     }
 
     /// Category
     public CategoryDTO Category_ModelToDTO(Category category) {
-        return new CategoryDTO(category.title);
+        return new CategoryDTO(category.id, category.title);
     }
 
     /// Reservation
     public ReservationDTO Reservation_ModelToDTO(Reservation reservation) {
-        return new ReservationDTO(reservation.id, reservation.getService().id, reservation.employeeId, reservation.startTime, reservation.sendConfirmation, reservation.endTime, reservation.reservationStatus);
+        return new ReservationDTO(reservation.id, reservation.getCustomer().id, reservation.getService().id, reservation.getEmployee().id, reservation.startTime, reservation.sendConfirmation, reservation.endTime, reservation.reservationStatus);
     }
 
     /// Service
     public ServiceDTO Service_ModelToDTO(Service service) {
-        return new ServiceDTO(service.title, service.category.id, service.price, service.discount.id,service.tax.id, service.durationMins);
+        Integer categoryId = (service.getCategory() != null) ? service.getCategory().getId() : null;
+        Integer discountId = (service.getDiscount() != null) ? service.getDiscount().getId() : null;
+        Integer taxId = (service.getTax() != null) ? service.getTax().getId() : null;
+        return new ServiceDTO(service.id, service.title, categoryId, service.price, discountId, taxId, service.durationMins);
     }
 
     /// Merchant

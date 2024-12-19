@@ -31,9 +31,9 @@ public class ServiceController {
 
     @GetMapping("/services")
     @PreAuthorize("hasRole('ADMIN') or hasRole('OWNER') or hasRole('REGULAR')")
-    ResponseEntity<List<ServiceDTO>> getServices(@RequestParam(required = false) Category category, @RequestParam(required = false) Integer limit) {
-        log.info("Fetching services with category: {}", category);
-        List<ServiceDTO> serviceList = _serviceService.getServices(category, limit);
+    ResponseEntity<List<ServiceDTO>> getServices(@RequestParam(required = false) Integer categoryId, @RequestParam(required = false) Integer limit) {
+        log.info("Fetching services with category: {}", categoryId);
+        List<ServiceDTO> serviceList = _serviceService.getServices(categoryId, limit);
         log.info("Fetched {} services", serviceList.size());
         return new ResponseEntity<>(serviceList, HttpStatus.OK);
     }

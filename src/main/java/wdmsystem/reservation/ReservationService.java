@@ -1,5 +1,6 @@
 package wdmsystem.reservation;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import wdmsystem.auth.CustomUserDetails;
 import wdmsystem.customer.Customer;
@@ -7,12 +8,16 @@ import wdmsystem.customer.ICustomerRepository;
 import wdmsystem.employee.Employee;
 import wdmsystem.employee.IEmployeeRepository;
 import wdmsystem.exception.NotFoundException;
+import wdmsystem.payment.Payment;
 import wdmsystem.service.IServiceRepository;
 import wdmsystem.service.Service;
+import wdmsystem.service.ServiceDTO;
 import wdmsystem.utility.DTOMapper;
 import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @org.springframework.stereotype.Service
 @AllArgsConstructor
@@ -30,14 +35,13 @@ public class ReservationService {
         Service service = serviceRepository.findById(request.serviceId())
                 .orElseThrow(() -> new NotFoundException("Service not found"));
 
-        if (!employeeRepository.existsById(request.employeeId())) {
-            throw new NotFoundException("Employee not found");
-        }
+        Employee employee = employeeRepository.findById(request.employeeId())
+                .orElseThrow(() -> new NotFoundException("Employee not found"));
 
         Reservation reservation = new Reservation(
                 customer,
                 service,
-                request.employeeId(), //probably change to employee
+                employee,
                 request.startTime(),
                 request.endTime(),
                 request.reservationStatus() != null ? request.reservationStatus() : ReservationStatus.CONFIRMED, // if null, Default set to CONFIRMED
@@ -59,12 +63,12 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new NotFoundException("Reservation not found"));
 
-        if (request.employeeId() != null) {
-            if (!employeeRepository.existsById(request.employeeId())) {
-                throw new NotFoundException("Employee not found");
-            }
-            reservation.setEmployeeId(request.employeeId());
-        }
+//        if (request.employeeId() != null) {
+//            if (!employeeRepository.existsById(request.employeeId())) {
+//                throw new NotFoundException("Employee not found");
+//            }
+//            reservation.setEmployeeId(request.employeeId());
+//        }
         if (request.startTime() != null) {
             reservation.setStartTime(request.startTime());
         }
@@ -98,6 +102,41 @@ public class ReservationService {
         reservationRepository.deleteById(reservationId);
     }
 
+    public List<ReservationDTO> getReservations(Boolean upcoming, Integer limit) {
+        if (limit == null || limit <= 0 || limit > 250) {
+            limit = 50;
+        }
+
+        LocalDateTime upcomingDate = LocalDateTime.now();
+        if (upcoming != null && !upcoming) {
+            upcomingDate = LocalDateTime.of(0,1,1,0,0);
+        }
+        PageRequest pageRequest = PageRequest.of(0, limit);
+
+        List<Reservation> reservations = reservationRepository.findUpcomingReservations(upcomingDate, pageRequest);
+
+        List<ReservationDTO> dtoList = new ArrayList<>();
+        for (Reservation reservation : reservations) {
+            dtoList.add(dtoMapper.Reservation_ModelToDTO(reservation));
+        }
+        return dtoList;
+    }
+
+    public double getUnpaidPrice(int reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new NotFoundException("Order with id " + reservationId + " not found"));
+
+        double price = reservation.getService().price;
+
+        double totalAmountPaid = 0;
+
+        for(Payment payment : reservation.getPayments()) {
+            totalAmountPaid += payment.totalAmount;
+        }
+
+        return price - totalAmountPaid;
+    }
+
     public boolean isOwnedByCurrentUser(int reservationId) {
         CustomUserDetails currentUser = (CustomUserDetails) SecurityContextHolder.getContext()
                 .getAuthentication()
@@ -106,8 +145,11 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() ->
                 new NotFoundException("Reservation with id " + reservationId + " not found"));
 
-        Employee employee = employeeRepository.findById(reservation.getEmployeeId()).orElseThrow(() ->
-                new NotFoundException("Employee with id " + reservation.getEmployeeId() + " not found"));
+        //TODO is this correct?
+        Employee employee = employeeRepository.findById(reservation.getEmployee().id).orElseThrow(() ->
+                new NotFoundException("Employee with id " + reservation.getEmployee().id + " not found"));
+//        Employee employee = employeeRepository.findById(reservation.getEmployeeId()).orElseThrow(() ->
+//                new NotFoundException("Employee with id " + reservation.getEmployeeId() + " not found"));
 
         return employee.getMerchant().id == currentUser.getMerchantId();
     }
