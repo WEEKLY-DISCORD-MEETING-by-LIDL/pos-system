@@ -216,10 +216,12 @@ public class OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new NotFoundException("Order with id " + orderId + " not found"));
 
-        return order.getOrderItems()
+        double sum = order.getOrderItems()
                 .stream()
                 .mapToDouble(OrderItem::getTotalPrice)
                 .sum();
+
+        return sum * (order.orderDiscount != null ? order.orderDiscount.percentage : 1);
     }
 
     public double getUnpaidPrice(int orderId) {
@@ -230,6 +232,8 @@ public class OrderService {
                 .stream()
                 .mapToDouble(OrderItem::getTotalPrice)
                 .sum();
+
+        price = price * (order.orderDiscount != null ? order.orderDiscount.percentage : 1);
 
         double totalAmountPaid = 0;
 

@@ -117,7 +117,12 @@ export const ViewOrderPage = (props) => {
                 <p>Unpaid: {unpaidPrice}</p>
             )}
 
-            {(order.status === "OPENED")  && (
+            {order.discount != null && (
+                <p>Discount: {order.discount.title} {order.discount.percentage * 100}%</p>
+            )}
+
+
+            {(order.status === "OPENED") && (
                 <button onClick={onCancel}>Cancel order</button>
             )}
 

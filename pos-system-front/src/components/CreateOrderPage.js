@@ -3,16 +3,19 @@ import {ProductSelection} from "./ProductSelection";
 import {fetchProducts} from "../api/ProductAPI";
 import {createOrderStyle as CreateOrderStyle} from "../styles/CreateOrderStyle";
 import {createOrder} from "../api/OrderAPI";
+import {fetchOrderDiscounts} from "../api/DiscountAPI";
 
 export const CreateOrderPage = () => {
 
     const token = localStorage.getItem("token");
     const [items, setItems] = useState([]);
     const [products, setProducts] = useState([]);
-    const [discountId, setDiscountId] = useState(null);
+    const [discounts, setDiscounts] = useState([]);
+    const [discountId, setDiscountId] = useState(0);
 
     useEffect(() => {
         fetchProducts(null, null, null, null, setProducts, token);
+        fetchOrderDiscounts(setDiscounts);
     }, []);
 
     const onPlus = (item) => {
@@ -54,7 +57,7 @@ export const CreateOrderPage = () => {
             orderItems.push(orderItem);
         }
 
-        createOrder(discountId, orderItems, token);
+        createOrder((discountId === 0 ? null : discountId), orderItems, token);
     }
 
     const getTotalAmount = () => {
@@ -62,6 +65,15 @@ export const CreateOrderPage = () => {
         items.forEach((item) => {
             sum += item.quantity * (item.product.price + item.productVariant.additionalPrice) * (item.tax != null ? item.tax.percentage + 1 : 1);
         });
+
+        if(discountId != null) {
+            for(let i = 0 ;i<discounts.length;++i) {
+                if(discounts[i].id === discountId) {
+                    sum *= (discounts[i].percentage/100);
+                    break;
+                }
+            }
+        }
 
         return sum;
     }
@@ -93,6 +105,14 @@ export const CreateOrderPage = () => {
                         </li>
                     ))}
                 </ul>
+
+                <h3>Discount:</h3>
+                <select onChange={e => setDiscountId(Number(e.target.value))}>
+                    <option value={0}>None</option>
+                    {discounts && discounts.map((discount) => (
+                        <option value={discount.id}>{discount.title}</option>
+                    ))}
+                </select>
 
                 <h2>Total amount: {getTotalAmount()}</h2>
                 <button style={CreateOrderStyle.createOrderButton} onClick={onCreate}>Create</button>
