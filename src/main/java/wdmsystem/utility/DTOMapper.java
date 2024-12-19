@@ -119,7 +119,7 @@ public class DTOMapper {
     /// EMPLOYEE
 
     public EmployeeDTO Employee_ModelToDTO(Employee employee) {
-        return new EmployeeDTO(employee.id, employee.getMerchant().id, employee.firstName, employee.lastName, employee.employeeType, employee.username, "<hidden>");
+        return new EmployeeDTO(employee.id, employee.getMerchant().id, employee.firstName, employee.lastName, employee.employeeType, employee.username, "<not visible for security reasons>");
     }
 
     public void Employee_DTOToModel(Employee employee, EmployeeDTO dto) {
