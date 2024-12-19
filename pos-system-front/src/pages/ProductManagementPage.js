@@ -172,19 +172,39 @@ const ProductManagementPage = () => {
                                 onClick={() => handleProductSelect(product)}
                             >
                                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                    <span>{product.title}</span>
+                                    <div style={{ flex: 1 }}>
+                                        <h4 style={{ margin: '0 0 8px 0' }}>{product.title}</h4>
+                                        <div style={{ fontSize: '0.9em', color: '#666' }}>
+                                            <p style={{ margin: '4px 0' }}>Price: €{product.price.toFixed(2)}</p>
+                                            {product.categoryId && categories.find(c => c.id === product.categoryId) && (
+                                                <p style={{ margin: '4px 0' }}>Category: {categories.find(c => c.id === product.categoryId).title}</p>
+                                            )}
+                                            {product.taxId && taxes.find(t => t.id === product.taxId) && (
+                                                <p style={{ margin: '4px 0' }}>Tax: {taxes.find(t => t.id === product.taxId).title} 
+                                                ({(taxes.find(t => t.id === product.taxId).percentage * 100).toFixed(1)}%)</p>
+                                            )}
+                                            {product.discountId && discounts.find(d => d.id === product.discountId) && (
+                                                <p style={{ margin: '4px 0' }}>Discount: {discounts.find(d => d.id === product.discountId).title} 
+                                                ({discounts.find(d => d.id === product.discountId).percentage}%)</p>
+                                            )}
+                                            {product.weight && (
+                                                <p style={{ margin: '4px 0' }}>Weight: {product.weight} {product.weightUnit}</p>
+                                            )}
+                                        </div>
+                                    </div>
                                     <div>
                                         <button onClick={() => {
                                             setEditingProduct(product);
                                             setIsEditProductModalOpen(true);
                                         }}>Edit</button>
-                                        <button onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleDeleteProduct(product.id);
-                                        }}>Delete</button>
+                                        <button 
+                                            style={{ marginLeft: '8px' }}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleDeleteProduct(product.id);
+                                            }}>Delete</button>
                                     </div>
                                 </div>
-                                <div>Price: €{product.price}</div>
                             </div>
                         ))}
                     </div>
