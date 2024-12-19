@@ -3,6 +3,7 @@ import { fetchService } from "../api/ServiceAPI";
 import { useLocation } from "react-router-dom";
 import { fetchReservationUnpaidPrice } from "../api/ReservationAPI";
 import { createPayment } from "../api/PaymentAPI";
+import { Button } from "reactstrap";
 
 export const ReservationPaymentPage = () => {
     const [splitPayments, setSplitPayments] = useState([]);
@@ -50,7 +51,7 @@ export const ReservationPaymentPage = () => {
             setPrice(selectedService.price);
             fetchReservationUnpaidPrice(selectedReservation, setUnpaidPrice);
         }
-    }, [selectedService, selectedReservation]);
+    }, [selectedService, selectedReservation,]);
 
 
     const onPay = (event) => {
@@ -80,12 +81,21 @@ export const ReservationPaymentPage = () => {
             ) : (
                 <h2>Loading reservation...</h2>
             )}
-
+            {selectedService && selectedService.title ? (
+                <p>Title: {selectedService.title}</p>
+            ) : (
+                <p>Loading Service...</p>
+            )}
             {selectedService && selectedService.price ? (
                 <p>Total price: {selectedService.price}</p>
             ) : (
                 <p>Loading price...</p>
             )}
+            <form onSubmit={onPay}>
+                <label>Tip: </label>
+                <input type={"number"} name={"tipInput"} step={"any"} min={0}></input>
+                <input type={"submit"} value={"Pay"}></input>
+            </form>
             
 
             {/* {unpaidPrice < price && (

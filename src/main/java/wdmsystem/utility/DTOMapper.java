@@ -185,7 +185,7 @@ public class DTOMapper {
 
     /// Reservation
     public ReservationDTO Reservation_ModelToDTO(Reservation reservation) {
-        return new ReservationDTO(reservation.id, reservation.getCustomer().id, reservation.getService().id, reservation.employeeId, reservation.startTime, reservation.sendConfirmation, reservation.endTime, reservation.reservationStatus);
+        return new ReservationDTO(reservation.id, reservation.getCustomer().id, reservation.getService().id, reservation.getEmployee().id, reservation.startTime, reservation.sendConfirmation, reservation.endTime, reservation.reservationStatus);
     }
 
     /// Service

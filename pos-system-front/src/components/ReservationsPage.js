@@ -124,8 +124,9 @@ export const ReservationsPage = () => {
     }, [selectedTime, timePairs]);
 
     
-    const handleCancel = () => {
-        const reservation = {
+    const handleCancel = (reservation) => {
+        setSelectedReservation(reservation)
+        const newReservation = {
             customerId: null,
             serviceId: selectedService.id,
             employeeId: null, 
@@ -134,14 +135,17 @@ export const ReservationsPage = () => {
             reservationStatus: "CANCELED",
             sendConfirmation: null,
         }
-        updateReservation(selectedReservation, reservation)
+        updateReservation(selectedReservation, newReservation)
         fetchReservations(setReservations);
     }
 
     const handlePayment = async (reservation) => {
-        fetchService(reservation.serviceId, setSelectedService)
-        // console.log(selectedService, reservation)
-        navigate("/pay-reservation", {state: {selectedService, reservation}})
+        setSelectedReservation(reservation);
+        // fetchService(reservation.serviceId, setSelectedService).then(() => console.log(selectedService, reservation))
+        fetchService(reservation.serviceId, setSelectedService).then(() => 
+            navigate("/pay-reservation", {state: {selectedService, selectedReservation}}));
+
+        // navigate("/pay-reservation", {state: {selectedService, selectedReservation}})
     }
 
       return (
