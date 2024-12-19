@@ -79,7 +79,7 @@ export const CreateOrderPage = () => {
             }
         }
 
-        return sum;
+        return sum.toFixed(2);
     }
 
 

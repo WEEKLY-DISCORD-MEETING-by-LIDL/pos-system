@@ -116,25 +116,14 @@ public class ServiceService {
             }
             service.setTitle(request.title());
         }
-        if (request.categoryId() != null) {
-            //TODO check if category exists and set category
-//            service.setCategory(request.categoryId());
-        }
         if (request.price() != null) {
             service.setPrice(request.price());
-        }
-        if (request.discountId() != null) {
-            //TODO check if discount exists
-//            service.setDiscountId(request.discountId());
-        }
-        if (request.taxId() != null) {
-            //TODO check if tax exists
-//            service.setTaxId(request.taxId());
         }
         if (request.durationMins() != null) {
             service.setDurationMins(request.durationMins());
         }
 
+        dtoMapper.Service_UpdateFromDTO(request, service);
         service.setUpdatedAt(LocalDateTime.now());
         serviceRepository.save(service);
     }

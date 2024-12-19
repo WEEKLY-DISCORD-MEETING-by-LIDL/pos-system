@@ -57,7 +57,8 @@ export const ViewOrderPage = (props) => {
                     tipAmount: 0,
                     totalAmount: splitPayments[i],
                     method: "CASH",
-                    orderId: id
+                    orderId: id,
+                    reservationId: 0
                 }
 
                 createPayment(payment, token);
@@ -80,7 +81,8 @@ export const ViewOrderPage = (props) => {
             tipAmount: Number(event.target.tipInput.value),
             totalAmount: unpaidPrice,
             method: "CASH",
-            orderId: id
+            orderId: id,
+            reservationId: 0
         }
 
         createPayment(payment, token).then(r => {

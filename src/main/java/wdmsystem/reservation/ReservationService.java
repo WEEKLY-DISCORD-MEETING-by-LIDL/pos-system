@@ -15,6 +15,7 @@ import wdmsystem.service.ServiceDTO;
 import wdmsystem.utility.DTOMapper;
 import lombok.AllArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +45,7 @@ public class ReservationService {
                 employee,
                 request.startTime(),
                 request.endTime(),
-                request.reservationStatus() != null ? request.reservationStatus() : ReservationStatus.CONFIRMED, // if null, Default set to CONFIRMED
+                request.reservationStatus() != null ? request.reservationStatus() : ReservationStatus.PENDING, // if null, Default set to CONFIRMED
                 request.sendConfirmation(),
                 LocalDateTime.now(),
                 LocalDateTime.now()
@@ -122,19 +123,19 @@ public class ReservationService {
         return dtoList;
     }
 
-    public double getUnpaidPrice(int reservationId) {
+    public BigDecimal getUnpaidPrice(int reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new NotFoundException("Order with id " + reservationId + " not found"));
+                .orElseThrow(() -> new NotFoundException("Reservation with id " + reservationId + " not found"));
 
-        double price = reservation.getService().price;
+        BigDecimal price = reservation.getService().price;
 
-        double totalAmountPaid = 0;
+        BigDecimal totalAmountPaid = BigDecimal.valueOf(0);
 
         for(Payment payment : reservation.getPayments()) {
-            totalAmountPaid += payment.totalAmount;
+            totalAmountPaid = totalAmountPaid.add(payment.totalAmount);
         }
 
-        return price - totalAmountPaid;
+        return price.subtract(totalAmountPaid).setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
     public boolean isOwnedByCurrentUser(int reservationId) {

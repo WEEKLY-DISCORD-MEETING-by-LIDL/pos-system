@@ -152,9 +152,8 @@ export const ReservationsPage = () => {
 
     const handlePayment = async (reservation) => {
         setSelectedReservation(reservation);
-        // fetchService(reservation.serviceId, setSelectedService).then(() => console.log(selectedService, reservation))
-        fetchService(reservation.serviceId, setSelectedService).then(() => 
-            navigate("/pay-reservation", {state: {selectedService, selectedReservation}}));
+
+        navigate("/pay-reservation", {state: {reservation}});
 
         // navigate("/pay-reservation", {state: {selectedService, selectedReservation}})
     }

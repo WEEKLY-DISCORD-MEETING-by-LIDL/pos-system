@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import { fetchService } from "../api/ServiceAPI";
 import { useLocation } from "react-router-dom";
-import { fetchReservationUnpaidPrice } from "../api/ReservationAPI";
+import {fetchReservationUnpaidPrice, updateReservation} from "../api/ReservationAPI";
 import { createPayment } from "../api/PaymentAPI";
 import { Button } from "reactstrap";
 
@@ -10,8 +10,9 @@ export const ReservationPaymentPage = () => {
     const [price, setPrice] = useState(null);
     const [unpaidPrice, setUnpaidPrice] = useState(0);
     const location = useLocation();
+    const [selectedService, setSelectedService] = useState(null);
 
-    const { selectedService, selectedReservation } = location.state || {};
+    const { reservation } = location.state || {};
 
     const token = localStorage.getItem("token");
 
@@ -35,25 +36,23 @@ export const ReservationPaymentPage = () => {
     }
 
     // const fetchDetails = () => {
-    //     if (!selectedService || !selectedReservation) {
+    //     if (!selectedService || !reservation) {
     //         return 
     //     }
     //     setPrice(selectedService.price)
-    //     fetchReservationUnpaidPrice(selectedReservation, setUnpaidPrice);
+    //     fetchReservationUnpaidPrice(reservation, setUnpaidPrice);
     // }
 
     // useEffect(() => {
     //     fetchDetails();
-    // }, [selectedService, selectedReservation]);
+    // }, [selectedService, reservation]);
 
     useEffect(() => {
+        fetchService(reservation.serviceId, setSelectedService);
         console.log(selectedService)
-        console.log(selectedReservation)
-        if (selectedService && selectedReservation) {
-            setPrice(selectedService.price);
-            fetchReservationUnpaidPrice(selectedReservation, setUnpaidPrice);
-        }
-    }, [selectedService, selectedReservation,]);
+        console.log(reservation)
+        fetchReservationUnpaidPrice(reservation, setUnpaidPrice);
+    }, [reservation,]);
 
 
     const onPay = (event) => {
@@ -62,14 +61,22 @@ export const ReservationPaymentPage = () => {
             tipAmount: Number(event.target.tipInput.value),
             totalAmount: unpaidPrice,
             method: "CASH",
-            reservationId: selectedReservation.id
+            reservationId: reservation.id,
+            orderId: 0
         }
 
         console.log(payment)
-        createPayment(payment, token);
+        createPayment(payment, token).then(r => {
+            const updatedReservation = {
+                ...reservation,
+                reservationStatus: "CONFIRMED"
+            }
+
+            updateReservation(updatedReservation, updatedReservation);
+        });
         // createPayment(payment).then(r => {
-        //     validatePaymentsAndUpdateOrderStatus(selectedReservation.id).then(r => {
-        //         archiveOrder(selectedReservation.id);
+        //     validatePaymentsAndUpdateOrderStatus(reservation.id).then(r => {
+        //         archiveOrder(reservation.id);
         //         fetchDetails();
         //     });
         // });
@@ -79,8 +86,10 @@ export const ReservationPaymentPage = () => {
 
     return (
         <div>
-            {selectedReservation && selectedReservation.id ? (
-                <h2>Reservation #{selectedReservation.id}</h2>
+            {reservation && reservation.id ? (
+                <>
+                    <h2>Reservation #{reservation.id}</h2>
+                </>
             ) : (
                 <h2>Loading reservation...</h2>
             )}
