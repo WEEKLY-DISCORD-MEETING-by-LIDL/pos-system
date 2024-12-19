@@ -60,20 +60,21 @@ export const DetailText = styled.p`
 `;
 
 export const ButtonGroup = styled.div`
-  display: flex;
-  gap: 8px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
 `;
 
 export const Button = styled.button.withConfig({
     shouldForwardProp: (prop) => prop !== 'primary' // Prevent `primary` prop from being forwarded to the DOM
 })`
-  padding: 5px 10px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  background-color: ${props => props.primary ? '#007bff' : 'white'};
-  color: ${props => props.primary ? 'white' : 'black'};
-  cursor: pointer;
-
+    padding: 20px 20px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: ${props => props.primary ? '#007bff' : 'white'};
+    color: ${props => props.primary ? 'white' : 'black'};
+    cursor: pointer;
+    
   &:hover {
     background-color: ${props => props.primary ? '#0056b3' : '#f0f0f0'};
   }
