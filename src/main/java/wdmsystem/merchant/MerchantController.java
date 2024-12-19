@@ -37,7 +37,9 @@ public class MerchantController {
     @GetMapping("/merchants")
     @PreAuthorize("hasRole('ADMIN') or hasRole('OWNER') or hasRole('REGULAR')")
     ResponseEntity<MerchantDTO> getMerchant() {
+        log.info("Fetching current merchant from token!"); // not sure if this should include something more
         MerchantDTO merchant = _merchantService.getMerchant();
+        log.info("Fetched merchant details: {}", merchant);
         return new ResponseEntity<>(merchant, HttpStatus.OK);
     }
 
