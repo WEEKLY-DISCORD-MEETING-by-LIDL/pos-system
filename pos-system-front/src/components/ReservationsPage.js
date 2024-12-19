@@ -139,7 +139,7 @@ export const ReservationsPage = () => {
         setSelectedReservation(reservation)
         const newReservation = {
             customerId: null,
-            serviceId: selectedService.id,
+            serviceId: null,
             employeeId: null, 
             startTime: null,
             endTime: null,

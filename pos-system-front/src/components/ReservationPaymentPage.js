@@ -13,6 +13,8 @@ export const ReservationPaymentPage = () => {
 
     const { selectedService, selectedReservation } = location.state || {};
 
+    const token = localStorage.getItem("token");
+
     const setupSplitPayments = (event) => {
         event.preventDefault();
         let numberOfSplitPayments = Number(event.target.splitInput.value);
@@ -64,6 +66,7 @@ export const ReservationPaymentPage = () => {
         }
 
         console.log(payment)
+        createPayment(payment, token);
         // createPayment(payment).then(r => {
         //     validatePaymentsAndUpdateOrderStatus(selectedReservation.id).then(r => {
         //         archiveOrder(selectedReservation.id);

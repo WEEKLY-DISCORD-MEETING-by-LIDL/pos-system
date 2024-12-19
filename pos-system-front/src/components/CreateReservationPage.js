@@ -98,9 +98,10 @@ export const CreateReservationPage = () => {
             }
         }
         
-        const startTime = new Date(`${date}T${selectedTime}:00`);
+        const startTime = new Date(`${date}T${selectedTime}:00Z`);
         const endTime = new Date(startTime);
         endTime.setMinutes(startTime.getMinutes() + selectedService.durationMins);
+        // console.log(startTime);
 
         const reservation = {
             customerId: customerId,

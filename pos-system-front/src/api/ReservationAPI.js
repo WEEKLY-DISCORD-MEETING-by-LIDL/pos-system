@@ -45,7 +45,9 @@ export const createReservation = async (reservationData) => {
 
 export const fetchReservations = async (setReservations) => {
     try {
-        const requestString = `http://localhost:8080/reservations`;
+        const params = new URLSearchParams();
+        params.append('upcoming', true);        
+        const requestString = `http://localhost:8080/reservations?${params.toString()}`;
         // console.log("serviceId:", serviceId);
         // console.log("date:", formattedDate);
         // console.log("Request URL:", requestString);

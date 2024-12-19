@@ -102,13 +102,13 @@ public class ReservationService {
         reservationRepository.deleteById(reservationId);
     }
 
-    public List<ReservationDTO> getReservations(boolean upcoming, Integer limit) {
+    public List<ReservationDTO> getReservations(Boolean upcoming, Integer limit) {
         if (limit == null || limit <= 0 || limit > 250) {
             limit = 50;
         }
 
         LocalDateTime upcomingDate = LocalDateTime.now();
-        if (!upcoming) {
+        if (upcoming != null && !upcoming) {
             upcomingDate = LocalDateTime.of(0,1,1,0,0);
         }
         PageRequest pageRequest = PageRequest.of(0, limit);

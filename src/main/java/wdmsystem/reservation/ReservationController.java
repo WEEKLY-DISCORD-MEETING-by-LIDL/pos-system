@@ -48,7 +48,7 @@ public class ReservationController {
 
     @GetMapping("/reservations")
     @PreAuthorize("hasRole('ADMIN') or hasRole('OWNER') or hasRole('REGULAR')")
-    public ResponseEntity<List<ReservationDTO>> getReservation(@RequestParam(required = false) boolean upcoming, @RequestParam(required = false) Integer limit) {
+    public ResponseEntity<List<ReservationDTO>> getReservations(@RequestParam(required = false) boolean upcoming, @RequestParam(required = false) Integer limit) {
         List<ReservationDTO> reservations = reservationService.getReservations(upcoming, limit);
         return new ResponseEntity<>(reservations, HttpStatus.OK);
     }

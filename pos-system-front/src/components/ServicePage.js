@@ -8,6 +8,9 @@ import { useEffect } from "react";
 import { fetchAvailableTimes } from "../api/ReservationAPI";
 import { Navigate, useNavigate } from "react-router-dom";
 import { createService, deleteService, updateService} from "../api/ServiceAPI";
+import { fetchTaxes } from "../api/TaxAPI";
+import { fetchDiscounts } from "../api/DiscountAPI";
+import { fetchCategories } from "../api/CategoryAPI";
 
 export const ServicePage = () => {
     const [selectedService, setSelectedService] = useState(null);
@@ -17,6 +20,12 @@ export const ServicePage = () => {
     const [availableTimes, setAvailableTimes] = useState([]);
     const [timePairs, setTimePairs] = useState([])
     const [isValid, setIsValid] = useState(false)
+    const [taxes, setTaxes] = useState([]);
+    const [discounts, setDiscounts] = useState([]);
+    const [categories, setCategories] = useState([])
+    const [selectedDiscount, setSelectedDiscount] = useState(null)
+    const [selectedTax, setSelectedTax] = useState(null)
+    const [selectedCategory, setSelectedCategory] = useState(null)
     const navigate = useNavigate();
 
     const [createModalOpen, setCreateModalOpen] = useState(false); // State to control modal visibility
@@ -102,6 +111,9 @@ export const ServicePage = () => {
 
     const handleUpdateService = () => {
         setUpdateModalOpen(true);
+        fetchDiscounts(setDiscounts);
+        fetchTaxes(null, setTaxes);
+        fetchCategories(setCategories);
     }
 
     const handleCloseUpdateModal = () => {
@@ -115,6 +127,9 @@ export const ServicePage = () => {
             taxId: null,
             durationMins: null
         }); // Reset fields
+        setSelectedCategory(null);
+        setSelectedDiscount(null);
+        setSelectedTax(null);
     };
 
     const handlePutService = () => {
@@ -126,6 +141,9 @@ export const ServicePage = () => {
 
     const handleCreateService = () => {
         setCreateModalOpen(true);
+        fetchDiscounts(setDiscounts);
+        fetchTaxes(null, setTaxes);
+        fetchCategories(setCategories);
     }
 
     const handleCloseCreateModal = () => {
@@ -139,6 +157,9 @@ export const ServicePage = () => {
             taxId: null,
             durationMins: null
         }); // Reset fields
+        setSelectedCategory(null);
+        setSelectedDiscount(null);
+        setSelectedTax(null);
     };
 
     const handleCreateInputChange = (e) => {
@@ -155,6 +176,34 @@ export const ServicePage = () => {
         handleCloseCreateModal(); // Close modal after submission
         fetchServices(null,null,setServices)
     };
+
+    const handleDiscountChange = (e) => {
+        const { value } = e.target;
+        setSelectedDiscount(value);
+
+        setCreateServiceData((prevState) => ({
+            ...prevState,
+            discountId: value,
+        }));
+    }
+    const handleTaxChange = (e) => {
+        const { value } = e.target;
+        setSelectedTax(value);
+
+        setCreateServiceData((prevState) => ({
+            ...prevState,
+            taxId: value,
+        }));
+    }
+    const handleCategoryChange = (e) => {
+        const { value } = e.target;
+        setSelectedCategory(value);
+
+        setCreateServiceData((prevState) => ({
+            ...prevState,
+            categoryId: value,
+        }));
+    }
 
     return (
         <Container fluid>
@@ -311,6 +360,60 @@ export const ServicePage = () => {
                             step="1"
                         />
                     </FormGroup>
+                    <FormGroup>
+                        <Label for="discountSelect">Select Discount</Label>
+                        <Input
+                            type="select"
+                            id="discountSelect"
+                            value={selectedDiscount || ""}
+                            onChange={handleDiscountChange}
+                        >
+                            <option value="" disabled>
+                            -- Choose a Discount --
+                            </option>
+                            {discounts.map((discount) => (
+                            <option key={discount.id} value={discount.id}>
+                                {discount.title} - {discount.percentage}%
+                            </option>
+                            ))}
+                        </Input>
+                    </FormGroup>
+                    <FormGroup>
+                        <Label for="taxSelect">Select Tax</Label>
+                        <Input
+                            type="select"
+                            id="taxSelect"
+                            value={selectedTax || ""}
+                            onChange={handleTaxChange}
+                        >
+                            <option value="" disabled>
+                            -- Choose a Tax --
+                            </option>
+                            {taxes.map((tax) => (
+                            <option key={tax.id} value={tax.id}>
+                                {tax.title} - {tax.percentage * 100}%
+                            </option>
+                            ))}
+                        </Input>
+                    </FormGroup>
+                    <FormGroup>
+                        <Label for="categorySelect">Select Category</Label>
+                        <Input
+                            type="select"
+                            id="categorySelect"
+                            value={selectedCategory || ""}
+                            onChange={handleCategoryChange}
+                        >
+                            <option value="" disabled>
+                            -- Choose a Category --
+                            </option>
+                            {categories.map((category) => (
+                            <option key={category.id} value={category.id}>
+                                {category.title}
+                            </option>
+                            ))}
+                        </Input>
+                    </FormGroup>
                 </ModalBody>
                 <ModalFooter>
                     <Button color="success" onClick={handleSubmitService}>
@@ -362,6 +465,60 @@ export const ServicePage = () => {
                             step="1"
                         />
                     </FormGroup> */}
+                    <FormGroup>
+                        <Label for="discountSelect">Select Discount</Label>
+                        <Input
+                            type="select"
+                            id="discountSelect"
+                            value={selectedDiscount || ""}
+                            onChange={handleDiscountChange}
+                        >
+                            <option value="" disabled>
+                            -- Choose a Discount --
+                            </option>
+                            {discounts.map((discount) => (
+                            <option key={discount.id} value={discount.id}>
+                                {discount.title} - {discount.percentage}%
+                            </option>
+                            ))}
+                        </Input>
+                    </FormGroup>
+                    <FormGroup>
+                        <Label for="taxSelect">Select Tax</Label>
+                        <Input
+                            type="select"
+                            id="taxSelect"
+                            value={selectedTax || ""}
+                            onChange={handleTaxChange}
+                        >
+                            <option value="" disabled>
+                            -- Choose a Tax --
+                            </option>
+                            {taxes.map((tax) => (
+                            <option key={tax.id} value={tax.id}>
+                                {tax.title} - {tax.percentage * 100}%
+                            </option>
+                            ))}
+                        </Input>
+                    </FormGroup>
+                    <FormGroup>
+                        <Label for="categorySelect">Select Category</Label>
+                        <Input
+                            type="select"
+                            id="categorySelect"
+                            value={selectedCategory || ""}
+                            onChange={handleCategoryChange}
+                        >
+                            <option value="" disabled>
+                            -- Choose a Category --
+                            </option>
+                            {categories.map((category) => (
+                            <option key={category.id} value={category.id}>
+                                {category.title}
+                            </option>
+                            ))}
+                        </Input>
+                    </FormGroup>
                 </ModalBody>
                 <ModalFooter>
                     <Button color="success" onClick={handlePutService}>
