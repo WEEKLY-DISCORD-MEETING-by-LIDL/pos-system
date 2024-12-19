@@ -82,7 +82,7 @@ public class ProductController {
     @PreAuthorize("hasRole('ADMIN') or (hasRole('OWNER') and @productService.productIsOwnedByCurrentUser(#productId))")
     ResponseEntity<ProductDTO> updateProduct(@PathVariable int productId, @RequestBody ProductDTO request) {
         log.info("Updating product with ID: {}", productId);
-        _productService.updateProduct(productId, request);
+        ProductDTO updatedProduct = _productService.updateProduct(productId, request);
         log.info("Product with ID: {} updated successfully", productId);
         return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
     }

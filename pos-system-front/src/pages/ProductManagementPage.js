@@ -1,19 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { 
+import {
     fetchProducts,
-    createProduct, 
-    updateProduct, 
+    createProduct,
+    updateProduct,
     deleteProduct,
     fetchVariants,
     createVariant,
     deleteVariant,
     updateVariant
 } from '../api/ProductAPI';
+import { fetchCategories } from '../api/CategoryAPI';
+import { fetchTaxes } from '../api/TaxAPI';
+import { fetchDiscounts } from '../api/DiscountAPI';
 
 const ProductManagementPage = () => {
 
     const token = localStorage.getItem("token");
     const [products, setProducts] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [taxes, setTaxes] = useState([]);
+    const [discounts, setDiscounts] = useState([]);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [variants, setVariants] = useState([]);
     const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
@@ -26,7 +32,8 @@ const ProductManagementPage = () => {
         weight: 0,
         weightUnit: 'kg',
         categoryId: 1,
-        merchantId: 1
+        taxId: null,
+        discountId: null
     });
     const [newVariant, setNewVariant] = useState({
         title: '',
@@ -37,10 +44,25 @@ const ProductManagementPage = () => {
 
     useEffect(() => {
         loadProducts();
+        loadCategories();
+        loadTaxes();
+        loadDiscounts();
     }, []);
 
     const loadProducts = async () => {
         await fetchProducts(null, null, null, null, setProducts, token);
+    };
+
+    const loadCategories = async () => {
+        await fetchCategories(setCategories, token);
+    };
+
+    const loadTaxes = async () => {
+        await fetchTaxes(null, setTaxes, token);
+    };
+
+    const loadDiscounts = async () => {
+        await fetchDiscounts(setDiscounts);
     };
 
     const loadVariants = async (productId) => {
@@ -56,7 +78,7 @@ const ProductManagementPage = () => {
         try {
             await createProduct(newProduct, token);
             setIsAddProductModalOpen(false);
-            setNewProduct({ title: '', price: 0, weight: 0, weightUnit: 'kg', categoryId: 1, merchantId: 1 });
+            setNewProduct({ title: '', price: 0, weight: 0, weightUnit: 'kg', categoryId: 1, taxId: null, discountId: null });
             await loadProducts();
         } catch (error) {
             console.error('Error adding product:', error);
@@ -128,7 +150,7 @@ const ProductManagementPage = () => {
     return (
         <div style={{ padding: '20px' }}>
             <h2>Product Management</h2>
-            
+
             {/* Product List Section */}
             <div style={{ display: 'flex', gap: '20px' }}>
                 <div style={{ flex: 1 }}>
@@ -138,7 +160,7 @@ const ProductManagementPage = () => {
                     </div>
                     <div style={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px' }}>
                         {products.map(product => (
-                            <div 
+                            <div
                                 key={product.id}
                                 style={{
                                     padding: '10px',
@@ -179,7 +201,7 @@ const ProductManagementPage = () => {
                     <div style={{ border: '1px solid #ccc', borderRadius: '4px', padding: '10px' }}>
                         {selectedProduct ? (
                             variants.map(variant => (
-                                <div 
+                                <div
                                     key={variant.id}
                                     style={{
                                         padding: '10px',
@@ -209,12 +231,12 @@ const ProductManagementPage = () => {
 
             {/* Add Product Modal */}
             {isAddProductModalOpen && (
-                <div style={{ 
-                    position: 'fixed', 
-                    top: 0, 
-                    left: 0, 
-                    right: 0, 
-                    bottom: 0, 
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
                     backgroundColor: 'rgba(0,0,0,0.5)',
                     display: 'flex',
                     justifyContent: 'center',
@@ -243,14 +265,49 @@ const ProductManagementPage = () => {
                             />
                         </div>
                         <div style={{ marginBottom: '10px' }}>
-                            <label style={{ display: 'block', marginBottom: '5px' }}>Category ID:</label>
-                            <input
-                                type="number"
-                                placeholder="Enter category ID"
-                                value={newProduct.categoryId}
+                            <label style={{ display: 'block', marginBottom: '5px' }}>Category:</label>
+                            <select
+                                value={newProduct.categoryId || ''}
                                 onChange={e => setNewProduct({...newProduct, categoryId: parseInt(e.target.value)})}
                                 style={{ width: '100%', padding: '5px' }}
-                            />
+                            >
+                                <option value="">Select Category</option>
+                                {categories.map(category => (
+                                    <option key={category.id} value={category.id}>
+                                        {category.title}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div style={{ marginBottom: '10px' }}>
+                            <label style={{ display: 'block', marginBottom: '5px' }}>Tax:</label>
+                            <select
+                                value={newProduct.taxId || ''}
+                                onChange={e => setNewProduct({...newProduct, taxId: parseInt(e.target.value)})}
+                                style={{ width: '100%', padding: '5px' }}
+                            >
+                                <option value="">Select Tax</option>
+                                {taxes.map(tax => (
+                                    <option key={tax.id} value={tax.id}>
+                                        {tax.title} ({tax.percentage*100}%)
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div style={{ marginBottom: '10px' }}>
+                            <label style={{ display: 'block', marginBottom: '5px' }}>Discount:</label>
+                            <select
+                                value={newProduct.discountId || ''}
+                                onChange={e => setNewProduct({...newProduct, discountId: parseInt(e.target.value)})}
+                                style={{ width: '100%', padding: '5px' }}
+                            >
+                                <option value="">Select Discount</option>
+                                {discounts.map(discount => (
+                                    <option key={discount.id} value={discount.id}>
+                                        {discount.title} ({discount.percentage}%)
+                                    </option>
+                                ))}
+                            </select>
                         </div>
                         <div style={{ marginBottom: '10px' }}>
                             <label style={{ display: 'block', marginBottom: '5px' }}>Weight:</label>
@@ -282,12 +339,12 @@ const ProductManagementPage = () => {
 
             {/* Add Variant Modal */}
             {isAddVariantModalOpen && (
-                <div style={{ 
-                    position: 'fixed', 
-                    top: 0, 
-                    left: 0, 
-                    right: 0, 
-                    bottom: 0, 
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
                     backgroundColor: 'rgba(0,0,0,0.5)',
                     display: 'flex',
                     justifyContent: 'center',
@@ -325,12 +382,12 @@ const ProductManagementPage = () => {
 
             {/* Edit Product Modal */}
             {isEditProductModalOpen && (
-                <div style={{ 
-                    position: 'fixed', 
-                    top: 0, 
-                    left: 0, 
-                    right: 0, 
-                    bottom: 0, 
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
                     backgroundColor: 'rgba(0,0,0,0.5)',
                     display: 'flex',
                     justifyContent: 'center',
@@ -359,6 +416,51 @@ const ProductManagementPage = () => {
                                     price: parseFloat(e.target.value)
                                 })}
                             />
+                        </div>
+                        <div style={{ marginBottom: '10px' }}>
+                            <label>Category:</label>
+                            <select
+                                value={editingProduct?.categoryId || ''}
+                                onChange={e => setEditingProduct({...editingProduct, categoryId: parseInt(e.target.value)})}
+                                style={{ width: '100%', padding: '5px' }}
+                            >
+                                <option value="">Select Category</option>
+                                {categories.map(category => (
+                                    <option key={category.id} value={category.id}>
+                                        {category.title}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div style={{ marginBottom: '10px' }}>
+                            <label>Tax:</label>
+                            <select
+                                value={editingProduct?.taxId || ''}
+                                onChange={e => setEditingProduct({...editingProduct, taxId: parseInt(e.target.value)})}
+                                style={{ width: '100%', padding: '5px' }}
+                            >
+                                <option value="">Select Tax</option>
+                                {taxes.map(tax => (
+                                    <option key={tax.id} value={tax.id}>
+                                        {tax.title} ({tax.percentage*100}%)
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div style={{ marginBottom: '10px' }}>
+                            <label>Discount:</label>
+                            <select
+                                value={editingProduct?.discountId || ''}
+                                onChange={e => setEditingProduct({...editingProduct, discountId: parseInt(e.target.value)})}
+                                style={{ width: '100%', padding: '5px' }}
+                            >
+                                <option value="">Select Discount</option>
+                                {discounts.map(discount => (
+                                    <option key={discount.id} value={discount.id}>
+                                        {discount.title} ({discount.percentage}%)
+                                    </option>
+                                ))}
+                            </select>
                         </div>
                         <div style={{ marginBottom: '10px' }}>
                             <label>Weight:</label>
@@ -395,12 +497,12 @@ const ProductManagementPage = () => {
 
             {/* Edit Variant Modal */}
             {isEditVariantModalOpen && (
-                <div style={{ 
-                    position: 'fixed', 
-                    top: 0, 
-                    left: 0, 
-                    right: 0, 
-                    bottom: 0, 
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
                     backgroundColor: 'rgba(0,0,0,0.5)',
                     display: 'flex',
                     justifyContent: 'center',
