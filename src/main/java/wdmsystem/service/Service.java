@@ -10,6 +10,7 @@ import lombok.Setter;
 
 import wdmsystem.merchant.Merchant;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public final class Service {
     @JoinColumn(name = "category_id")
     public Category category;
   
-    public double price;
+    public BigDecimal price;
   
     @ManyToOne
     @JoinColumn(name = "discount_id")
@@ -48,7 +49,7 @@ public final class Service {
     @OneToMany(mappedBy = "service", cascade = CascadeType.ALL, orphanRemoval = true)
     public List<Reservation> reservations;
   
-    public Service(Merchant merchant, String title, Category category, double price, Discount discount, Tax tax, int durationMins, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Service(Merchant merchant, String title, Category category, BigDecimal price, Discount discount, Tax tax, int durationMins, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.merchant = merchant;
         this.title = title;
         this.category = category;

@@ -1,4 +1,6 @@
 package wdmsystem.service;
 
-public record ServiceDTO(Integer id, String title, Integer categoryId, Double price, Integer discountId, Integer taxId, Integer durationMins) {
+import java.math.BigDecimal;
+
+public record ServiceDTO(Integer id, String title, Integer categoryId, BigDecimal price, Integer discountId, Integer taxId, Integer durationMins) {
 }

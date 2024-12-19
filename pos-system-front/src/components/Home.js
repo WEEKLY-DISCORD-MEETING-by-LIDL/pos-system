@@ -44,6 +44,8 @@ const Home = () => {
                 <button style={HomeStyle.button} onClick={goToMerchantManagement}>Merchant Management</button>
                 <button style={HomeStyle.button} onClick={goToTaxManagement}>Tax Management</button>
                 <button style={HomeStyle.button} onClick={goToDiscounts}>Discount Management</button>
+                <button style={HomeStyle.button} onClick={() => {navigate("/services")}}>Services</button>
+                <button style={HomeStyle.button} onClick={() => {navigate("/reservations")}}>Reservations</button>
             </div>
         </div>
     )

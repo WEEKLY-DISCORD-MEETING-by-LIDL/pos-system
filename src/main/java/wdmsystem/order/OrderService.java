@@ -337,6 +337,7 @@ public class OrderService {
 
         totalAmountPaid = totalAmountPaid.setScale(2, RoundingMode.HALF_UP);
 
+        System.out.println(totalAmountPaid + " " + price);
         if(totalAmountPaid.compareTo(price) < 0 && totalAmountPaid.compareTo(BigDecimal.valueOf(0)) > 0) {
             order.status = OrderStatus.PARTIALLY_PAID;
             return dtoMapper.Order_ModelToDTO(orderRepository.save(order));

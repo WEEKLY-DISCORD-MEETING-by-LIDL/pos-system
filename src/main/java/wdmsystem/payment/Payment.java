@@ -36,12 +36,13 @@ public class Payment {
 
     public LocalDateTime createdAt;
 
-    public Payment(Integer id, BigDecimal tipAmount, BigDecimal totalAmount, PaymentMethod method, Order order) {
+    public Payment(Integer id, BigDecimal tipAmount, BigDecimal totalAmount, PaymentMethod method, Order order, Reservation reservation) {
         this.id = id;
         this.tipAmount = tipAmount;
         this.totalAmount = totalAmount;
         this.method = method;
         this.order = order;
+        this.reservation = reservation;
     }
 
     public Payment() {

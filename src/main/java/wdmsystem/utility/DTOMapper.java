@@ -24,6 +24,7 @@ import wdmsystem.order.discount.OrderDiscountDTO;
 import wdmsystem.payment.Payment;
 import wdmsystem.payment.PaymentDTO;
 import wdmsystem.product.*;
+import wdmsystem.reservation.IReservationRepository;
 import wdmsystem.reservation.Reservation;
 import wdmsystem.reservation.ReservationDTO;
 import wdmsystem.service.ServiceDTO;
@@ -43,6 +44,7 @@ public class DTOMapper {
     IOrderItemRepository orderItemRepository;
     IProductRepository productRepository;
     IProductVariantRepository productVariantRepository;
+    IReservationRepository reservationRepository;
     IEmployeeRepository employeeRepository;
     ITaxRepository taxRepository;
     ICategoryRepository categoryRepository;
@@ -159,17 +161,17 @@ public class DTOMapper {
 
     public Payment Payment_DTOToModel(PaymentDTO paymentDTO) {
         Order order = orderRepository.findById(paymentDTO.orderId()).orElse(null);
-        Reservation reservation = null; //will change once reservations work
+        Reservation reservation = reservationRepository.findById(paymentDTO.reservationId()).orElse(null); //will change once reservations work
 
         if (order == null && reservation == null) {
             throw new NotFoundException("Payment is not applied to any order or reservation");
         }
 
-        return new Payment(paymentDTO.id(), paymentDTO.tipAmount(), paymentDTO.totalAmount(), paymentDTO.method(), order);
+        return new Payment(paymentDTO.id(), paymentDTO.tipAmount(), paymentDTO.totalAmount(), paymentDTO.method(), order, reservation);
     }
 
     public PaymentDTO Payment_ModelToDTO(Payment payment) {
-        return new PaymentDTO(payment.id, payment.tipAmount, payment.totalAmount, payment.method, (payment.order == null ? null : payment.order.id));
+        return new PaymentDTO(payment.id, payment.tipAmount, payment.totalAmount, payment.method, (payment.order == null ? null : payment.order.id), (payment.reservation == null ? null : payment.reservation.id));
     }
 
     /// Customer
@@ -193,6 +195,21 @@ public class DTOMapper {
         Integer discountId = (service.getDiscount() != null) ? service.getDiscount().getId() : null;
         Integer taxId = (service.getTax() != null) ? service.getTax().getId() : null;
         return new ServiceDTO(service.id, service.title, categoryId, service.price, discountId, taxId, service.durationMins);
+    }
+
+    public void Service_UpdateFromDTO(ServiceDTO request, Service service){
+        if (request.categoryId() != null) {
+            categoryRepository.findById(request.categoryId()).ifPresent(service::setCategory);
+        }
+        if (request.price() != null) {
+            service.setPrice(request.price());
+        }
+        if (request.discountId() != null) {
+            discountRepository.findById(request.discountId()).ifPresent(service::setDiscount);
+        }
+        if (request.taxId() != null) {
+            taxRepository.findById(request.taxId()).ifPresent(service::setTax);
+        }
     }
 
     /// Merchant

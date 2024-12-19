@@ -6,6 +6,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import lombok.extern.slf4j.Slf4j;
+
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -49,7 +51,9 @@ public class ReservationController {
     @GetMapping("/reservations")
     @PreAuthorize("hasRole('ADMIN') or hasRole('OWNER') or hasRole('REGULAR')")
     public ResponseEntity<List<ReservationDTO>> getReservations(@RequestParam(required = false) boolean upcoming, @RequestParam(required = false) Integer limit) {
+        log.info("Received request to get reservations unpaid price with parameters upcoming: {}, limit: {}", upcoming, limit);
         List<ReservationDTO> reservations = reservationService.getReservations(upcoming, limit);
+        log.info("Fetched reservations details: {}", reservations);
         return new ResponseEntity<>(reservations, HttpStatus.OK);
     }
 
@@ -73,9 +77,11 @@ public class ReservationController {
 
     //new
     @GetMapping("/reservations/{reservationId}/unpaid-price")
-    @PreAuthorize("hasRole('ADMIN') or ((hasRole('OWNER') or hasRole('REGULAR')) and @orderService.isOwnedByCurrentUser(#reservationId))")
-    public ResponseEntity<Double> getUnpaidPrice(@PathVariable int reservationId) {
-        double price = reservationService.getUnpaidPrice(reservationId);
+    @PreAuthorize("hasRole('ADMIN') or ((hasRole('OWNER') or hasRole('REGULAR')) and @reservationService.isOwnedByCurrentUser(#reservationId))")
+    public ResponseEntity<BigDecimal> getUnpaidPrice(@PathVariable int reservationId) {
+        log.info("Received request to get reservation unpaid price with ID {}", reservationId);
+        BigDecimal price = reservationService.getUnpaidPrice(reservationId);
+        log.info("Fetched unpaid price of reservation with ID {} successfully", reservationId);
         return new ResponseEntity<>(price, HttpStatus.OK);
     }
 
