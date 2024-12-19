@@ -27,8 +27,8 @@ public class ServiceController {
 
     @GetMapping("/services")
     @PreAuthorize("hasRole('ADMIN') or hasRole('OWNER') or hasRole('REGULAR')")
-    ResponseEntity<List<ServiceDTO>> getServices(@RequestParam(required = false) Category category, @RequestParam(required = false) Integer limit) {
-        List<ServiceDTO> serviceList = _serviceService.getServices(category, limit);
+    ResponseEntity<List<ServiceDTO>> getServices(@RequestParam(required = false) Integer categoryId, @RequestParam(required = false) Integer limit) {
+        List<ServiceDTO> serviceList = _serviceService.getServices(categoryId, limit);
         return new ResponseEntity<>(serviceList, HttpStatus.OK);
     }
 

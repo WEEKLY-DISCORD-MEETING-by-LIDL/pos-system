@@ -6,6 +6,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
+
 
 @RestController
 public class ReservationController {
@@ -38,6 +40,13 @@ public class ReservationController {
         return new ResponseEntity<>(reservation, HttpStatus.OK);
     }
 
+    @GetMapping("/reservations")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('OWNER') or hasRole('REGULAR')")
+    public ResponseEntity<List<ReservationDTO>> getReservation(@RequestParam(required = false) boolean upcoming, @RequestParam(required = false) Integer limit) {
+        List<ReservationDTO> reservations = reservationService.getReservations(upcoming, limit);
+        return new ResponseEntity<>(reservations, HttpStatus.OK);
+    }
+
     @DeleteMapping("/reservations/{reservationId}")
     @PreAuthorize("hasRole('ADMIN') or ((hasRole('OWNER') or hasRole('REGULAR')) and @reservationService.isOwnedByCurrentUser(#reservationId))")
     public ResponseEntity<String> deleteReservation(@PathVariable int reservationId) {
@@ -52,6 +61,13 @@ public class ReservationController {
         return new ResponseEntity<>("Reservation canceled successfully", HttpStatus.OK);
     }
 
+    //new
+    @GetMapping("/reservations/{reservationId}/unpaid-price")
+    @PreAuthorize("hasRole('ADMIN') or ((hasRole('OWNER') or hasRole('REGULAR')) and @orderService.isOwnedByCurrentUser(#reservationId))")
+    public ResponseEntity<Double> getUnpaidPrice(@PathVariable int reservationId) {
+        double price = reservationService.getUnpaidPrice(reservationId);
+        return new ResponseEntity<>(price, HttpStatus.OK);
+    }
 
 }
 
