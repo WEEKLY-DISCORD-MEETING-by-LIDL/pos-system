@@ -37,6 +37,22 @@ export const createDiscount = async (discountData) => {
     }
 };
 
+export const fetchDiscount = async (discountId, setDiscount) => {
+
+    const token = localStorage.getItem("token");
+    try {
+        const response = await axios.get(`http://localhost:8080/discounts/${discountId}`, {
+            headers:{
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        setDiscount(response.data);
+    } catch (err) {
+        console.log(err.message);
+    }
+}
+
 export const updateDiscount = async (discountId, discountData) => {
     try {
         const token = localStorage.getItem("token");

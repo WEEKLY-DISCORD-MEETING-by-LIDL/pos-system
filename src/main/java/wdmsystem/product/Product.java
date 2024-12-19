@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class Product {
     @OnDelete(action = OnDeleteAction.SET_NULL)
     public Category category;
 
-    public double price;
+    public BigDecimal price;
 
     @ManyToOne
     @JoinColumn(name = "discount_id")
@@ -52,7 +53,7 @@ public class Product {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     public List<ProductVariant> variants;
 
-    public Product(Integer id, Merchant merchant, String title, Category category, double price, Discount discount, Tax tax, float weight, String weightUnit) {
+    public Product(Integer id, Merchant merchant, String title, Category category, BigDecimal price, Discount discount, Tax tax, float weight, String weightUnit) {
         this.id = id;
         this.merchant = merchant;
         this.title = title;

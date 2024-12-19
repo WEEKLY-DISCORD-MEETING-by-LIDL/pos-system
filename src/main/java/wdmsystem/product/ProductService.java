@@ -13,6 +13,7 @@ import org.springframework.data.domain.Limit;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,7 @@ public class ProductService {
         if (request.weight() <= 0) {
             throw new InvalidInputException("Product weight must be greater than 0");
         }
-        if (request.price() < 0) {
+        if (request.price().compareTo(BigDecimal.valueOf(0)) < 0) {
             throw new InvalidInputException("Product price must be greater than or equal to 0");
         }
 
@@ -55,7 +56,7 @@ public class ProductService {
 
         Product savedProduct = productRepository.save(product);
 
-        ProductVariantDTO defaultVariantRequest = new ProductVariantDTO(null, savedProduct.getId(), "Default", 0);
+        ProductVariantDTO defaultVariantRequest = new ProductVariantDTO(null, savedProduct.getId(), "Default", BigDecimal.valueOf(0));
         createVariant(savedProduct.getId(), defaultVariantRequest);
 
         return dtoMapper.Product_ModelToDTO(savedProduct);
@@ -66,7 +67,7 @@ public class ProductService {
         if (request.title().length() > 30) {
             throw new InvalidInputException("Product variant title is longer than 30 characters");
         }
-        if (request.additionalPrice() < 0) {
+        if (request.additionalPrice().compareTo(BigDecimal.valueOf(0)) < 0) {
             throw new InvalidInputException("Product variant additional price must be greater than or equal 0");
         }
 
@@ -200,7 +201,7 @@ public class ProductService {
         if(request.weight() <= 0) {
             throw new InvalidInputException("Product weight must be greater than 0");
         }
-        if(request.price() < 0) {
+        if(request.price().compareTo(BigDecimal.valueOf(0)) < 0) {
             throw new InvalidInputException("Product price must be greater than or equal to 0");
         }
 
@@ -221,7 +222,7 @@ public class ProductService {
         if(request.title().length() > 30) {
             throw new InvalidInputException("Product variant title is longer than 30 characters");
         }
-        if (request.additionalPrice() < 0) {
+        if (request.additionalPrice().compareTo(BigDecimal.valueOf(0)) < 0) {
             throw new InvalidInputException("Product variant additional price must be greater than or equal 0");
         }
 

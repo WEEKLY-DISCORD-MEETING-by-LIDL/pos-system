@@ -18,6 +18,10 @@ export const CreateOrderPage = () => {
         fetchOrderDiscounts(setDiscounts);
     }, []);
 
+    const getItemPrice = (item) => {
+        return (item.quantity * (((item.product.price + item.productVariant.additionalPrice) * (item.discount != null ? 1 - item.discount.percentage : 1)) * (item.tax != null ? item.tax.percentage + 1 : 1))).toFixed(2)
+    }
+
     const onPlus = (item) => {
         item.quantity++;
 
@@ -63,13 +67,13 @@ export const CreateOrderPage = () => {
     const getTotalAmount = () => {
         let sum = 0;
         items.forEach((item) => {
-            sum += item.quantity * (item.product.price + item.productVariant.additionalPrice) * (item.tax != null ? item.tax.percentage + 1 : 1);
+            sum += Number(getItemPrice(item));
         });
 
         if(discountId != null) {
             for(let i = 0 ;i<discounts.length;++i) {
                 if(discounts[i].id === discountId) {
-                    sum *= (discounts[i].percentage/100);
+                    sum *= (1 - discounts[i].percentage/100);
                     break;
                 }
             }
@@ -88,7 +92,7 @@ export const CreateOrderPage = () => {
                         <li>
                             <div>
                                 <p>{item.product.title} {item.productVariant.title} x{item.quantity}</p>
-                                <p>Price: {item.quantity * (item.product.price + item.productVariant.additionalPrice) * (item.tax != null ? item.tax.percentage + 1 : 1)}</p>
+                                <p>Price: {getItemPrice(item)}</p>
                                 <button onClick={() => {
                                     onMinus(item)
                                 }}>-
@@ -114,7 +118,7 @@ export const CreateOrderPage = () => {
                     ))}
                 </select>
 
-                <h2>Total amount: {getTotalAmount()}</h2>
+                <h2>Total amount: {getTotalAmount()} €</h2>
                 <button style={CreateOrderStyle.createOrderButton} onClick={onCreate}>Create</button>
             </div>
 

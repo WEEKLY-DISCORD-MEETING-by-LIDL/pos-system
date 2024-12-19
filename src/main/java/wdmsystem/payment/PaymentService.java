@@ -6,6 +6,7 @@ import wdmsystem.utility.DTOMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Service
@@ -18,8 +19,8 @@ public class PaymentService {
 
     public void createPayment(PaymentDTO paymentDTO) {
 
-        if(paymentDTO.tipAmount() < 0) throw new InvalidInputException("Tip amount must be greater than or equal to 0");
-        if(paymentDTO.totalAmount() <= 0) throw new InvalidInputException("Total amount must be greater than 0");
+        if(paymentDTO.tipAmount().compareTo(BigDecimal.valueOf(0)) < 0) throw new InvalidInputException("Tip amount must be greater than or equal to 0");
+        if(paymentDTO.totalAmount().compareTo(BigDecimal.valueOf(0)) <= 0) throw new InvalidInputException("Total amount must be greater than 0");
 
 
 

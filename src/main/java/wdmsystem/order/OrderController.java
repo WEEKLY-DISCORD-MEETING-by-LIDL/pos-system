@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import wdmsystem.order.summary.OrderSummary;
 import lombok.extern.slf4j.Slf4j;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Slf4j
@@ -90,9 +91,9 @@ public class OrderController {
     //new
     @GetMapping("/orders/{orderId}/price")
     @PreAuthorize("hasRole('ADMIN') or ((hasRole('OWNER') or hasRole('REGULAR')) and @orderService.isOwnedByCurrentUser(#orderId))")
-    public ResponseEntity<Double> getPrice(@PathVariable int orderId) {
+    public ResponseEntity<BigDecimal> getPrice(@PathVariable int orderId) {
         log.info("Fetching price for order with ID: {}", orderId);
-        double price = _orderService.getPrice(orderId);
+        BigDecimal price = _orderService.getPrice(orderId);
         log.info("Fetched price for order with ID {}: {}", orderId, price);
         return new ResponseEntity<>(price, HttpStatus.OK);
     }
@@ -100,8 +101,8 @@ public class OrderController {
     //new
     @GetMapping("/orders/{orderId}/unpaid-price")
     @PreAuthorize("hasRole('ADMIN') or ((hasRole('OWNER') or hasRole('REGULAR')) and @orderService.isOwnedByCurrentUser(#orderId))")
-    public ResponseEntity<Double> getUnpaidPrice(@PathVariable int orderId) {
-        double price = _orderService.getUnpaidPrice(orderId);
+    public ResponseEntity<BigDecimal> getUnpaidPrice(@PathVariable int orderId) {
+        BigDecimal price = _orderService.getUnpaidPrice(orderId);
         return new ResponseEntity<>(price, HttpStatus.OK);
     }
 

@@ -154,6 +154,7 @@ export const validatePaymentsAndUpdateOrderStatus = async (orderId, token) => {
             }
         });
         console.log(response.data);
+        return response;
     } catch (err) {
         console.log(err.message);
     }

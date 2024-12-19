@@ -2,17 +2,20 @@ import {useEffect, useState} from "react";
 import {fetchVariants} from "../api/ProductAPI";
 import {ProductCardStyle} from "../styles/ProductCardStyle";
 import {fetchTax} from "../api/TaxAPI";
+import {fetchDiscount} from "../api/DiscountAPI";
 
 export const ProductCard = (props) => {
 
     const token = localStorage.getItem("token");
     const [selectedVariant, setSelectedVariants] = useState(0);
     const [variants, setVariants] = useState([]);
-    const [tax, setTax] = useState(null)
+    const [tax, setTax] = useState(null);
+    const [discount, setDiscount] = useState(null);
     
     useEffect(() => {
         fetchVariants(props.product.id, setVariants, token);
         fetchTax(props.product.taxId, setTax, token);
+        fetchDiscount(props.product.discountId, setDiscount);
     }, []);
 
     const currentVariant = variants[selectedVariant];
@@ -31,6 +34,7 @@ export const ProductCard = (props) => {
             product: props.product,
             productVariant: variants[selectedVariant],
             tax: tax,
+            discount: discount,
             quantity: 1
         }
 

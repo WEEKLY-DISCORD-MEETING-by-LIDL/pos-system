@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,14 +22,14 @@ public class ProductVariant {
     public Product product;
 
     public String title;
-    public double additionalPrice;
+    public BigDecimal additionalPrice;
     public LocalDateTime createdAt;
     public LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "productVariant", cascade = CascadeType.ALL)
     public List<OrderItem> orderItems;
 
-    public ProductVariant(Integer id, Product product, String title, double additionalPrice) {
+    public ProductVariant(Integer id, Product product, String title, BigDecimal additionalPrice) {
         this.id = id;
         this.product = product;
         this.title = title;

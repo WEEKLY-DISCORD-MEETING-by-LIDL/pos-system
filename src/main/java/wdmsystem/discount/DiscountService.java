@@ -58,6 +58,13 @@ public class DiscountService {
         return discountDTOList;
     }
 
+    public DiscountDTO getDiscount(int discountId){
+        Discount discount = discountRepository.findById(discountId).orElseThrow(() ->
+                new NotFoundException("Discount with ID " + discountId + " not found"));
+
+        return dtoMapper.Discount_ModelToDTO(discount);
+    }
+
     public DiscountDTO updateDiscount(int discountId, DiscountDTO discountDTO) {
         Discount discount = discountRepository.findById(discountId).orElseThrow(
                 () -> new NotFoundException("Discount with id " + discountId + " not found"));
