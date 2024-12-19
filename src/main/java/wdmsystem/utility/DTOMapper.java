@@ -180,7 +180,7 @@ public class DTOMapper {
 
     /// Category
     public CategoryDTO Category_ModelToDTO(Category category) {
-        return new CategoryDTO(category.title);
+        return new CategoryDTO(category.id, category.title);
     }
 
     /// Reservation
